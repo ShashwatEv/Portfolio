@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shashwat | Initialize Comm</title>
+    <link rel="icon" type="image/png" href="/assets/fevicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['Fira Code', 'monospace'] },
+                    colors: { bgDark: '#050505', neonCyan: '#66fcf1', neonBlue: '#3b82f6' },
+                    // Added Animation Config for Footer
+                    animation: { 'infinite-scroll': 'infinite-scroll 25s linear infinite' },
+                    keyframes: {
+                        'infinite-scroll': {
+                            from: { transform: 'translateX(0)' },
+                            to: { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+            (function () {
+                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            })();
+    </script>
+
+    <style>
+        /* BASE STYLES & SPOTLIGHT FIX */
+        html {
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /* CYBER GRID (Spotlight effect controlled by JS class on body) */
+        :root {
+            --grid-color: rgba(59, 130, 246, 0.25);
+        }
+
+        html.dark {
+            --grid-color: rgba(102, 252, 241, 0.15);
+        }
+
+        .cyber-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: none;
+            background-size: 40px 40px;
+            mask-image: none;
+            -webkit-mask-image: none;
+            pointer-events: none;
+            transition: background-image 0.5s ease, mask-image 0.5s ease, -webkit-mask-image 0.5s ease;
+        }
+
+        body.is-hovering .cyber-grid {
+            background-image:
+                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 20%);
+            -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 20%);
+        }
+
+        /* GLASS NAV */
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .dark .glass {
+            background: rgba(5, 5, 5, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* CONTACT FORM STYLES */
+        .term-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            width: 100%;
+            padding: 10px 0;
+            outline: none;
+            transition: 0.3s;
+            font-family: 'Fira Code';
+        }
+
+        .term-input:focus {
+            border-color: #66fcf1;
+        }
+
+        .dark .term-input {
+            color: white;
+            border-bottom-color: #555;
+        }
+
+        .dark .term-input:focus {
+            border-color: #66fcf1;
+        }
+
+        /* OVERLAY TERMINAL STYLES */
+        #terminal-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            cursor: pointer;
+            padding: 0;
+            background: none;
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #terminal-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        #overlay-terminal {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 500px;
+            height: 350px;
+            min-width: 300px;
+            min-height: 200px;
+            max-width: 90vw;
+            max-height: 90vh;
+            z-index: 99;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(102, 252, 241, 0.15);
+            display: flex;
+            flex-direction: column;
+            font-family: 'Fira Code', monospace;
+            overflow: hidden;
+            resize: both;
+        }
+
+        .term-bar {
+            padding: 8px 12px;
+            background: rgba(102, 252, 241, 0.1);
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            user-select: none;
+        }
+
+        .term-output-area {
+            flex-grow: 1;
+            padding: 10px 12px;
+            overflow-y: auto;
+            color: #e5e5e5;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .term-output-area::-webkit-scrollbar {
+            display: block;
+            width: 6px;
+        }
+
+        .term-output-area::-webkit-scrollbar-thumb {
+            background: rgba(102, 252, 241, 0.3);
+            border-radius: 3px;
+        }
+
+        .term-output-area {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(102, 252, 241, 0.3) transparent;
+        }
+
+        .term-input-line {
+            display: flex;
+            padding: 5px 12px 8px;
+            border-top: 1px solid #333;
+            align-items: center;
+        }
+
+        .term-prompt {
+            color: #00ff00;
+            white-space: nowrap;
+            margin-right: 5px;
+        }
+
+        .term-input {
+            background: transparent;
+            border: none;
+            color: #66fcf1;
+            outline: none;
+            width: 100%;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+
+    <div class="cyber-grid"></div>
+
+    <nav class="fixed w-full z-50 top-0 start-0 glass transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div
+                    class="w-8 h-8 bg-blue-500 dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
+                    &lt;/&gt;</div>
+                <span class="self-center text-xl font-bold tracking-wide dark:text-white">CodeBaaz</span>
+            </a>
+            <div class="flex items-center gap-6 font-mono text-sm">
+                <a href="index.html" class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Home</a>
+                <a href="about.html" class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/About</a>
+                <a href="projects.html"
+                    class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Work</a>
+                <a href="contact.html" class="text-blue-500 dark:text-neonCyan">~/Contact</a>
+
+                <button id="theme-toggle"
+                    class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-all">
+                    <i class="ri-sun-line dark:hidden text-orange-500"></i>
+                    <i class="ri-moon-line hidden dark:block text-neonCyan"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section id="contact-page"
+        class="relative z-10 pt-32 pb-20 container mx-auto px-6 min-h-[80vh] flex flex-col justify-center flex-grow">
+        <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+            <div class="space-y-8">
+                <h1 class="text-4xl md:text-5xl font-bold font-mono break-all leading-tight">
+                    <span class="text-blue-500 dark:text-neonCyan">./</span>Initialize_Comm
+                </h1>
+                <p class="text-gray-600 dark:text-gray-400 text-lg">
+                    Have a project in mind or just want to discuss the latest tech? Execute the form command.
+                </p>
+
+                <div class="space-y-4 font-mono">
+                    <div class="flex items-center gap-4 group cursor-pointer">
+                        <div
+                            class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded flex items-center justify-center group-hover:text-blue-500 dark:group-hover:text-neonCyan transition-colors">
+                            <i class="ri-mail-send-line text-xl"></i>
+                        </div>
+                        <span
+                            class="group-hover:text-blue-500 dark:group-hover:text-neonCyan break-all">shashwatop89@gmail.com</span>
+                    </div>
+                    <div class="flex items-center gap-4 group cursor-pointer">
+                        <div
+                            class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded flex items-center justify-center group-hover:text-blue-500 dark:group-hover:text-neonCyan transition-colors">
+                            <i class="ri-github-line text-xl"></i>
+                        </div>
+                        <span
+                            class="group-hover:text-blue-500 dark:group-hover:text-neonCyan break-all">github.com/ShashwatEv</span>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="bg-white dark:bg-[#0a0a0a] p-8 rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl relative overflow-hidden">
+                <div
+                    class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-neonCyan dark:to-purple-500">
+                </div>
+                <div class="flex gap-2 mb-6">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                </div>
+
+                <form class="space-y-6">
+                    <div>
+                        <label class="block font-mono text-xs text-gray-500 mb-1">var Name =</label>
+                        <input type="text" placeholder="'Your Name'" class="term-input">
+                    </div>
+                    <div>
+                        <label class="block font-mono text-xs text-gray-500 mb-1">var Email =</label>
+                        <input type="email" placeholder="'your@email.com'" class="term-input">
+                    </div>
+                    <div>
+                        <label class="block font-mono text-xs text-gray-500 mb-1">const Message =</label>
+                        <textarea rows="4" placeholder="// Type your message here..." class="term-input"></textarea>
+                    </div>
+                    <button type="button"
+                        class="w-full py-3 bg-blue-600 dark:bg-neonCyan text-white dark:text-black font-bold font-mono rounded hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_15px_rgba(102,252,241,0.5)] transition-all">
+                        > Execute Send()
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+    <footer id="main-footer" class="bg-black border-t border-gray-800 relative z-10">
+        <div class="w-full py-8 overflow-hidden relative border-b border-gray-800">
+            <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black z-10 pointer-events-none">
+            </div>
+            <div class="flex w-full overflow-hidden">
+                <div class="flex animate-infinite-scroll gap-16 items-center px-4">
+                    <i
+                        class="ri-reactjs-line text-4xl text-gray-500 dark:text-gray-400 hover:text-blue-400 transition-colors"></i>
+                    <i
+                        class="ri-html5-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors"></i>
+                    <i
+                        class="ri-css3-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-blue-600 transition-colors"></i>
+                    <i
+                        class="ri-javascript-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-yellow-400 transition-colors"></i>
+                    <i
+                        class="ri-nodejs-line text-4xl text-gray-500 dark:text-gray-400 hover:text-green-500 transition-colors"></i>
+                    <i
+                        class="ri-reactjs-line text-4xl text-gray-500 dark:text-gray-400 hover:text-blue-400 transition-colors"></i>
+                    <i
+                        class="ri-html5-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors"></i>
+                    <i
+                        class="ri-css3-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-blue-600 transition-colors"></i>
+                    <i
+                        class="ri-javascript-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-yellow-400 transition-colors"></i>
+                    <i
+                        class="ri-nodejs-line text-4xl text-gray-500 dark:text-gray-400 hover:text-green-500 transition-colors"></i>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center text-xs font-mono text-gray-400 dark:text-gray-500">
+            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                System Operational</div>
+            <div id="clock">00:00:00 UTC</div>
+        </div>
+    </footer>
+    <button id="terminal-toggle" aria-label="Open Terminal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="10" ry="10" fill="#000000" stroke="#66fcf1" stroke-width="3" />
+            <text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif"
+                font-size="35" fill="#66fcf1" font-weight="bold">
+                &lt;/&gt;
+            </text>
+            <circle cx="80" cy="80" r="10" fill="#27c93f" stroke="#000000" stroke-width="2" />
+        </svg>
+    </button>
+
+    <div id="overlay-terminal" style="display: none;">
+        <div class="term-bar" id="term-header">
+            <span class="text-neonCyan font-bold text-sm">System Terminal — contact.html</span>
+            <span class="text-sm cursor-pointer"
+                onclick="document.getElementById('overlay-terminal').style.display='none';"><i
+                    class="ri-close-line text-white/50 hover:text-white"></i></span>
+        </div>
+        <div class="term-output-area" id="terminal-output">
+            <div class="text-xs text-gray-400 pb-2 border-b border-gray-800 mb-2">
+                Welcome to Shashwat's System Shell (SSH). Type 'help' for commands.
+            </div>
+        </div>
+        <div class="term-input-line">
+            <span class="term-prompt" id="current-prompt">Shash@port:~$</span>
+            <input type="text" id="terminal-input" class="term-input" autocomplete="off" autofocus>
+        </div>
+    </div>
+    <script>
+        // --- Shared Terminal Logic (STARTS HERE) ---
+        (function () {
+            const terminalOutput = document.getElementById('terminal-output');
+            const terminalInput = document.getElementById('terminal-input');
+            const overlayTerminal = document.getElementById('overlay-terminal');
+            const toggleButton = document.getElementById('terminal-toggle');
+            const promptSpan = document.getElementById('current-prompt');
+
+            const PROMPT = 'Shash@port:~$';
+
+            // --- Terminal Utility Functions ---
+
+            // Function to echo user input and current prompt
+            function echoInput(command) {
+                const outputLine = document.createElement('div');
+                outputLine.innerHTML = `<span class="term-prompt">${PROMPT}</span> ${command}`;
+                terminalOutput.appendChild(outputLine);
+            }
+
+            // Function to print a response
+            function print(message, colorClass = 'text-white') {
+                const outputLine = document.createElement('div');
+                outputLine.innerHTML = `<span class="${colorClass}">${message}</span>`;
+                terminalOutput.appendChild(outputLine);
+            }
+
+            // Function to scroll to the latest input line
+            function scrollToBottom() {
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            }
+
+            // --- Terminal Command Definitions ---
+
+            const commands = {
+                'whoami': {
+                    desc: 'Displays author bio and primary role.',
+                    exec: () => {
+                        print("Name: Shashwat Singh", 'text-neonCyan');
+                        print("Role: Full Stack Developer / System Architect", 'text-neonCyan');
+                        print("Motto: Building scalable systems, line by line.", 'text-gray-400');
+                    }
+                },
+                'ls -l /': {
+                    desc: 'Lists main system directories (navigation links).',
+                    exec: () => {
+                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>home</span>", 'text-neonCyan');
+                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>about</span>", 'text-neonCyan');
+                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>work</span>", 'text-neonCyan');
+                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>contact</span>", 'text-neonCyan');
+                    }
+                },
+                'neofetch': {
+                    desc: 'Displays stylized system specifications (Host, Shell, Status).',
+                    exec: () => {
+                        print('<span style="color:#8B5CF6">/\_/\</span>', 'text-gray-400');
+                        print('<span style="color:#8B5CF6">( o.o )</span> <span class="text-neonCyan font-semibold">Host</span>: Vercel Cloud', 'text-gray-400');
+                        print('<span style="color:#8B5CF6"> > ^ < </span> <span class="text-neonCyan font-semibold">Loc</span>: 127.0.0.1', 'text-gray-400');
+                        print('       <span class="text-neonCyan font-semibold">Shell</span>: ZSH v5.8', 'text-gray-400');
+                        print('       <span class="text-green-500 font-bold">● Online</span>');
+                    }
+                },
+                'date': {
+                    desc: 'Displays the current local date and time.',
+                    exec: () => {
+                        print(new Date().toString(), 'text-neonCyan');
+                    }
+                },
+                'theme toggle': {
+                    desc: 'Switches the entire site between dark and light modes.',
+                    exec: () => {
+                        document.documentElement.classList.toggle('dark');
+                        localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                        print("Theme switched.", 'text-green-500');
+                    }
+                },
+                'clear': {
+                    desc: 'Clears the terminal output screen.',
+                    exec: () => {
+                        terminalOutput.innerHTML = '';
+                    }
+                },
+                'exit': {
+                    desc: 'Closes the terminal overlay.',
+                    exec: () => {
+                        overlayTerminal.style.display = 'none';
+                    }
+                },
+                'help': {
+                    desc: 'Lists all available commands.',
+                    exec: () => {
+                        print("Available Commands:", 'text-neonCyan');
+                        Object.keys(commands).forEach(cmd => {
+                            print(`  ${cmd.padEnd(15, ' ')} -> ${commands[cmd].desc}`, 'text-gray-400');
+                        });
+                        print("Navigation: cd home | cd work | cd contact", 'text-info');
+                    }
+                },
+                'ping': {
+                    desc: 'Simulates a network latency check.',
+                    exec: (args) => {
+                        const host = args[1] || 'shashwat.dev';
+                        print(`PING ${host} (${Math.random().toFixed(2)}): 64 bytes from ${host}: icmp_seq=1 time=${(Math.random() * 10).toFixed(2)} ms`, 'text-green-500');
+                    }
+                },
+                'grep': {
+                    desc: 'Searches the skills list for a keyword (e.g., grep react /skills).',
+                    exec: (args) => {
+                        const term = (args[1] || '').toLowerCase();
+                        const skills = "React, Next.js, Tailwind, Node.js, Python, Django, PostgreSQL, Mongo, Redis, Docker, AWS, Git";
+                        const results = skills.split(', ').filter(s => s.toLowerCase().includes(term));
+
+                        if (term && results.length > 0) {
+                            print(`Found matching skills: ${results.join(', ')}`, 'text-neonCyan');
+                        } else if (term) {
+                            print(`No skills found matching '${term}'.`, 'text-error');
+                        } else {
+                            print("Usage: grep [keyword] /skills", 'text-gray-400');
+                        }
+                    }
+                },
+                'read -f /readme.txt': {
+                    desc: 'Prints a philosophy/future plans statement.',
+                    exec: () => {
+                        print("##################################################", 'text-info');
+                        print("// System Philosophy:", 'text-neonCyan');
+                        print("// I believe software should be fast, reliable, and deeply intentional.", 'text-gray-400');
+                        print("// Next Goal: Dive deep into WebAssembly and Rust for performance optimization.", 'text-gray-400');
+                        print("##################################################", 'text-info');
+                    }
+                },
+                'sudo reboot': {
+                    desc: 'Initiates a simulated system reboot (redirects via confirmation).',
+                    exec: () => {
+                        print("[SUDO] WARNING: System will restart. Proceed? (y/n)", 'text-error');
+                        // Special state handling for confirmation
+                        terminalInput.setAttribute('data-confirm', 'reboot');
+                    }
+                },
+                'man': {
+                    desc: 'Displays the manual page for a command (e.g., man cd).',
+                    exec: (args) => {
+                        const command = args[1];
+                        if (command === 'cd') {
+                            print("NAME: cd - Change the active directory/section.", 'text-neonCyan');
+                            print("SYNOPSIS: cd [home|about|work|contact]", 'text-gray-400');
+                        } else if (commands[command]) {
+                            print(`MANUAL: ${command} -> ${commands[command].desc}`, 'text-neonCyan');
+                        } else {
+                            print("Error: No manual entry for command.", 'text-error');
+                        }
+                    }
+                },
+                'ssh': {
+                    desc: 'Simulates a secure connection attempt.',
+                    exec: () => {
+                        print("Handshake initiated...", 'text-info');
+                        setTimeout(() => {
+                            print("SUCCESS: Connection to api.shash.dev Established.", 'text-green-500');
+                            scrollToBottom();
+                        }, 500);
+                    }
+                },
+            };
+
+            // --- Command Runner ---
+
+            function runCommand(command) {
+                if (!command) return;
+
+                const parts = command.trim().toLowerCase().split(/\s+/);
+                const baseCommand = parts[0];
+
+                if (baseCommand === 'cd' && parts.length === 2) {
+                    const dir = parts[1];
+                    let url = '';
+                    if (dir === 'home') url = 'index.html';
+                    else if (dir === 'about') url = 'about.html';
+                    else if (dir === 'work' || dir === 'projects') url = 'projects.html';
+                    else if (dir === 'contact' || dir === 'comm') url = 'contact.html';
+
+                    if (url) {
+                        print(`Navigating to /${dir} ...`, 'text-info');
+                        setTimeout(() => window.location.href = url, 300);
+                        return;
+                    }
+                }
+
+                // Handle complex commands (e.g., 'read -f /README.txt' or 'ls -l /')
+                const complexCommand = command.trim().toLowerCase();
+                if (commands[complexCommand]) {
+                    commands[complexCommand].exec(parts);
+                    return;
+                }
+
+                if (commands[baseCommand]) {
+                    commands[baseCommand].exec(parts);
+                    return;
+                }
+
+                print(`Error: command not found: ${command}`, 'text-error');
+            }
+
+            // --- Input and Confirmation Handler ---
+
+            terminalInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const command = terminalInput.value.trim();
+                    const confirmState = terminalInput.getAttribute('data-confirm');
+
+                    echoInput(command); // Show input before running command
+
+                    if (confirmState === 'reboot') {
+                        if (command === 'y') {
+                            print("System rebooting...", 'text-error');
+                            setTimeout(() => window.location.href = 'loading.html', 500);
+                        } else {
+                            print("Reboot cancelled.", 'text-green-500');
+                        }
+                        terminalInput.removeAttribute('data-confirm'); // Reset state
+                    } else {
+                        runCommand(command);
+                    }
+
+                    terminalInput.value = '';
+                    scrollToBottom();
+                }
+            });
+
+            // --- Drag and Resize Logic ---
+            const termHeader = document.getElementById('term-header');
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            termHeader.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                const rect = overlayTerminal.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+
+                overlayTerminal.style.cursor = 'move';
+                overlayTerminal.style.position = 'fixed';
+                overlayTerminal.style.right = 'auto';
+                overlayTerminal.style.bottom = 'auto';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                let newX = e.clientX - offsetX;
+                let newY = e.clientY - offsetY;
+
+                if (newX < 0) newX = 0;
+                if (newY < 0) newY = 0;
+                if (newX + overlayTerminal.offsetWidth > window.innerWidth) newX = window.innerWidth - overlayTerminal.offsetWidth;
+                if (newY + overlayTerminal.offsetHeight > window.innerHeight) newY = window.innerHeight - overlayTerminal.offsetHeight;
+
+                overlayTerminal.style.left = newX + 'px';
+                overlayTerminal.style.top = newY + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                overlayTerminal.style.cursor = 'default';
+            });
+
+            // --- Toggle Button Logic ---
+            toggleButton.addEventListener('click', () => {
+                const isHidden = overlayTerminal.style.display === 'none';
+                overlayTerminal.style.display = isHidden ? 'flex' : 'none';
+                if (isHidden) {
+                    terminalInput.focus();
+                }
+            });
+
+            // --- Initial Setup and Event Handling (Existing Logic) ---
+
+            // Existing theme toggle logic
+            const themeBtn = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+            themeBtn.addEventListener('click', () => {
+                html.classList.toggle('dark');
+                localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+                const isDark = html.classList.contains('dark');
+                themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
+                themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
+            });
+
+            // Function to update clock (NEW)
+            function updateClock() {
+                const now = new Date();
+                document.getElementById('clock').innerText = now.toUTCString().split(' ')[4] + ' UTC';
+            }
+            setInterval(updateClock, 1000);
+
+            // Spotlight/Glow Logic (existing + footer)
+            const grid = document.querySelector('.cyber-grid');
+            const contactPage = document.getElementById('contact-page');
+            const mainFooter = document.getElementById('main-footer'); // NEW
+            const body = document.body;
+
+            function activateGlow() { body.classList.add('is-hovering'); }
+            function deactivateGlow() { body.classList.remove('is-hovering'); }
+
+            const glowSections = [contactPage, mainFooter].filter(el => el != null);
+
+            glowSections.forEach(section => {
+                section.addEventListener('mouseenter', activateGlow);
+            });
+
+            document.addEventListener('mouseout', function (e) {
+                if (!e.relatedTarget && !e.toElement) {
+                    deactivateGlow();
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (grid) {
+                    grid.style.setProperty('--x', `${e.clientX}px`);
+                    grid.style.setProperty('--y', `${e.clientY}px`);
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                updateClock(); // NEW
+
+                // Initialize theme icon 
+                const isDark = html.classList.contains('dark');
+                themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
+                themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
+            });
+        })();
+        // --- Shared Terminal Logic (ENDS HERE) ---
+    </script>
+</body>
+
+</html>

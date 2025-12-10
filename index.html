@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/fevicon.png">
+    <title>Shashwat | System Core</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        bgDark: '#050505',
+                        neonCyan: '#66fcf1',
+                        neonBlue: '#3b82f6',
+                    },
+                    animation: {
+                        'infinite-scroll': 'infinite-scroll 25s linear infinite',
+                    },
+                    keyframes: {
+                        'infinite-scroll': {
+                            from: { transform: 'translateX(0)' },
+                            to: { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+            (function () {
+                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            })();
+    </script>
+
+    <style>
+        /* BASE SETTINGS */
+        html {
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /* 1. SCROLL PROGRESS */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: #66fcf1;
+            z-index: 100;
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        /* 2. CYBER GRID (Spotlight effect controlled by JS class on body) */
+        :root {
+            --grid-color: rgba(59, 130, 246, 0.25);
+        }
+
+        html.dark {
+            --grid-color: rgba(102, 252, 241, 0.15);
+        }
+
+        .cyber-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: none;
+            background-size: 40px 40px;
+            mask-image: none;
+            -webkit-mask-image: none;
+            pointer-events: none;
+            transition: background-image 0.5s ease, mask-image 0.5s ease, -webkit-mask-image 0.5s ease;
+        }
+
+        /* NEW: Apply the grid lines AND the spotlight when hovering */
+        body.is-hovering .cyber-grid {
+            /* 1. Turns the visible grid lines ON */
+            background-image:
+                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+
+            /* 2. Turns the spotlight mask ON */
+            mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 20%);
+            -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 20%);
+        }
+
+        /* --- NEW SKILL BAR ANIMATION STYLES --- */
+        .skill-bar-container {
+            height: 6px;
+            background: #222;
+            border-radius: 3px;
+            margin-top: 4px;
+        }
+
+        .skill-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            width: 0;
+            /* Starts at 0% for JS animation */
+            transition: width 1.5s cubic-bezier(0.17, 0.84, 0.44, 1);
+            /* Smooth, dynamic animation */
+        }
+
+        /* --- ACTIVITY LOG STYLES --- */
+        .log-entry {
+            border-left: 2px solid #333;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .log-entry:hover {
+            border-left-color: #66fcf1;
+        }
+
+        .log-time {
+            color: #4b5563;
+            /* gray-600 */
+        }
+
+        .dark .log-time {
+            color: #9ca3af;
+            /* gray-400 */
+        }
+
+        /* 3. RAINBOW TEXT */
+        .rainbow-text {
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: glowing 20s linear infinite;
+        }
+
+        @keyframes glowing {
+            0% {
+                background-position: 0 0;
+            }
+
+            50% {
+                background-position: 400% 0;
+            }
+
+            100% {
+                background-position: 0 0;
+            }
+        }
+
+        /* 4. GLASS NAV */
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .dark .glass {
+            background: rgba(5, 5, 5, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* 5. TERMINAL CARD */
+        .terminal-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark .terminal-card {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            box-shadow: none;
+        }
+
+        .terminal-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.4);
+        }
+
+        .dark .terminal-card:hover {
+            border-color: #66fcf1;
+            box-shadow: 0 0 30px rgba(102, 252, 241, 0.15);
+        }
+
+        .terminal-header {
+            background: #f3f4f6;
+            padding: 8px 12px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            gap: 6px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dark .terminal-header {
+            background: #171717;
+            border-bottom: 1px solid #333;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .red {
+            background: #ff5f56;
+        }
+
+        .yellow {
+            background: #ffbd2e;
+        }
+
+        .green {
+            background: #27c93f;
+        }
+
+        .terminal-body {
+            padding: 16px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            flex-grow: 1;
+            color: #1f2937;
+        }
+
+        .dark .terminal-body {
+            color: #e5e5e5;
+        }
+
+        .cmd {
+            color: #27c93f;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        /* 6. EDITABLE CODE */
+        .editable-code {
+            border-bottom: 1px dashed rgba(102, 252, 241, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0 4px;
+            border-radius: 4px;
+            outline: none;
+            color: #a5f3fc;
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+            color: #66fcf1;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* 7. OVERLAY TERMINAL STYLES */
+        #terminal-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            cursor: pointer;
+            padding: 0;
+            background: none;
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #terminal-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        #overlay-terminal {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 500px;
+            height: 350px;
+            min-width: 300px;
+            min-height: 200px;
+            max-width: 90vw;
+            max-height: 90vh;
+            z-index: 99;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(102, 252, 241, 0.15);
+            display: none;
+            flex-direction: column;
+            font-family: 'Fira Code', monospace;
+            overflow: hidden;
+            resize: both;
+        }
+
+        .term-bar {
+            padding: 8px 12px;
+            background: rgba(102, 252, 241, 0.1);
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            user-select: none;
+        }
+
+        .term-output-area {
+            flex-grow: 1;
+            padding: 10px 12px;
+            overflow-y: auto;
+            color: #e5e5e5;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .term-output-area::-webkit-scrollbar {
+            display: block;
+            width: 6px;
+        }
+
+        .term-output-area::-webkit-scrollbar-thumb {
+            background: rgba(102, 252, 241, 0.3);
+            border-radius: 3px;
+        }
+
+        .term-output-area {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(102, 252, 241, 0.3) transparent;
+        }
+
+        .term-input-line {
+            display: flex;
+            padding: 5px 12px 8px;
+            border-top: 1px solid #333;
+            align-items: center;
+        }
+
+        .term-prompt {
+            color: #00ff00;
+            white-space: nowrap;
+            margin-right: 5px;
+        }
+
+        .term-input {
+            background: transparent;
+            border: none;
+            color: #66fcf1;
+            outline: none;
+            width: 100%;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-gray-100 transition-colors duration-300 relative flex flex-col min-h-screen">
+
+    <div id="scroll-progress"></div>
+
+    <div class="cyber-grid"></div>
+
+    <nav class="fixed w-full z-50 top-0 start-0 glass transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div
+                    class="w-8 h-8 bg-blue-500 dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
+                    &lt;/&gt;
+                </div>
+                <span class="self-center text-xl font-bold tracking-wide dark:text-white">CodeBaaz</span>
+            </a>
+
+            <div class="flex items-center gap-6">
+                <div class="hidden md:flex gap-6 font-mono text-sm">
+                    <a href="index.html"
+                        class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Home</a>
+                    <a href="about.html"
+                        class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/About</a>
+                    <a href="projects.html"
+                        class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Work</a>
+                    <a href="contact.html"
+                        class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Contact</a>
+                </div>
+
+                <button id="theme-toggle"
+                    class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-all">
+                    <i class="ri-sun-line dark:hidden text-orange-500"></i>
+                    <i class="ri-moon-line hidden dark:block text-neonCyan"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero-section" class="relative z-10 flex-grow flex items-center justify-center pt-32 pb-20">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+            <div class="space-y-6 order-2 lg:order-1">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-neonCyan/10 text-blue-600 dark:text-neonCyan text-sm font-mono border border-blue-200 dark:border-neonCyan/20">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 dark:bg-neonCyan opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500 dark:bg-neonCyan"></span>
+                    </span>
+                    System Online v1.0
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-bold leading-tight dark:text-white">
+                    Hi, I'm <br>
+                    <span id="live-name-display" class="rainbow-text transition-colors duration-300">
+                        Shashwat
+                    </span>
+                </h1>
+
+                <h2 class="text-2xl md:text-3xl font-mono text-gray-500 dark:text-gray-400 h-10">
+                    I build <span id="typewriter" class="typing-cursor text-blue-500 dark:text-neonCyan"></span>
+                </h2>
+
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-lg leading-relaxed pt-2">
+                    A Full Stack Developer crafting interactive digital experiences.
+                </p>
+
+                <div class="pt-4 flex gap-4">
+                    <a href="projects.html"
+                        class="px-6 py-2 bg-blue-600 dark:bg-neonCyan text-white dark:text-black font-bold rounded hover:shadow-lg transition-all transform hover:-translate-y-1">
+                        View Projects
+                    </a>
+                    <a href="contact.html"
+                        class="px-6 py-2 border border-gray-400 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-neonCyan hover:text-blue-500 dark:hover:text-neonCyan transition-all">
+                        Contact Me
+                    </a>
+                </div>
+            </div>
+
+            <div class="hidden lg:block relative perspective-container order-1 lg:order-2" id="card-container">
+                <div id="tilt-card"
+                    class="relative bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-gray-800 p-8 rounded-2xl shadow-2xl transform-gpu transition-transform duration-100 ease-out">
+                    <div
+                        class="flex justify-between items-center mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <span class="font-mono text-xs text-gray-400">user_profile.js</span>
+                    </div>
+
+                    <div class="font-mono text-sm leading-8 select-none">
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">1</span><span
+                                class="text-purple-500">const</span> <span
+                                class="text-yellow-600 dark:text-yellow-400 ml-2">Dev</span> = {</div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">2</span><span
+                                class="ml-4">name: '<span contenteditable="true" spellcheck="false" id="input-name"
+                                    class="editable-code">Your Name</span>',</span></div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">3</span><span
+                                class="ml-4">roles: [</span></div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">4</span><span
+                                class="ml-8 text-green-600 dark:text-green-400" contenteditable="true"
+                                spellcheck="false" id="input-roles" class="editable-code">'Websites', 'Apps',
+                                'Systems'</span></div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">5</span><span
+                                class="ml-4">],</span></div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">6</span>};</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="overview-section" class="py-10 container mx-auto px-6 relative z-10 pb-24">
+        <h2 class="text-center font-mono text-xl mb-10 text-gray-500 dark:text-gray-400">&lt;System_Overview /&gt;</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+
+            <div class="terminal-card group">
+                <div class="terminal-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <div class="terminal-body">
+                    <div class="mb-2"><span class="cmd">user@system:~$</span> neofetch</div>
+                    <div class="flex gap-4 mt-4">
+                        <div class="text-purple-500 dark:text-purple-400 hidden sm:block font-bold">
+                            /\_/\<br>( o.o )<br> > ^ < </div>
+                                <div>
+                                    <p><span class="text-blue-600 dark:text-blue-400 font-semibold">Host</span>: Vercel
+                                        Cloud</p>
+                                    <p><span class="text-blue-600 dark:text-blue-400 font-semibold">Loc</span>:
+                                        127.0.0.1</p>
+                                    <p><span class="text-blue-600 dark:text-blue-400 font-semibold">Shell</span>: ZSH
+                                        v5.8</p>
+                                    <p class="text-green-600 dark:text-green-400 mt-2 font-bold">● Online</p>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-card group">
+                    <div class="terminal-header">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="mb-2"><span class="cmd">user@system:~$</span> ls skills/</div>
+                        <div class="grid grid-cols-2 gap-2 mt-4 text-sm font-semibold">
+                            <span class="text-green-600 dark:text-green-400"><i class="ri-code-line"></i>
+                                JavaScript</span>
+                            <span class="text-blue-600 dark:text-blue-400"><i class="ri-reactjs-line"></i> React</span>
+                            <span class="text-yellow-600 dark:text-yellow-400"><i class="ri-nodejs-line"></i>
+                                Node.js</span>
+                            <span class="text-purple-600 dark:text-purple-400"><i class="ri-database-2-line"></i>
+                                SQL</span>
+                            <span class="text-orange-600 dark:text-orange-400"><i class="ri-amazon-line"></i> AWS</span>
+                            <span class="text-cyan-600 dark:text-cyan-400"><i class="ri-tailwind-css-fill"></i>
+                                Tailwind</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-card group">
+                    <div class="terminal-header">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="mb-2"><span class="cmd">user@system:~$</span> check_integrity</div>
+                        <div class="mt-4">
+                            <p>Status: <span class="text-purple-600 dark:text-purple-400 font-bold">OK</span></p>
+                            <p class="text-gray-500 mt-2">Core Services:</p>
+                            <p>API Endpoint: operational</p>
+                            <p>Database: operational</p>
+                            <p class="text-green-600 dark:text-green-400 mt-2 font-bold">✔ Integrity check complete</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-card group">
+                    <div class="terminal-header">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="mb-2"><span class="cmd">user@system:~$</span> ./contact.sh</div>
+                        <div class="flex flex-col gap-3 mt-4 font-medium">
+                            <a href="#" class="hover:text-blue-500 transition-colors flex items-center gap-2"><i
+                                    class="ri-linkedin-box-fill"></i> LinkedIn</a>
+                            <a href="#" class="hover:text-yellow-500 transition-colors flex items-center gap-2"><i
+                                    class="ri-mail-fill"></i> Email</a>
+                            <a href="contact.html"
+                                class="hover:text-cyan-500 transition-colors flex items-center gap-2"><i
+                                    class="ri-file-text-line"></i> Resume</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    </section>
+
+    <section id="tech-matrix-section" class="py-10 container mx-auto px-6 relative z-10 pb-24">
+        <h2 class="text-center font-mono text-xl mb-12 text-gray-500 dark:text-gray-400">&lt;Tech_Stack_Matrix /&gt;
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <div>
+                <h3 class="font-mono text-2xl font-bold mb-6 text-blue-500 dark:text-neonCyan flex items-center gap-3">
+                    <i class="ri-code-s-slash-line"></i> Frontend Engineering
+                </h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">HTML5 / CSS3</span>
+                            <span class="font-mono text-sm text-gray-400">99%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-orange-600 dark:bg-orange-500" data-progress="99"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">React / Next.js</span>
+                            <span class="font-mono text-sm text-gray-400">95%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-blue-500 dark:bg-neonCyan" data-progress="95"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">JavaScript (ES6+)</span>
+                            <span class="font-mono text-sm text-gray-400">90%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-yellow-500" data-progress="90"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Tailwind CSS / SCSS</span>
+                            <span class="font-mono text-sm text-gray-400">98%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-cyan-500" data-progress="98"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="font-mono text-2xl font-bold mb-6 text-purple-500 flex items-center gap-3">
+                    <i class="ri-server-line"></i> Backend & Data
+                </h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">C/C++ & DSA</span>
+                            <span class="font-mono text-sm text-gray-400">85%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-pink-600" data-progress="85"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Node.js / Express</span>
+                            <span class="font-mono text-sm text-gray-400">85%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-green-500" data-progress="85"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">SQL / PostgreSQL</span>
+                            <span class="font-mono text-sm text-gray-400">80%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-indigo-500" data-progress="80"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Python / Django</span>
+                            <span class="font-mono text-sm text-gray-400">75%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-yellow-700" data-progress="75"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:col-span-2">
+                <h3 class="font-mono text-2xl font-bold mb-6 text-orange-500 flex items-center gap-3">
+                    <i class="ri-terminal-box-line"></i> Infrastructure & DevOps
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">AWS</span>
+                            <span class="font-mono text-sm text-gray-400">70%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-orange-500" data-progress="70"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Docker / Containers</span>
+                            <span class="font-mono text-sm text-gray-400">85%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-blue-700" data-progress="85"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Git / CI/CD</span>
+                            <span class="font-mono text-sm text-gray-400">95%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-red-600" data-progress="95"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="activity-log-section" class="py-10 container mx-auto px-6 relative z-10 pb-24 max-w-4xl">
+        <h2 class="text-center font-mono text-xl mb-12 text-gray-500 dark:text-gray-400">&lt;Recent_Activity_Log /&gt;
+        </h2>
+
+        <div class="space-y-4 font-mono">
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-09 11:30</span>
+                <p class="text-green-500">PULL /home/index.html -> [PASS] Code optimized for mobile viewport.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-08 19:45</span>
+                <p>TASK /api/auth: Added WebAuthn support for login flow.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-08 10:15</span>
+                <p class="text-yellow-500">DB_UPDATE /skills: Changed 'SQL' proficiency from 75% to 80%.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-07 14:00</span>
+                <p>TASK /projects/commune-x: Implemented WebSocket reconnection logic.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-06 23:10</span>
+                <p class="text-green-500">PUSH /loading.html: Added new dynamic terminal boot sequence.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-05 08:00</span>
+                <p>AUDIT /core: Security check completed. [VULNERABILITIES: 0]</p>
+            </div>
+        </div>
+        <div class="text-center pt-8">
+            <a href="about.html" class="font-mono text-sm text-blue-500 dark:text-neonCyan hover:underline">
+                View Full Execution Log >
+            </a>
+        </div>
+    </section>
+    <footer id="main-footer" class="bg-black border-t border-gray-800 relative z-10">
+        <div class="w-full py-8 overflow-hidden relative border-b border-gray-800">
+            <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black z-10 pointer-events-none">
+            </div>
+            <div class="flex w-full overflow-hidden">
+                <div class="flex animate-infinite-scroll gap-16 items-center px-4">
+                    <i
+                        class="ri-reactjs-line text-4xl text-gray-500 dark:text-gray-400 hover:text-blue-400 transition-colors"></i>
+                    <i
+                        class="ri-html5-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors"></i>
+                    <i
+                        class="ri-css3-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-blue-600 transition-colors"></i>
+                    <i
+                        class="ri-javascript-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-yellow-400 transition-colors"></i>
+                    <i
+                        class="ri-nodejs-line text-4xl text-gray-500 dark:text-gray-400 hover:text-green-500 transition-colors"></i>
+                    <i
+                        class="ri-reactjs-line text-4xl text-gray-500 dark:text-gray-400 hover:text-blue-400 transition-colors"></i>
+                    <i
+                        class="ri-html5-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors"></i>
+                    <i
+                        class="ri-css3-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-blue-600 transition-colors"></i>
+                    <i
+                        class="ri-javascript-fill text-4xl text-gray-500 dark:text-gray-400 hover:text-yellow-400 transition-colors"></i>
+                    <i
+                        class="ri-nodejs-line text-4xl text-gray-500 dark:text-gray-400 hover:text-green-500 transition-colors"></i>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center text-xs font-mono text-gray-400 dark:text-gray-500">
+            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                System Operational</div>
+            <div id="clock">00:00:00 UTC</div>
+        </div>
+    </footer>
+
+    <button id="terminal-toggle" aria-label="Open Terminal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="10" ry="10" fill="#000000" stroke="#66fcf1" stroke-width="3" />
+            <text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif"
+                font-size="35" fill="#66fcf1" font-weight="bold">
+                &lt;/&gt;
+            </text>
+            <circle cx="80" cy="80" r="10" fill="#27c93f" stroke="#000000" stroke-width="2" />
+        </svg>
+    </button>
+
+    <div id="overlay-terminal" style="display: none;">
+        <div class="term-bar" id="term-header">
+            <span class="text-neonCyan font-bold text-sm">System Terminal — index.html</span>
+            <span class="text-sm cursor-pointer"
+                onclick="document.getElementById('overlay-terminal').style.display='none';"><i
+                    class="ri-close-line text-white/50 hover:text-white"></i></span>
+        </div>
+        <div class="term-output-area" id="terminal-output">
+            <div class="text-xs text-gray-400 pb-2 border-b border-gray-800 mb-2">
+                Welcome to Shashwat's System Shell (SSH). Type 'help' for commands.
+            </div>
+        </div>
+        <div class="term-input-line">
+            <span class="term-prompt" id="current-prompt">Shash@port:~$</span>
+            <input type="text" id="terminal-input" class="term-input" autocomplete="off" autofocus>
+        </div>
+    </div>
+    <script>
+        // --- Shared Terminal Logic (STARTS HERE) ---
+        (function () {
+            const terminalOutput = document.getElementById('terminal-output');
+            const terminalInput = document.getElementById('terminal-input');
+            const overlayTerminal = document.getElementById('overlay-terminal');
+            const toggleButton = document.getElementById('terminal-toggle');
+            const promptSpan = document.getElementById('current-prompt');
+
+            const PROMPT = 'Shash@port:~$';
+
+            // --- Terminal Utility Functions ---
+
+            // Function to echo user input and current prompt
+            function echoInput(command) {
+                const outputLine = document.createElement('div');
+                outputLine.innerHTML = `<span class="term-prompt">${PROMPT}</span> ${command}`;
+                terminalOutput.appendChild(outputLine);
+            }
+
+            // Function to print a response
+            function print(message, colorClass = 'text-white') {
+                const outputLine = document.createElement('div');
+                outputLine.innerHTML = `<span class="${colorClass}">${message}</span>`;
+                terminalOutput.appendChild(outputLine);
+            }
+
+            // Function to scroll to the latest input line
+            function scrollToBottom() {
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            }
+
+            // --- Skill Bar Animation Logic ---
+            function animateSkillBars() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const bars = entry.target.querySelectorAll('.skill-progress-bar');
+                            bars.forEach(bar => {
+                                const progress = bar.getAttribute('data-progress');
+                                bar.style.width = `${progress}%`;
+                            });
+                            observer.unobserve(entry.target); // Stop observing after animation runs once
+                        }
+                    });
+                }, { threshold: 0.5 }); // Trigger when 50% of the section is visible
+
+                const skillSection = document.getElementById('tech-matrix-section');
+                if (skillSection) {
+                    observer.observe(skillSection);
+                }
+            }
+
+            // --- Terminal Command Definitions ---
+
+            const commands = {
+                'whoami': {
+                    desc: 'Displays author bio and primary role.',
+                    exec: () => {
+                        print("Name: Shashwat Singh", 'text-neonCyan');
+                        print("Role: Full Stack Developer / System Architect", 'text-neonCyan');
+                        print("Motto: Building scalable systems, line by line.", 'text-gray-400');
+                    }
+                },
+                'ls -l /': {
+                    desc: 'Lists main system directories (navigation links).',
+                    exec: () => {
+                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>home</span>", 'text-neonCyan');
+                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>about</span>", 'text-neonCyan');
+                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>work</span>", 'text-neonCyan');
+                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>contact</span>", 'text-neonCyan');
+                    }
+                },
+                'neofetch': {
+                    desc: 'Displays stylized system specifications (Host, Shell, Status).',
+                    exec: () => {
+                        print('<span style="color:#8B5CF6">/\_/\</span>', 'text-gray-400');
+                        print('<span style="color:#8B5CF6">( o.o )</span> <span class="text-neonCyan font-semibold">Host</span>: Vercel Cloud', 'text-gray-400');
+                        print('<span style="color:#8B5CF6"> > ^ < </span> <span class="text-neonCyan font-semibold">Loc</span>: 127.0.0.1', 'text-gray-400');
+                        print('       <span class="text-neonCyan font-semibold">Shell</span>: ZSH v5.8', 'text-gray-400');
+                        print('       <span class="text-green-500 font-bold">● Online</span>');
+                    }
+                },
+                'date': {
+                    desc: 'Displays the current local date and time.',
+                    exec: () => {
+                        print(new Date().toString(), 'text-neonCyan');
+                    }
+                },
+                'theme toggle': {
+                    desc: 'Switches the entire site between dark and light modes.',
+                    exec: () => {
+                        document.documentElement.classList.toggle('dark');
+                        localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                        print("Theme switched.", 'text-green-500');
+                    }
+                },
+                'clear': {
+                    desc: 'Clears the terminal output screen.',
+                    exec: () => {
+                        terminalOutput.innerHTML = '';
+                    }
+                },
+                'exit': {
+                    desc: 'Closes the terminal overlay.',
+                    exec: () => {
+                        overlayTerminal.style.display = 'none';
+                    }
+                },
+                'help': {
+                    desc: 'Lists all available commands.',
+                    exec: () => {
+                        print("Available Commands:", 'text-neonCyan');
+                        Object.keys(commands).forEach(cmd => {
+                            print(`  ${cmd.padEnd(15, ' ')} -> ${commands[cmd].desc}`, 'text-gray-400');
+                        });
+                        print("Navigation: cd home | cd work | cd contact", 'text-info');
+                    }
+                },
+                'ping': {
+                    desc: 'Simulates a network latency check.',
+                    exec: (args) => {
+                        const host = args[1] || 'shashwat.dev';
+                        print(`PING ${host} (${Math.random().toFixed(2)}): 64 bytes from ${host}: icmp_seq=1 time=${(Math.random() * 10).toFixed(2)} ms`, 'text-green-500');
+                    }
+                },
+                'grep': {
+                    desc: 'Searches the skills list for a keyword (e.g., grep react /skills).',
+                    exec: (args) => {
+                        const term = (args[1] || '').toLowerCase();
+                        const skills = "React, Next.js, Tailwind, HTML5, CSS3, C/C++, Node.js, Python, Django, PostgreSQL, Mongo, Redis, Docker, AWS, Git";
+                        const results = skills.split(', ').filter(s => s.toLowerCase().includes(term));
+
+                        if (term && results.length > 0) {
+                            print(`Found matching skills: ${results.join(', ')}`, 'text-neonCyan');
+                        } else if (term) {
+                            print(`No skills found matching '${term}'.`, 'text-error');
+                        } else {
+                            print("Usage: grep [keyword] /skills", 'text-gray-400');
+                        }
+                    }
+                },
+                'read -f /readme.txt': {
+                    desc: 'Prints a philosophy/future plans statement.',
+                    exec: () => {
+                        print("##################################################", 'text-info');
+                        print("// System Philosophy:", 'text-neonCyan');
+                        print("// I believe software should be fast, reliable, and deeply intentional.", 'text-gray-400');
+                        print("// Next Goal: Dive deep into WebAssembly and Rust for performance optimization.", 'text-gray-400');
+                        print("##################################################", 'text-info');
+                    }
+                },
+                'sudo reboot': {
+                    desc: 'Initiates a simulated system reboot (redirects via confirmation).',
+                    exec: () => {
+                        print("[SUDO] WARNING: System will restart. Proceed? (y/n)", 'text-error');
+                        // Special state handling for confirmation
+                        terminalInput.setAttribute('data-confirm', 'reboot');
+                    }
+                },
+                'man': {
+                    desc: 'Displays the manual page for a command (e.g., man cd).',
+                    exec: (args) => {
+                        const command = args[1];
+                        if (command === 'cd') {
+                            print("NAME: cd - Change the active directory/section.", 'text-neonCyan');
+                            print("SYNOPSIS: cd [home|about|work|contact]", 'text-gray-400');
+                        } else if (commands[command]) {
+                            print(`MANUAL: ${command} -> ${commands[command].desc}`, 'text-neonCyan');
+                        } else {
+                            print("Error: No manual entry for command.", 'text-error');
+                        }
+                    }
+                },
+                'ssh': {
+                    desc: 'Simulates a secure connection attempt.',
+                    exec: () => {
+                        print("Handshake initiated...", 'text-info');
+                        setTimeout(() => {
+                            print("SUCCESS: Connection to api.shash.dev Established.", 'text-green-500');
+                            scrollToBottom();
+                        }, 500);
+                    }
+                },
+            };
+
+            // --- Command Runner ---
+
+            function runCommand(command) {
+                if (!command) return;
+
+                const parts = command.trim().toLowerCase().split(/\s+/);
+                const baseCommand = parts[0];
+
+                if (baseCommand === 'cd' && parts.length === 2) {
+                    const dir = parts[1];
+                    let url = '';
+                    if (dir === 'home') url = 'index.html';
+                    else if (dir === 'about') url = 'about.html';
+                    else if (dir === 'work' || dir === 'projects') url = 'projects.html';
+                    else if (dir === 'contact' || dir === 'comm') url = 'contact.html';
+
+                    if (url) {
+                        print(`Navigating to /${dir} ...`, 'text-info');
+                        setTimeout(() => window.location.href = url, 300);
+                        return;
+                    }
+                }
+
+                // Handle complex commands (e.g., 'read -f /README.txt' or 'ls -l /')
+                const complexCommand = command.trim().toLowerCase();
+                if (commands[complexCommand]) {
+                    commands[complexCommand].exec(parts);
+                    return;
+                }
+
+                if (commands[baseCommand]) {
+                    commands[baseCommand].exec(parts);
+                    return;
+                }
+
+                print(`Error: command not found: ${command}`, 'text-error');
+            }
+
+            // --- Input and Confirmation Handler ---
+
+            terminalInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const command = terminalInput.value.trim();
+                    const confirmState = terminalInput.getAttribute('data-confirm');
+
+                    echoInput(command); // Show input before running command
+
+                    if (confirmState === 'reboot') {
+                        if (command === 'y') {
+                            print("System rebooting...", 'text-error');
+                            setTimeout(() => window.location.href = 'loading.html', 500);
+                        } else {
+                            print("Reboot cancelled.", 'text-green-500');
+                        }
+                        terminalInput.removeAttribute('data-confirm'); // Reset state
+                    } else {
+                        runCommand(command);
+                    }
+
+                    terminalInput.value = '';
+                    scrollToBottom();
+                }
+            });
+
+            // --- Drag and Resize Logic ---
+            const termHeader = document.getElementById('term-header');
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            termHeader.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                const rect = overlayTerminal.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+
+                overlayTerminal.style.cursor = 'move';
+                overlayTerminal.style.position = 'fixed';
+                overlayTerminal.style.right = 'auto';
+                overlayTerminal.style.bottom = 'auto';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                let newX = e.clientX - offsetX;
+                let newY = e.clientY - offsetY;
+
+                if (newX < 0) newX = 0;
+                if (newY < 0) newY = 0;
+                if (newX + overlayTerminal.offsetWidth > window.innerWidth) newX = window.innerWidth - overlayTerminal.offsetWidth;
+                if (newY + overlayTerminal.offsetHeight > window.innerHeight) newY = window.innerHeight - overlayTerminal.offsetHeight;
+
+                overlayTerminal.style.left = newX + 'px';
+                overlayTerminal.style.top = newY + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                overlayTerminal.style.cursor = 'default';
+            });
+
+            // --- Toggle Button Logic ---
+            toggleButton.addEventListener('click', () => {
+                const isHidden = overlayTerminal.style.display === 'none';
+                overlayTerminal.style.display = isHidden ? 'flex' : 'none';
+                if (isHidden) {
+                    terminalInput.focus();
+                }
+            });
+
+            // --- Initial Setup and Event Handling (Existing Logic) ---
+
+            // Existing theme toggle logic
+            const themeBtn = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+            themeBtn.addEventListener('click', () => {
+                html.classList.toggle('dark');
+                localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+                const isDark = html.classList.contains('dark');
+                themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
+                themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
+            });
+
+            // Function to update clock (existing)
+            function updateClock() {
+                const now = new Date();
+                document.getElementById('clock').innerText = now.toUTCString().split(' ')[4] + ' UTC';
+            }
+            setInterval(updateClock, 1000);
+
+            // Spotlight/Glow Logic (existing)
+            const grid = document.querySelector('.cyber-grid');
+            const heroSection = document.getElementById('hero-section');
+            const overviewSection = document.getElementById('overview-section');
+            const techMatrixSection = document.getElementById('tech-matrix-section');
+            const activityLogSection = document.getElementById('activity-log-section'); // New Section
+            const mainFooter = document.getElementById('main-footer');
+            const body = document.body;
+
+            function activateGlow() { body.classList.add('is-hovering'); }
+            function deactivateGlow() { body.classList.remove('is-hovering'); }
+
+            const glowSections = [heroSection, overviewSection, techMatrixSection, activityLogSection, mainFooter].filter(el => el != null);
+
+            glowSections.forEach(section => {
+                section.addEventListener('mouseenter', activateGlow);
+            });
+
+            document.addEventListener('mouseout', function (e) {
+                if (!e.relatedTarget && !e.toElement) {
+                    deactivateGlow();
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (grid) {
+                    grid.style.setProperty('--x', `${e.clientX}px`);
+                    grid.style.setProperty('--y', `${e.clientY}px`);
+                }
+            });
+
+            // Typewriter Logic (existing)
+            const inputName = document.getElementById('input-name');
+            const displayName = document.getElementById('live-name-display');
+            const inputRoles = document.getElementById('input-roles');
+            const typewriterElement = document.getElementById('typewriter');
+
+            let phrases = ["Websites", "Apps", "Systems"];
+            let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+
+            function updatePhrases() {
+                const text = inputRoles.innerText.trim();
+                const parts = text.split(',').map(part => part.trim().replace(/['"]/g, ''));
+                if (parts.length > 0) phrases = parts.filter(p => p.length > 0);
+                else phrases = ["Code"];
+            }
+            inputRoles.addEventListener('input', () => { updatePhrases(); });
+
+            function type() {
+                const currentPhrase = phrases[phraseIndex % phrases.length];
+                if (isDeleting) {
+                    typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1); charIndex--;
+                } else {
+                    typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1); charIndex++;
+                }
+                let typeSpeed = isDeleting ? 50 : 100;
+                if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; }
+                else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex++; typeSpeed = 500; }
+                setTimeout(type, typeSpeed);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                updateClock();
+                updatePhrases();
+                type();
+                animateSkillBars(); // Run the skill bar animation on load
+
+                // Initialize theme icon
+                const isDark = html.classList.contains('dark');
+                themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
+                themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
+
+                // Prevent contenteditable enter key issues
+                const elements = [inputName, inputRoles].filter(el => el != null);
+                elements.forEach(el => {
+                    el.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+                });
+            });
+        })();
+        // --- Shared Terminal Logic (ENDS HERE) ---
+    </script>
+</body>
+
+</html>
