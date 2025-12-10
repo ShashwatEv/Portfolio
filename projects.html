@@ -20,10 +20,12 @@
                 extend: {
                     fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['Fira Code', 'monospace'] },
                     colors: {
-                        bgDark: '#050505',
-                        neonCyan: '#66fcf1',
-                        neonBlue: '#3b82f6',
-                        // Extracted Project Colors
+                        // Mapped to CSS Variables for Terminal Switching
+                        bgDark: 'var(--bg-primary)',
+                        textMain: 'var(--text-primary)',
+                        neonCyan: 'var(--accent-primary)',
+                        neonBlue: 'var(--accent-secondary)',
+                        // Extracted Project Colors (Static)
                         dhanOrange: '#f97316',
                         communePurple: '#8B5CF6'
                     },
@@ -41,6 +43,7 @@
 
     <script>
             (function () {
+                // Check for saved custom theme or default to system
                 if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                 } else {
@@ -50,6 +53,35 @@
     </script>
 
     <style>
+        /* --- DYNAMIC THEME VARIABLES --- */
+        :root {
+            /* Default Theme (Original Dark) */
+            --bg-primary: #050505;
+            --text-primary: #e5e5e5;
+            --accent-primary: #66fcf1;
+            /* Cyan */
+            --accent-secondary: #3b82f6;
+            /* Blue */
+            --grid-color: rgba(102, 252, 241, 0.15);
+        }
+
+        /* Smooth Transition for Theme Switching */
+        body,
+        div,
+        section,
+        nav,
+        footer,
+        span,
+        h1,
+        h2,
+        h3,
+        p,
+        i,
+        button,
+        input {
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+
         /* BASE STYLES & SPOTLIGHT FIX */
         html {
             scroll-behavior: smooth;
@@ -65,15 +97,7 @@
             overflow-x: hidden;
         }
 
-        /* CYBER GRID (Background Effect) */
-        :root {
-            --grid-color: rgba(59, 130, 246, 0.25);
-        }
-
-        html.dark {
-            --grid-color: rgba(102, 252, 241, 0.15);
-        }
-
+        /* CYBER GRID */
         .cyber-grid {
             position: fixed;
             inset: 0;
@@ -112,15 +136,17 @@
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             transition: all 0.3s ease;
-            position: relative; /* Essential for containing the spotlight */
-            overflow: hidden;   /* Essential for cutting off the light at borders */
+            position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             height: 100%;
         }
 
         .dark .project-terminal {
-            background: #0a0a0a;
+            /* Now adapts to theme background slightly lighter? Or keep strict black? 
+               Let's use the variable to blend with themes like 'matrix' or 'cyberpunk' */
+            background: var(--bg-primary);
             border: 1px solid #333;
         }
 
@@ -128,7 +154,7 @@
             transform: translateY(-5px);
         }
 
-        /* --- TERMINAL SPOTLIGHT EFFECT (NEW) --- */
+        /* TERMINAL SPOTLIGHT EFFECT */
         .terminal-spotlight {
             position: absolute;
             inset: 0;
@@ -136,11 +162,9 @@
             z-index: 10;
             opacity: 0;
             transition: opacity 0.3s ease;
-            background: radial-gradient(
-                600px circle at var(--x) var(--y),
-                var(--spotlight-color) 0%,
-                transparent 40%
-            );
+            background: radial-gradient(600px circle at var(--x) var(--y),
+                    var(--spotlight-color) 0%,
+                    transparent 40%);
         }
 
         .project-terminal:hover .terminal-spotlight {
@@ -149,45 +173,60 @@
 
         /* 1. DHANVAANIJYA THEME */
         .theme-dhan {
-            --spotlight-color: rgba(249, 115, 22, 0.15); /* Orange Light */
+            --spotlight-color: rgba(249, 115, 22, 0.15);
         }
+
         .theme-dhan:hover {
             border-color: #f97316;
             box-shadow: 0 10px 40px -10px rgba(249, 115, 22, 0.3);
         }
+
         .theme-dhan .term-header {
             border-bottom: 1px solid rgba(249, 115, 22, 0.2);
             background: rgba(249, 115, 22, 0.05);
         }
-        .theme-dhan .prompt-user { color: #f97316; }
+
+        .theme-dhan .prompt-user {
+            color: #f97316;
+        }
 
         /* 2. COMMUNE-X THEME */
         .theme-commune {
-            --spotlight-color: rgba(139, 92, 246, 0.15); /* Purple Light */
+            --spotlight-color: rgba(139, 92, 246, 0.15);
         }
+
         .theme-commune:hover {
             border-color: #8B5CF6;
             box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.3);
         }
+
         .theme-commune .term-header {
             border-bottom: 1px solid rgba(139, 92, 246, 0.2);
             background: rgba(139, 92, 246, 0.05);
         }
-        .theme-commune .prompt-user { color: #8B5CF6; }
+
+        .theme-commune .prompt-user {
+            color: #8B5CF6;
+        }
 
         /* 3. DEFAULT/PORTFOLIO THEME */
         .theme-default {
-            --spotlight-color: rgba(102, 252, 241, 0.15); /* Cyan Light */
+            --spotlight-color: rgba(102, 252, 241, 0.15);
         }
+
         .theme-default:hover {
-            border-color: #66fcf1;
+            border-color: var(--accent-primary);
             box-shadow: 0 10px 40px -10px rgba(102, 252, 241, 0.2);
         }
+
         .theme-default .term-header {
             border-bottom: 1px solid rgba(102, 252, 241, 0.2);
             background: rgba(102, 252, 241, 0.05);
         }
-        .theme-default .prompt-user { color: #27c93f; }
+
+        .theme-default .prompt-user {
+            color: #27c93f;
+        }
 
         /* TERMINAL INTERNALS */
         .term-header {
@@ -196,7 +235,7 @@
             align-items: center;
             gap: 6px;
             position: relative;
-            z-index: 20; /* Ensure header sits above spotlight */
+            z-index: 20;
         }
 
         .dot {
@@ -205,9 +244,17 @@
             border-radius: 50%;
         }
 
-        .red { background: #ff5f56; }
-        .yellow { background: #ffbd2e; }
-        .green { background: #27c93f; }
+        .red {
+            background: #ff5f56;
+        }
+
+        .yellow {
+            background: #ffbd2e;
+        }
+
+        .green {
+            background: #27c93f;
+        }
 
         .term-body {
             padding: 20px;
@@ -217,7 +264,12 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            z-index: 20; /* Ensure text sits above spotlight */
+            z-index: 20;
+            color: #1f2937;
+        }
+
+        .dark .term-body {
+            color: var(--text-primary);
         }
 
         /* Tech Tags */
@@ -252,7 +304,7 @@
             background: transparent;
             border: none;
             outline: none;
-            color: #66fcf1;
+            color: var(--accent-primary);
             width: 100%;
             font-size: 0.85rem;
             font-family: 'Fira Code', monospace;
@@ -289,7 +341,7 @@
             background: #0a0a0a;
             border: 1px solid #333;
             border-radius: 6px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(102, 252, 241, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px var(--grid-color);
             display: flex;
             flex-direction: column;
             font-family: 'Fira Code', monospace;
@@ -348,7 +400,7 @@
         .term-input {
             background: transparent;
             border: none;
-            color: #66fcf1;
+            color: var(--accent-primary);
             outline: none;
             width: 100%;
             font-size: 0.8rem;
@@ -357,7 +409,7 @@
 </head>
 
 <body
-    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-textMain transition-colors duration-300 min-h-screen flex flex-col">
 
     <div class="cyber-grid"></div>
 
@@ -365,16 +417,16 @@
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4">
             <a href="index.html" class="flex items-center gap-2 group">
                 <div
-                    class="w-8 h-8 bg-blue-500 dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
+                    class="w-8 h-8 bg-neonBlue dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
                     &lt;/&gt;</div>
-                <span class="self-center text-xl font-bold tracking-wide dark:text-white">CodeBaaz</span>
+                <span class="self-center text-xl font-bold tracking-wide dark:text-textMain">CodeBaaz</span>
             </a>
             <div class="flex items-center gap-6 font-mono text-sm">
-                <a href="index.html" class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Home</a>
-                <a href="about.html" class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/About</a>
-                <a href="projects.html" class="text-blue-500 dark:text-neonCyan">~/Work</a>
+                <a href="index.html" class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Home</a>
+                <a href="about.html" class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/About</a>
+                <a href="projects.html" class="text-neonBlue dark:text-neonCyan">~/Work</a>
                 <a href="contact.html"
-                    class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Contact</a>
+                    class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Contact</a>
 
                 <button id="theme-toggle"
                     class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-all">
@@ -390,14 +442,14 @@
         <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
             <div>
                 <h1 class="text-4xl md:text-6xl font-bold font-mono break-words">
-                    <span class="text-blue-500 dark:text-neonCyan">./</span>Projects_Directory
+                    <span class="text-neonBlue dark:text-neonCyan">./</span>Projects_Directory
                 </h1>
                 <p class="text-gray-500 dark:text-gray-400 mt-4 font-mono max-w-xl">
                     // displaying active deployments && experiments
                 </p>
             </div>
             <div
-                class="font-mono text-xs text-blue-500 dark:text-neonCyan border border-blue-500 dark:border-neonCyan px-3 py-1 rounded opacity-70">
+                class="font-mono text-xs text-neonBlue dark:text-neonCyan border border-blue-500 dark:border-neonCyan px-3 py-1 rounded opacity-70">
                 Total_Count: <span id="project-count">3</span>
             </div>
         </div>
@@ -435,7 +487,8 @@
                         <h3 class="text-2xl font-bold mb-2 font-mono group-hover:text-dhanOrange transition-colors">
                             Dhanvaanijya</h3>
                         <p class="text-gray-600 dark:text-gray-400 text-sm mb-6 flex-grow">
-                            AI-powered stock prediction platform that tracks sentiment and historical data for accurate and smarter
+                            AI-powered stock prediction platform that tracks sentiment and historical data for accurate
+                            and smarter
                             trading decisions.
                         </p>
 
@@ -475,7 +528,8 @@
                         <h3 class="text-2xl font-bold mb-2 font-mono group-hover:text-communePurple transition-colors">
                             Commune-X</h3>
                         <p class="text-gray-600 dark:text-gray-400 text-sm mb-6 flex-grow">
-                            The future of secure and anonymous communication. Features E2E encrypted chat, built-in VPN, and 3D
+                            The future of secure and anonymous communication. Features E2E encrypted chat, built-in VPN,
+                            and 3D
                             Solaris visualization.
                         </p>
 
@@ -571,9 +625,10 @@
 
     <button id="terminal-toggle" aria-label="Open Terminal">
         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
-            <rect width="100" height="100" rx="10" ry="10" fill="#000000" stroke="#66fcf1" stroke-width="3" />
+            <rect width="100" height="100" rx="10" ry="10" fill="#000000" stroke="var(--accent-primary)"
+                stroke-width="3" />
             <text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif"
-                font-size="35" fill="#66fcf1" font-weight="bold">
+                font-size="35" fill="var(--accent-primary)" font-weight="bold">
                 &lt;/&gt;
             </text>
             <circle cx="80" cy="80" r="10" fill="#27c93f" stroke="#000000" stroke-width="2" />
@@ -609,26 +664,116 @@
             const projectItems = document.querySelectorAll('.project-item');
             const projectCountSpan = document.getElementById('project-count');
 
-
             const PROMPT = 'Shash@port:~$';
+
+            // --- HISTORY LOGIC ---
+            let commandHistory = [];
+            let historyIndex = -1;
+
+            // --- THEME DATABASE & LOGIC ---
+            const themeData = {
+                'default': {
+                    '--bg-primary': '#050505',
+                    '--text-primary': '#e5e5e5',
+                    '--accent-primary': '#66fcf1',
+                    '--accent-secondary': '#3b82f6',
+                    '--grid-color': 'rgba(102, 252, 241, 0.15)'
+                },
+                'matrix': {
+                    '--bg-primary': '#000000',
+                    '--text-primary': '#00dd00',
+                    '--accent-primary': '#00ff41',
+                    '--accent-secondary': '#008f11',
+                    '--grid-color': 'rgba(0, 255, 65, 0.2)'
+                },
+                'cyberpunk': {
+                    '--bg-primary': '#0f0014',
+                    '--text-primary': '#fcee0a',
+                    '--accent-primary': '#ff003c',
+                    '--accent-secondary': '#00f0ff',
+                    '--grid-color': 'rgba(255, 0, 60, 0.2)'
+                },
+                'ocean': {
+                    '--bg-primary': '#001e2b',
+                    '--text-primary': '#e0f7fa',
+                    '--accent-primary': '#00e5ff',
+                    '--accent-secondary': '#18ffff',
+                    '--grid-color': 'rgba(0, 229, 255, 0.15)'
+                },
+                'sunset': {
+                    '--bg-primary': '#2d1b2e',
+                    '--text-primary': '#ffcc00',
+                    '--accent-primary': '#ff5e62',
+                    '--accent-secondary': '#ff9966',
+                    '--grid-color': 'rgba(255, 94, 98, 0.2)'
+                },
+                'dracula': {
+                    '--bg-primary': '#282a36',
+                    '--text-primary': '#f8f8f2',
+                    '--accent-primary': '#ff79c6',
+                    '--accent-secondary': '#bd93f9',
+                    '--grid-color': 'rgba(189, 147, 249, 0.15)'
+                },
+                'coffee': {
+                    '--bg-primary': '#2b211e',
+                    '--text-primary': '#dcc9bc',
+                    '--accent-primary': '#d4a373',
+                    '--accent-secondary': '#a98467',
+                    '--grid-color': 'rgba(212, 163, 115, 0.15)'
+                },
+                'light': {
+                    '--bg-primary': '#ffffff',
+                    '--text-primary': '#111827',
+                    '--accent-primary': '#2563eb',
+                    '--accent-secondary': '#4f46e5',
+                    '--grid-color': 'rgba(37, 99, 235, 0.1)'
+                }
+            };
+
+            function applyTheme(themeName) {
+                const theme = themeData[themeName];
+                if (!theme) return false;
+
+                const root = document.documentElement;
+
+                // 1. Update CSS Variables
+                for (const [property, value] of Object.entries(theme)) {
+                    root.style.setProperty(property, value);
+                }
+
+                // 2. Handle Tailwind Dark Mode Class
+                if (themeName === 'light') {
+                    root.classList.remove('dark');
+                    localStorage.theme = 'light';
+                } else {
+                    root.classList.add('dark');
+                    localStorage.theme = 'dark';
+                }
+
+                // 3. Persist specific theme name
+                localStorage.customTheme = themeName;
+                return true;
+            }
+
+            // Restore theme on load
+            if (localStorage.customTheme && themeData[localStorage.customTheme]) {
+                applyTheme(localStorage.customTheme);
+            }
 
             // --- Terminal Utility Functions ---
 
-            // Function to echo user input and current prompt
             function echoInput(command) {
                 const outputLine = document.createElement('div');
                 outputLine.innerHTML = `<span class="term-prompt">${PROMPT}</span> ${command}`;
                 terminalOutput.appendChild(outputLine);
             }
 
-            // Function to print a response
             function print(message, colorClass = 'text-white') {
                 const outputLine = document.createElement('div');
                 outputLine.innerHTML = `<span class="${colorClass}">${message}</span>`;
                 terminalOutput.appendChild(outputLine);
             }
 
-            // Function to scroll to the latest input line
             function scrollToBottom() {
                 terminalOutput.scrollTop = terminalOutput.scrollHeight;
             }
@@ -655,7 +800,6 @@
 
                 } else if (action === 'sort' && parts[1] === 'by' && param) {
                     print(`Sorting projects by: ${param}`, 'text-info');
-
                     const itemsArray = Array.from(projectItems);
 
                     if (param === 'complexity') {
@@ -666,7 +810,6 @@
                         });
                         count = itemsArray.length;
                     } else if (param === 'recent' || param === 'alpha') {
-                        // For simplicity, let's just reverse the order for 'recent' or 'alpha' simulation
                         itemsArray.reverse();
                         count = itemsArray.length;
                     } else {
@@ -674,11 +817,9 @@
                         return;
                     }
 
-                    // Re-append sorted elements
                     itemsArray.forEach(item => projectGrid.appendChild(item));
 
                 } else if (action === 'reset') {
-                    // Reset command
                     projectItems.forEach(item => {
                         item.style.display = 'block';
                         count++;
@@ -715,6 +856,23 @@
                         print("Motto: Building scalable systems, line by line.", 'text-gray-400');
                     }
                 },
+                'theme': {
+                    desc: 'Change system UI colors. Usage: theme [name] | theme list',
+                    exec: (args) => {
+                        const subCmd = args[1];
+                        if (subCmd === 'list') {
+                            print("Available Themes:", 'text-neonCyan');
+                            Object.keys(themeData).forEach(t => { print(`  - ${t}`, 'text-gray-400'); });
+                            return;
+                        }
+                        if (themeData[subCmd]) {
+                            applyTheme(subCmd);
+                            print(`System Theme set to: [${subCmd.toUpperCase()}]`, 'text-green-500');
+                        } else {
+                            print(`Error: Theme '${subCmd}' not found. Type 'theme list' for options.`, 'text-error');
+                        }
+                    }
+                },
                 'ls -l /': {
                     desc: 'Lists main system directories (navigation links).',
                     exec: () => {
@@ -727,7 +885,7 @@
                 'neofetch': {
                     desc: 'Displays stylized system specifications (Host, Shell, Status).',
                     exec: () => {
-                        print('<span style="color:#8B5CF6">/\_/\</span>', 'text-gray-400');
+                        print('<span style="color:#8B5CF6">/\\_/\\</span>', 'text-gray-400');
                         print('<span style="color:#8B5CF6">( o.o )</span> <span class="text-neonCyan font-semibold">Host</span>: Vercel Cloud', 'text-gray-400');
                         print('<span style="color:#8B5CF6"> > ^ < </span> <span class="text-neonCyan font-semibold">Loc</span>: 127.0.0.1', 'text-gray-400');
                         print('       <span class="text-neonCyan font-semibold">Shell</span>: ZSH v5.8', 'text-gray-400');
@@ -738,14 +896,6 @@
                     desc: 'Displays the current local date and time.',
                     exec: () => {
                         print(new Date().toString(), 'text-neonCyan');
-                    }
-                },
-                'theme toggle': {
-                    desc: 'Switches the entire site between dark and light modes.',
-                    exec: () => {
-                        document.documentElement.classList.toggle('dark');
-                        localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-                        print("Theme switched.", 'text-green-500');
                     }
                 },
                 'clear': {
@@ -807,7 +957,6 @@
                     desc: 'Initiates a simulated system reboot (redirects via confirmation).',
                     exec: () => {
                         print("[SUDO] WARNING: System will restart. Proceed? (y/n)", 'text-error');
-                        // Special state handling for confirmation
                         terminalInput.setAttribute('data-confirm', 'reboot');
                     }
                 },
@@ -860,13 +1009,12 @@
                     }
                 }
 
-                // Handle project specific commands
+                // Handle project specific commands from overlay
                 if (baseCommand === 'filter' || baseCommand === 'sort' || baseCommand === 'reset') {
                     runProjectCommand(command);
                     return;
                 }
 
-                // Handle complex commands (e.g., 'read -f /README.txt' or 'ls -l /')
                 const complexCommand = command.trim().toLowerCase();
                 if (commands[complexCommand]) {
                     commands[complexCommand].exec(parts);
@@ -884,12 +1032,38 @@
             // --- Input and Confirmation Handler ---
 
             terminalInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
+                // HISTORY NAVIGATION
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (historyIndex > 0) {
+                        historyIndex--;
+                        terminalInput.value = commandHistory[historyIndex];
+                    } else if (historyIndex === -1 && commandHistory.length > 0) {
+                        historyIndex = commandHistory.length - 1;
+                        terminalInput.value = commandHistory[historyIndex];
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (historyIndex < commandHistory.length - 1 && historyIndex !== -1) {
+                        historyIndex++;
+                        terminalInput.value = commandHistory[historyIndex];
+                    } else {
+                        historyIndex = commandHistory.length;
+                        terminalInput.value = '';
+                    }
+                }
+                // EXECUTION
+                else if (e.key === 'Enter') {
                     e.preventDefault();
                     const command = terminalInput.value.trim();
                     const confirmState = terminalInput.getAttribute('data-confirm');
 
-                    echoInput(command); // Show input before running command
+                    if (command) {
+                        commandHistory.push(command);
+                        historyIndex = commandHistory.length;
+                    }
+
+                    echoInput(command);
 
                     if (confirmState === 'reboot') {
                         if (command === 'y') {
@@ -898,7 +1072,7 @@
                         } else {
                             print("Reboot cancelled.", 'text-green-500');
                         }
-                        terminalInput.removeAttribute('data-confirm'); // Reset state
+                        terminalInput.removeAttribute('data-confirm');
                     } else {
                         runTerminalOverlayCommand(command);
                     }
@@ -954,27 +1128,34 @@
                 }
             });
 
-            // --- Initial Setup and Event Handling (Existing Logic) ---
+            // --- Initial Setup and Event Handling ---
 
-            // Existing theme toggle logic
+            // Existing theme toggle logic (Icon Click)
             const themeBtn = document.getElementById('theme-toggle');
             const html = document.documentElement;
             themeBtn.addEventListener('click', () => {
+                if (localStorage.customTheme && localStorage.customTheme !== 'default' && localStorage.customTheme !== 'light') {
+                    applyTheme('default');
+                }
                 html.classList.toggle('dark');
-                localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
                 const isDark = html.classList.contains('dark');
+                localStorage.theme = isDark ? 'dark' : 'light';
+
+                if (isDark) applyTheme('default');
+                else applyTheme('light');
+
                 themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
                 themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
             });
 
-            // Function to update clock (existing)
+            // Function to update clock
             function updateClock() {
                 const now = new Date();
                 document.getElementById('clock').innerText = now.toUTCString().split(' ')[4] + ' UTC';
             }
             setInterval(updateClock, 1000);
 
-            // Spotlight/Glow Logic (existing)
+            // Spotlight/Glow Logic
             const grid = document.querySelector('.cyber-grid');
             const projectsContent = document.getElementById('projects-content');
             const mainFooter = document.getElementById('main-footer');
@@ -1024,7 +1205,7 @@
                 themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
                 themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
 
-                // Initialize project counts (runs once on load)
+                // Initialize project counts
                 projectCountSpan.innerText = projectItems.length;
 
                 // Initialize spotlights

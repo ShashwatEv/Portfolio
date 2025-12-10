@@ -19,7 +19,13 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['Fira Code', 'monospace'] },
-                    colors: { bgDark: '#050505', neonCyan: '#66fcf1', neonBlue: '#3b82f6' },
+                    colors: {
+                        // Mapped to CSS Variables for Terminal Switching
+                        bgDark: 'var(--bg-primary)',
+                        textMain: 'var(--text-primary)',
+                        neonCyan: 'var(--accent-primary)',
+                        neonBlue: 'var(--accent-secondary)',
+                    },
                     animation: { 'infinite-scroll': 'infinite-scroll 25s linear infinite' },
                     keyframes: {
                         'infinite-scroll': {
@@ -34,6 +40,7 @@
 
     <script>
             (function () {
+                // Check for saved custom theme or default to system
                 if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                 } else {
@@ -43,6 +50,36 @@
     </script>
 
     <style>
+        /* --- DYNAMIC THEME VARIABLES --- */
+        :root {
+            /* Default Theme (Original Dark) */
+            --bg-primary: #050505;
+            --text-primary: #e5e5e5;
+            --accent-primary: #66fcf1;
+            /* Cyan */
+            --accent-secondary: #3b82f6;
+            /* Blue */
+            --grid-color: rgba(102, 252, 241, 0.15);
+        }
+
+        /* Smooth Transition for Theme Switching */
+        body,
+        div,
+        section,
+        nav,
+        footer,
+        span,
+        h1,
+        h2,
+        h3,
+        h4,
+        p,
+        i,
+        button,
+        input {
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+
         /* BASE STYLES & SPOTLIGHT FIX */
         html {
             scroll-behavior: smooth;
@@ -58,15 +95,7 @@
             overflow-x: hidden;
         }
 
-        /* CYBER GRID (Spotlight effect controlled by JS class on body) */
-        :root {
-            --grid-color: rgba(59, 130, 246, 0.25);
-        }
-
-        html.dark {
-            --grid-color: rgba(102, 252, 241, 0.15);
-        }
-
+        /* CYBER GRID */
         .cyber-grid {
             position: fixed;
             inset: 0;
@@ -109,18 +138,19 @@
         }
 
         .dark .skill-card {
-            background: #0a0a0a;
+            background: var(--bg-primary);
+            /* Use variable for theme consistnecy */
             border: 1px solid #333;
         }
 
         .skill-card:hover {
             transform: translateY(-3px);
-            border-color: #3b82f6;
+            border-color: var(--accent-secondary);
         }
 
         .dark .skill-card:hover {
-            border-color: #66fcf1;
-            box-shadow: 0 0 15px rgba(102, 252, 241, 0.1);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 15px var(--grid-color);
         }
 
         /* CERTIFICATE CARD STYLES */
@@ -138,7 +168,7 @@
         }
 
         .dark .cert-card {
-            background: #0a0a0a;
+            background: var(--bg-primary);
             border: 1px solid #333;
         }
 
@@ -172,13 +202,27 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #3b82f6;
+            background: var(--accent-secondary);
             box-shadow: 0 0 0 4px #eff6ff;
         }
 
         .dark .timeline-dot {
-            background: #66fcf1;
-            box-shadow: 0 0 0 4px #050505;
+            background: var(--accent-primary);
+            box-shadow: 0 0 0 4px var(--bg-primary);
+        }
+
+        /* NEW DEEP DIVE STYLES */
+        .deep-dive-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dark .deep-dive-card {
+            background: var(--bg-primary);
+            border: 1px solid #333;
         }
 
         /* OVERLAY TERMINAL STYLES */
@@ -212,7 +256,7 @@
             background: #0a0a0a;
             border: 1px solid #333;
             border-radius: 6px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(102, 252, 241, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px var(--grid-color);
             display: none;
             flex-direction: column;
             font-family: 'Fira Code', monospace;
@@ -271,30 +315,16 @@
         .term-input {
             background: transparent;
             border: none;
-            color: #66fcf1;
+            color: var(--accent-primary);
             outline: none;
             width: 100%;
             font-size: 0.8rem;
-        }
-
-        /* NEW DEEP DIVE STYLES */
-        .deep-dive-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .dark .deep-dive-card {
-            background: #0a0a0a;
-            border: 1px solid #333;
         }
     </style>
 </head>
 
 <body
-    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-textMain transition-colors duration-300 min-h-screen flex flex-col">
 
     <div class="cyber-grid"></div>
 
@@ -302,17 +332,17 @@
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4">
             <a href="index.html" class="flex items-center gap-2 group">
                 <div
-                    class="w-8 h-8 bg-blue-500 dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
+                    class="w-8 h-8 bg-neonBlue dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
                     &lt;/&gt;</div>
-                <span class="self-center text-xl font-bold tracking-wide dark:text-white">CodeBaaz</span>
+                <span class="self-center text-xl font-bold tracking-wide dark:text-textMain">CodeBaaz</span>
             </a>
             <div class="flex items-center gap-6 font-mono text-sm">
-                <a href="index.html" class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Home</a>
-                <a href="about.html" class="text-blue-500 dark:text-neonCyan">~/About</a>
+                <a href="index.html" class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Home</a>
+                <a href="about.html" class="text-neonBlue dark:text-neonCyan">~/About</a>
                 <a href="projects.html"
-                    class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Work</a>
+                    class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Work</a>
                 <a href="contact.html"
-                    class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Contact</a>
+                    class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Contact</a>
 
                 <button id="theme-toggle"
                     class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-all">
@@ -326,7 +356,7 @@
     <section id="about-content" class="relative z-10 pt-32 pb-20 container mx-auto px-6 flex-grow">
 
         <h1 class="text-4xl md:text-6xl font-bold mb-12 font-mono break-words">
-            <span class="text-blue-500 dark:text-neonCyan">./</span>Profile_Config
+            <span class="text-neonBlue dark:text-neonCyan">./</span>Profile_Config
         </h1>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-20">
@@ -334,15 +364,16 @@
             <div class="space-y-8">
                 <div class="space-y-6 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
                     <p>
-                        <span class="font-mono text-blue-500 dark:text-neonCyan mr-2">></span>
-                        Hello! My name is <strong class="text-black dark:text-white">Shashwat Singh</strong>. Back in
+                        <span class="font-mono text-neonBlue dark:text-neonCyan mr-2">></span>
+                        Hello! My name is <strong class="text-black dark:text-textMain">Shashwat Singh</strong>. Back in
                         2020, I started
                         coding when I was 15, trying to modify game scripts. That curiosity turned into a career.
                     </p>
                     <p>
-                        <span class="font-mono text-blue-500 dark:text-neonCyan mr-2">></span>
+                        <span class="font-mono text-neonBlue dark:text-neonCyan mr-2">></span>
                         Fast-forward to today, I specialize in building <strong
-                            class="text-black dark:text-white">scalable systems</strong>. I enjoy the logic of backend
+                            class="text-black dark:text-textMain">scalable systems</strong>. I enjoy the logic of
+                        backend
                         architecture and the creativity of frontend design.
                     </p>
                 </div>
@@ -351,7 +382,7 @@
                     <h3 class="font-mono text-sm text-gray-500 mb-4">-- SYSTEM_SKILLS --</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-sm">
                         <div class="skill-card group">
-                            <div class="flex items-center gap-2 mb-2 text-blue-500 dark:text-neonCyan">
+                            <div class="flex items-center gap-2 mb-2 text-neonBlue dark:text-neonCyan">
                                 <i class="ri-layout-masonry-line"></i> <span>Frontend</span>
                             </div>
                             <div class="text-gray-600 dark:text-gray-400">React, Next.js, Tailwind</div>
@@ -385,29 +416,27 @@
                     <div class="relative">
                         <div class="timeline-dot"></div>
                         <span
-                            class="font-mono text-xs text-blue-500 dark:text-neonCyan bg-blue-50 dark:bg-gray-800 px-2 py-1 rounded">2024
+                            class="font-mono text-xs text-neonBlue dark:text-neonCyan bg-blue-50 dark:bg-white/5 px-2 py-1 rounded">2024
                             - Present</span>
-                        <h3 class="text-xl font-bold mt-3 text-black dark:text-white">Senior Developer</h3>
+                        <h3 class="text-xl font-bold mt-3 text-black dark:text-textMain">Senior Developer</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 font-mono">TechCorp Inc.</p>
                         <p class="mt-2 text-gray-600 dark:text-gray-300">Leading the migration of legacy systems to
                             microservices.</p>
                     </div>
                     <div class="relative">
                         <div class="timeline-dot"></div>
-                        <span
-                            class="font-mono text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">2022
+                        <span class="font-mono text-xs text-gray-500 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">2022
                             - 2024</span>
-                        <h3 class="text-xl font-bold mt-3 text-black dark:text-white">Full Stack Engineer</h3>
+                        <h3 class="text-xl font-bold mt-3 text-black dark:text-textMain">Full Stack Engineer</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 font-mono">Creative Agency</p>
                         <p class="mt-2 text-gray-600 dark:text-gray-300">Developed high-performance websites for
                             international clients.</p>
                     </div>
                     <div class="relative">
                         <div class="timeline-dot"></div>
-                        <span
-                            class="font-mono text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">2018
+                        <span class="font-mono text-xs text-gray-500 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">2018
                             - 2022</span>
-                        <h3 class="text-xl font-bold mt-3 text-black dark:text-white">Computer Science Degree</h3>
+                        <h3 class="text-xl font-bold mt-3 text-black dark:text-textMain">Computer Science Degree</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 font-mono">University of Technology</p>
                         <p class="mt-2 text-gray-600 dark:text-gray-300">Specialized in Algorithms and Data Structures.
                         </p>
@@ -417,14 +446,14 @@
         </div>
 
         <div id="deep-dive-section" class="pt-8 pb-20">
-            <h2 class="font-mono text-2xl font-bold mb-8 text-blue-500 dark:text-neonCyan flex items-center gap-3">
+            <h2 class="font-mono text-2xl font-bold mb-8 text-neonBlue dark:text-neonCyan flex items-center gap-3">
                 <i class="ri-database-2-line"></i> PROJECT_BREAKDOWN_LOG
             </h2>
 
             <div class="deep-dive-card">
                 <h4 class="text-xl font-bold font-mono mb-2">Senior Developer @ TechCorp Inc.</h4>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">2024 - Present / <span
-                        class="text-blue-500 dark:text-neonCyan">Role: Microservice Architect</span></p>
+                        class="text-neonBlue dark:text-neonCyan">Role: Microservice Architect</span></p>
                 <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                     <li><span class="font-bold text-purple-600 dark:text-purple-400">ACHIEVEMENT:</span> Led the
                         complete migration of monolithic applications to a Dockerized, event-driven microservices
@@ -439,7 +468,7 @@
             <div class="deep-dive-card">
                 <h4 class="text-xl font-bold font-mono mb-2">Full Stack Engineer @ Creative Agency</h4>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">2022 - 2024 / <span
-                        class="text-blue-500 dark:text-neonCyan">Role: Frontend & API Lead</span></p>
+                        class="text-neonBlue dark:text-neonCyan">Role: Frontend & API Lead</span></p>
                 <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                     <li><span class="font-bold text-purple-600 dark:text-purple-400">ACHIEVEMENT:</span> Engineered a
                         custom GraphQL API layer to unify data from three separate legacy REST services, simplifying
@@ -455,7 +484,7 @@
             <div class="deep-dive-card">
                 <h4 class="text-xl font-bold font-mono mb-2">Computer Science Degree @ University of Technology</h4>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">2018 - 2022 / <span
-                        class="text-blue-500 dark:text-neonCyan">Focus: Algorithms & Systems</span></p>
+                        class="text-neonBlue dark:text-neonCyan">Focus: Algorithms & Systems</span></p>
                 <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                     <li><span class="font-bold text-purple-600 dark:text-purple-400">ACHIEVEMENT:</span> Built a
                         proprietary Pathfinding AI using C++ and advanced graph algorithms (A* search), achieving
@@ -469,24 +498,24 @@
         </div>
         <div class="border-t border-gray-200 dark:border-gray-800 pt-16">
             <h2 class="text-2xl font-bold mb-8 font-mono flex items-center gap-3">
-                <i class="ri-shield-check-line text-blue-500 dark:text-neonCyan"></i>
+                <i class="ri-shield-check-line text-neonBlue dark:text-neonCyan"></i>
                 CREDENTIALS_DATABASE
             </h2>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                 <div
-                    class="bg-blue-50 dark:bg-[#0f1115] border border-blue-100 dark:border-gray-800 rounded-lg p-8 text-center lg:col-span-1 flex flex-col items-center justify-center">
+                    class="bg-blue-50 dark:bg-white/5 border border-blue-100 dark:border-gray-800 rounded-lg p-8 text-center lg:col-span-1 flex flex-col items-center justify-center">
                     <div
-                        class="w-16 h-16 bg-blue-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4 text-blue-500 dark:text-neonCyan">
+                        class="w-16 h-16 bg-blue-100 dark:bg-white/10 rounded-full flex items-center justify-center mb-4 text-neonBlue dark:text-neonCyan">
                         <i class="ri-file-user-line text-3xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-2 text-black dark:text-white">System Resume</h3>
+                    <h3 class="text-xl font-bold mb-2 text-black dark:text-textMain">System Resume</h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Full detailed log of experience and
                         education.</p>
 
                     <a href="path/to/your-resume.pdf" download
-                        class="group relative inline-flex items-center gap-2 px-6 py-3 bg-blue-600 dark:bg-neonCyan text-white dark:text-black font-bold font-mono rounded hover:shadow-lg transition-all w-full justify-center">
+                        class="group relative inline-flex items-center gap-2 px-6 py-3 bg-neonBlue dark:bg-neonCyan text-white dark:text-black font-bold font-mono rounded hover:shadow-lg transition-all w-full justify-center">
                         <i class="ri-download-line group-hover:animate-bounce"></i>
                         Download .pdf
                     </a>
@@ -500,7 +529,7 @@
                             <i class="ri-award-line text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-black dark:text-white">AWS Certified Developer</h4>
+                            <h4 class="font-bold text-black dark:text-textMain">AWS Certified Developer</h4>
                             <p class="text-xs text-gray-500 dark:text-gray-400 font-mono">Issued: 2024</p>
                         </div>
                         <i
@@ -513,7 +542,7 @@
                             <i class="ri-medal-2-line text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-black dark:text-white">Meta Frontend Pro</h4>
+                            <h4 class="font-bold text-black dark:text-textMain">Meta Frontend Pro</h4>
                             <p class="text-xs text-gray-500 dark:text-gray-400 font-mono">Issued: 2023</p>
                         </div>
                         <i
@@ -526,7 +555,7 @@
                             <i class="ri-code-box-line text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-black dark:text-white">Python Data Science</h4>
+                            <h4 class="font-bold text-black dark:text-textMain">Python Data Science</h4>
                             <p class="text-xs text-gray-500 dark:text-gray-400 font-mono">Issued: 2022</p>
                         </div>
                         <i
@@ -535,11 +564,11 @@
 
                     <a href="#" class="cert-card group">
                         <div
-                            class="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                            class="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded flex items-center justify-center text-neonBlue dark:text-neonBlue group-hover:bg-neonBlue group-hover:text-white transition-colors">
                             <i class="ri-shield-star-line text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-black dark:text-white">Cybersecurity Basic</h4>
+                            <h4 class="font-bold text-black dark:text-textMain">Cybersecurity Basic</h4>
                             <p class="text-xs text-gray-500 dark:text-gray-400 font-mono">Issued: 2021</p>
                         </div>
                         <i
@@ -591,9 +620,10 @@
     </footer>
     <button id="terminal-toggle" aria-label="Open Terminal">
         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
-            <rect width="100" height="100" rx="10" ry="10" fill="#000000" stroke="#66fcf1" stroke-width="3" />
+            <rect width="100" height="100" rx="10" ry="10" fill="#000000" stroke="var(--accent-primary)"
+                stroke-width="3" />
             <text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif"
-                font-size="35" fill="#66fcf1" font-weight="bold">
+                font-size="35" fill="var(--accent-primary)" font-weight="bold">
                 &lt;/&gt;
             </text>
             <circle cx="80" cy="80" r="10" fill="#27c93f" stroke="#000000" stroke-width="2" />
@@ -628,23 +658,114 @@
 
             const PROMPT = 'Shash@port:~$';
 
+            // --- HISTORY LOGIC ---
+            let commandHistory = [];
+            let historyIndex = -1;
+
+            // --- THEME DATABASE & LOGIC ---
+            const themeData = {
+                'default': {
+                    '--bg-primary': '#050505',
+                    '--text-primary': '#e5e5e5',
+                    '--accent-primary': '#66fcf1',
+                    '--accent-secondary': '#3b82f6',
+                    '--grid-color': 'rgba(102, 252, 241, 0.15)'
+                },
+                'matrix': {
+                    '--bg-primary': '#000000',
+                    '--text-primary': '#00dd00',
+                    '--accent-primary': '#00ff41',
+                    '--accent-secondary': '#008f11',
+                    '--grid-color': 'rgba(0, 255, 65, 0.2)'
+                },
+                'cyberpunk': {
+                    '--bg-primary': '#0f0014',
+                    '--text-primary': '#fcee0a',
+                    '--accent-primary': '#ff003c',
+                    '--accent-secondary': '#00f0ff',
+                    '--grid-color': 'rgba(255, 0, 60, 0.2)'
+                },
+                'ocean': {
+                    '--bg-primary': '#001e2b',
+                    '--text-primary': '#e0f7fa',
+                    '--accent-primary': '#00e5ff',
+                    '--accent-secondary': '#18ffff',
+                    '--grid-color': 'rgba(0, 229, 255, 0.15)'
+                },
+                'sunset': {
+                    '--bg-primary': '#2d1b2e',
+                    '--text-primary': '#ffcc00',
+                    '--accent-primary': '#ff5e62',
+                    '--accent-secondary': '#ff9966',
+                    '--grid-color': 'rgba(255, 94, 98, 0.2)'
+                },
+                'dracula': {
+                    '--bg-primary': '#282a36',
+                    '--text-primary': '#f8f8f2',
+                    '--accent-primary': '#ff79c6',
+                    '--accent-secondary': '#bd93f9',
+                    '--grid-color': 'rgba(189, 147, 249, 0.15)'
+                },
+                'coffee': {
+                    '--bg-primary': '#2b211e',
+                    '--text-primary': '#dcc9bc',
+                    '--accent-primary': '#d4a373',
+                    '--accent-secondary': '#a98467',
+                    '--grid-color': 'rgba(212, 163, 115, 0.15)'
+                },
+                'light': {
+                    '--bg-primary': '#ffffff',
+                    '--text-primary': '#111827',
+                    '--accent-primary': '#2563eb',
+                    '--accent-secondary': '#4f46e5',
+                    '--grid-color': 'rgba(37, 99, 235, 0.1)'
+                }
+            };
+
+            function applyTheme(themeName) {
+                const theme = themeData[themeName];
+                if (!theme) return false;
+
+                const root = document.documentElement;
+
+                // 1. Update CSS Variables
+                for (const [property, value] of Object.entries(theme)) {
+                    root.style.setProperty(property, value);
+                }
+
+                // 2. Handle Tailwind Dark Mode Class
+                if (themeName === 'light') {
+                    root.classList.remove('dark');
+                    localStorage.theme = 'light';
+                } else {
+                    root.classList.add('dark');
+                    localStorage.theme = 'dark';
+                }
+
+                // 3. Persist specific theme name
+                localStorage.customTheme = themeName;
+                return true;
+            }
+
+            // Restore theme on load
+            if (localStorage.customTheme && themeData[localStorage.customTheme]) {
+                applyTheme(localStorage.customTheme);
+            }
+
             // --- Terminal Utility Functions ---
 
-            // Function to echo user input and current prompt
             function echoInput(command) {
                 const outputLine = document.createElement('div');
                 outputLine.innerHTML = `<span class="term-prompt">${PROMPT}</span> ${command}`;
                 terminalOutput.appendChild(outputLine);
             }
 
-            // Function to print a response
             function print(message, colorClass = 'text-white') {
                 const outputLine = document.createElement('div');
                 outputLine.innerHTML = `<span class="${colorClass}">${message}</span>`;
                 terminalOutput.appendChild(outputLine);
             }
 
-            // Function to scroll to the latest input line
             function scrollToBottom() {
                 terminalOutput.scrollTop = terminalOutput.scrollHeight;
             }
@@ -660,6 +781,23 @@
                         print("Motto: Building scalable systems, line by line.", 'text-gray-400');
                     }
                 },
+                'theme': {
+                    desc: 'Change system UI colors. Usage: theme [name] | theme list',
+                    exec: (args) => {
+                        const subCmd = args[1];
+                        if (subCmd === 'list') {
+                            print("Available Themes:", 'text-neonCyan');
+                            Object.keys(themeData).forEach(t => { print(`  - ${t}`, 'text-gray-400'); });
+                            return;
+                        }
+                        if (themeData[subCmd]) {
+                            applyTheme(subCmd);
+                            print(`System Theme set to: [${subCmd.toUpperCase()}]`, 'text-green-500');
+                        } else {
+                            print(`Error: Theme '${subCmd}' not found. Type 'theme list' for options.`, 'text-error');
+                        }
+                    }
+                },
                 'ls -l /': {
                     desc: 'Lists main system directories (navigation links).',
                     exec: () => {
@@ -672,7 +810,7 @@
                 'neofetch': {
                     desc: 'Displays stylized system specifications (Host, Shell, Status).',
                     exec: () => {
-                        print('<span style="color:#8B5CF6">/\_/\</span>', 'text-gray-400');
+                        print('<span style="color:#8B5CF6">/\\_/\\</span>', 'text-gray-400');
                         print('<span style="color:#8B5CF6">( o.o )</span> <span class="text-neonCyan font-semibold">Host</span>: Vercel Cloud', 'text-gray-400');
                         print('<span style="color:#8B5CF6"> > ^ < </span> <span class="text-neonCyan font-semibold">Loc</span>: 127.0.0.1', 'text-gray-400');
                         print('       <span class="text-neonCyan font-semibold">Shell</span>: ZSH v5.8', 'text-gray-400');
@@ -683,14 +821,6 @@
                     desc: 'Displays the current local date and time.',
                     exec: () => {
                         print(new Date().toString(), 'text-neonCyan');
-                    }
-                },
-                'theme toggle': {
-                    desc: 'Switches the entire site between dark and light modes.',
-                    exec: () => {
-                        document.documentElement.classList.toggle('dark');
-                        localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-                        print("Theme switched.", 'text-green-500');
                     }
                 },
                 'clear': {
@@ -752,7 +882,6 @@
                     desc: 'Initiates a simulated system reboot (redirects via confirmation).',
                     exec: () => {
                         print("[SUDO] WARNING: System will restart. Proceed? (y/n)", 'text-error');
-                        // Special state handling for confirmation
                         terminalInput.setAttribute('data-confirm', 'reboot');
                     }
                 },
@@ -823,12 +952,38 @@
             // --- Input and Confirmation Handler ---
 
             terminalInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
+                // HISTORY NAVIGATION
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (historyIndex > 0) {
+                        historyIndex--;
+                        terminalInput.value = commandHistory[historyIndex];
+                    } else if (historyIndex === -1 && commandHistory.length > 0) {
+                        historyIndex = commandHistory.length - 1;
+                        terminalInput.value = commandHistory[historyIndex];
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (historyIndex < commandHistory.length - 1 && historyIndex !== -1) {
+                        historyIndex++;
+                        terminalInput.value = commandHistory[historyIndex];
+                    } else {
+                        historyIndex = commandHistory.length;
+                        terminalInput.value = '';
+                    }
+                }
+                // EXECUTION
+                else if (e.key === 'Enter') {
                     e.preventDefault();
                     const command = terminalInput.value.trim();
                     const confirmState = terminalInput.getAttribute('data-confirm');
 
-                    echoInput(command); // Show input before running command
+                    if (command) {
+                        commandHistory.push(command);
+                        historyIndex = commandHistory.length;
+                    }
+
+                    echoInput(command);
 
                     if (confirmState === 'reboot') {
                         if (command === 'y') {
@@ -837,7 +992,7 @@
                         } else {
                             print("Reboot cancelled.", 'text-green-500');
                         }
-                        terminalInput.removeAttribute('data-confirm'); // Reset state
+                        terminalInput.removeAttribute('data-confirm');
                     } else {
                         runCommand(command);
                     }
@@ -893,31 +1048,38 @@
                 }
             });
 
-            // --- Initial Setup and Event Handling (Existing Logic) ---
+            // --- Initial Setup and Event Handling ---
 
-            // Existing theme toggle logic
+            // Existing theme toggle logic (Icon Click)
             const themeBtn = document.getElementById('theme-toggle');
             const html = document.documentElement;
             themeBtn.addEventListener('click', () => {
+                if (localStorage.customTheme && localStorage.customTheme !== 'default' && localStorage.customTheme !== 'light') {
+                    applyTheme('default');
+                }
                 html.classList.toggle('dark');
-                localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
                 const isDark = html.classList.contains('dark');
+                localStorage.theme = isDark ? 'dark' : 'light';
+
+                if (isDark) applyTheme('default');
+                else applyTheme('light');
+
                 themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
                 themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
             });
 
-            // Function to update clock (NEW)
+            // Function to update clock
             function updateClock() {
                 const now = new Date();
                 document.getElementById('clock').innerText = now.toUTCString().split(' ')[4] + ' UTC';
             }
             setInterval(updateClock, 1000);
 
-            // Spotlight/Glow Logic (existing + footer)
+            // Spotlight/Glow Logic
             const grid = document.querySelector('.cyber-grid');
             const aboutContent = document.getElementById('about-content');
             const deepDiveSection = document.getElementById('deep-dive-section');
-            const mainFooter = document.getElementById('main-footer'); // NEW
+            const mainFooter = document.getElementById('main-footer');
             const body = document.body;
 
             function activateGlow() { body.classList.add('is-hovering'); }
@@ -943,7 +1105,7 @@
             });
 
             document.addEventListener('DOMContentLoaded', () => {
-                updateClock(); // NEW
+                updateClock();
 
                 // Initialize theme icon 
                 const isDark = html.classList.contains('dark');

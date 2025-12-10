@@ -23,9 +23,11 @@
                         mono: ['Fira Code', 'monospace'],
                     },
                     colors: {
-                        bgDark: '#050505',
-                        neonCyan: '#66fcf1',
-                        neonBlue: '#3b82f6',
+                        // Mapped to CSS Variables for Terminal Switching
+                        bgDark: 'var(--bg-primary)',
+                        textMain: 'var(--text-primary)',
+                        neonCyan: 'var(--accent-primary)',
+                        neonBlue: 'var(--accent-secondary)',
                     },
                     animation: {
                         'infinite-scroll': 'infinite-scroll 25s linear infinite',
@@ -43,6 +45,7 @@
 
     <script>
             (function () {
+                // Check for saved custom theme or default to system
                 if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                 } else {
@@ -52,6 +55,35 @@
     </script>
 
     <style>
+        /* --- DYNAMIC THEME VARIABLES --- */
+        :root {
+            /* Default Theme (Original Dark) */
+            --bg-primary: #050505;
+            --text-primary: #e5e5e5;
+            --accent-primary: #66fcf1;
+            /* Cyan */
+            --accent-secondary: #3b82f6;
+            /* Blue */
+            --grid-color: rgba(102, 252, 241, 0.15);
+        }
+
+        /* Smooth Transition for Theme Switching */
+        body,
+        div,
+        section,
+        nav,
+        footer,
+        span,
+        h1,
+        h2,
+        h3,
+        p,
+        i,
+        button,
+        input {
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+
         /* BASE SETTINGS */
         html {
             scroll-behavior: smooth;
@@ -73,19 +105,15 @@
             top: 0;
             left: 0;
             height: 3px;
-            background: #66fcf1;
+            background: var(--accent-primary);
             z-index: 100;
             width: 0%;
             transition: width 0.1s;
         }
 
-        /* 2. CYBER GRID (Spotlight effect controlled by JS class on body) */
-        :root {
-            --grid-color: rgba(59, 130, 246, 0.25);
-        }
-
+        /* 2. CYBER GRID */
         html.dark {
-            --grid-color: rgba(102, 252, 241, 0.15);
+            /* Grid color is now dynamic */
         }
 
         .cyber-grid {
@@ -100,19 +128,15 @@
             transition: background-image 0.5s ease, mask-image 0.5s ease, -webkit-mask-image 0.5s ease;
         }
 
-        /* NEW: Apply the grid lines AND the spotlight when hovering */
         body.is-hovering .cyber-grid {
-            /* 1. Turns the visible grid lines ON */
             background-image:
                 linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
                 linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
-
-            /* 2. Turns the spotlight mask ON */
             mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 20%);
             -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 20%);
         }
 
-        /* --- NEW SKILL BAR ANIMATION STYLES --- */
+        /* --- SKILL BARS --- */
         .skill-bar-container {
             height: 6px;
             background: #222;
@@ -124,12 +148,10 @@
             height: 100%;
             border-radius: 3px;
             width: 0;
-            /* Starts at 0% for JS animation */
             transition: width 1.5s cubic-bezier(0.17, 0.84, 0.44, 1);
-            /* Smooth, dynamic animation */
         }
 
-        /* --- ACTIVITY LOG STYLES --- */
+        /* --- ACTIVITY LOG --- */
         .log-entry {
             border-left: 2px solid #333;
             padding-left: 1rem;
@@ -138,17 +160,11 @@
         }
 
         .log-entry:hover {
-            border-left-color: #66fcf1;
+            border-left-color: var(--accent-primary);
         }
 
         .log-time {
-            color: #4b5563;
-            /* gray-600 */
-        }
-
-        .dark .log-time {
             color: #9ca3af;
-            /* gray-400 */
         }
 
         /* 3. RAINBOW TEXT */
@@ -208,13 +224,13 @@
 
         .terminal-card:hover {
             transform: translateY(-5px);
-            border-color: #3b82f6;
+            border-color: var(--accent-secondary);
             box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.4);
         }
 
         .dark .terminal-card:hover {
-            border-color: #66fcf1;
-            box-shadow: 0 0 30px rgba(102, 252, 241, 0.15);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 30px var(--grid-color);
         }
 
         .terminal-header {
@@ -258,7 +274,7 @@
         }
 
         .dark .terminal-body {
-            color: #e5e5e5;
+            color: var(--text-primary);
         }
 
         .cmd {
@@ -280,7 +296,7 @@
         .typing-cursor::after {
             content: '|';
             animation: blink 1s step-start infinite;
-            color: #66fcf1;
+            color: var(--accent-primary);
         }
 
         @keyframes blink {
@@ -320,7 +336,7 @@
             background: #0a0a0a;
             border: 1px solid #333;
             border-radius: 6px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(102, 252, 241, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px var(--grid-color);
             display: none;
             flex-direction: column;
             font-family: 'Fira Code', monospace;
@@ -379,7 +395,7 @@
         .term-input {
             background: transparent;
             border: none;
-            color: #66fcf1;
+            color: var(--accent-primary);
             outline: none;
             width: 100%;
             font-size: 0.8rem;
@@ -388,7 +404,7 @@
 </head>
 
 <body
-    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-gray-100 transition-colors duration-300 relative flex flex-col min-h-screen">
+    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-textMain transition-colors duration-300 relative flex flex-col min-h-screen">
 
     <div id="scroll-progress"></div>
 
@@ -398,22 +414,22 @@
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4">
             <a href="index.html" class="flex items-center gap-2 group">
                 <div
-                    class="w-8 h-8 bg-blue-500 dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
+                    class="w-8 h-8 bg-neonBlue dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
                     &lt;/&gt;
                 </div>
-                <span class="self-center text-xl font-bold tracking-wide dark:text-white">CodeBaaz</span>
+                <span class="self-center text-xl font-bold tracking-wide dark:text-textMain">CodeBaaz</span>
             </a>
 
             <div class="flex items-center gap-6">
                 <div class="hidden md:flex gap-6 font-mono text-sm">
                     <a href="index.html"
-                        class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Home</a>
+                        class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Home</a>
                     <a href="about.html"
-                        class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/About</a>
+                        class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/About</a>
                     <a href="projects.html"
-                        class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Work</a>
+                        class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Work</a>
                     <a href="contact.html"
-                        class="hover:text-blue-500 dark:hover:text-neonCyan transition-colors">~/Contact</a>
+                        class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Contact</a>
                 </div>
 
                 <button id="theme-toggle"
@@ -430,16 +446,16 @@
 
             <div class="space-y-6 order-2 lg:order-1">
                 <div
-                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-neonCyan/10 text-blue-600 dark:text-neonCyan text-sm font-mono border border-blue-200 dark:border-neonCyan/20">
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-neonCyan/10 text-neonBlue dark:text-neonCyan text-sm font-mono border border-blue-200 dark:border-neonCyan/20">
                     <span class="relative flex h-2 w-2">
                         <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 dark:bg-neonCyan opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500 dark:bg-neonCyan"></span>
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neonBlue dark:bg-neonCyan opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-neonBlue dark:bg-neonCyan"></span>
                     </span>
                     System Online v1.0
                 </div>
 
-                <h1 class="text-5xl md:text-7xl font-bold leading-tight dark:text-white">
+                <h1 class="text-5xl md:text-7xl font-bold leading-tight dark:text-textMain">
                     Hi, I'm <br>
                     <span id="live-name-display" class="rainbow-text transition-colors duration-300">
                         Shashwat
@@ -447,7 +463,7 @@
                 </h1>
 
                 <h2 class="text-2xl md:text-3xl font-mono text-gray-500 dark:text-gray-400 h-10">
-                    I build <span id="typewriter" class="typing-cursor text-blue-500 dark:text-neonCyan"></span>
+                    I build <span id="typewriter" class="typing-cursor text-neonBlue dark:text-neonCyan"></span>
                 </h2>
 
                 <p class="text-lg text-gray-600 dark:text-gray-300 max-w-lg leading-relaxed pt-2">
@@ -456,11 +472,11 @@
 
                 <div class="pt-4 flex gap-4">
                     <a href="projects.html"
-                        class="px-6 py-2 bg-blue-600 dark:bg-neonCyan text-white dark:text-black font-bold rounded hover:shadow-lg transition-all transform hover:-translate-y-1">
+                        class="px-6 py-2 bg-neonBlue dark:bg-neonCyan text-white dark:text-black font-bold rounded hover:shadow-lg transition-all transform hover:-translate-y-1">
                         View Projects
                     </a>
                     <a href="contact.html"
-                        class="px-6 py-2 border border-gray-400 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-neonCyan hover:text-blue-500 dark:hover:text-neonCyan transition-all">
+                        class="px-6 py-2 border border-gray-400 dark:border-gray-600 rounded-lg hover:border-neonBlue dark:hover:border-neonCyan hover:text-neonBlue dark:hover:text-neonCyan transition-all">
                         Contact Me
                     </a>
                 </div>
@@ -517,11 +533,11 @@
                         <div class="text-purple-500 dark:text-purple-400 hidden sm:block font-bold">
                             /\_/\<br>( o.o )<br> > ^ < </div>
                                 <div>
-                                    <p><span class="text-blue-600 dark:text-blue-400 font-semibold">Host</span>: Vercel
+                                    <p><span class="text-neonBlue dark:text-neonCyan font-semibold">Host</span>: Vercel
                                         Cloud</p>
-                                    <p><span class="text-blue-600 dark:text-blue-400 font-semibold">Loc</span>:
+                                    <p><span class="text-neonBlue dark:text-neonCyan font-semibold">Loc</span>:
                                         127.0.0.1</p>
-                                    <p><span class="text-blue-600 dark:text-blue-400 font-semibold">Shell</span>: ZSH
+                                    <p><span class="text-neonBlue dark:text-neonCyan font-semibold">Shell</span>: ZSH
                                         v5.8</p>
                                     <p class="text-green-600 dark:text-green-400 mt-2 font-bold">● Online</p>
                                 </div>
@@ -540,7 +556,7 @@
                         <div class="grid grid-cols-2 gap-2 mt-4 text-sm font-semibold">
                             <span class="text-green-600 dark:text-green-400"><i class="ri-code-line"></i>
                                 JavaScript</span>
-                            <span class="text-blue-600 dark:text-blue-400"><i class="ri-reactjs-line"></i> React</span>
+                            <span class="text-neonBlue dark:text-neonBlue"><i class="ri-reactjs-line"></i> React</span>
                             <span class="text-yellow-600 dark:text-yellow-400"><i class="ri-nodejs-line"></i>
                                 Node.js</span>
                             <span class="text-purple-600 dark:text-purple-400"><i class="ri-database-2-line"></i>
@@ -565,7 +581,8 @@
                             <p class="text-gray-500 mt-2">Core Services:</p>
                             <p>API Endpoint: operational</p>
                             <p>Database: operational</p>
-                            <p class="text-green-600 dark:text-green-400 mt-2 font-bold">✔ Integrity check complete</p>
+                            <p class="text-green-600 dark:text-green-400 mt-2 font-bold">✔ Integrity check complete
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -579,7 +596,7 @@
                     <div class="terminal-body">
                         <div class="mb-2"><span class="cmd">user@system:~$</span> ./contact.sh</div>
                         <div class="flex flex-col gap-3 mt-4 font-medium">
-                            <a href="#" class="hover:text-blue-500 transition-colors flex items-center gap-2"><i
+                            <a href="#" class="hover:text-neonBlue transition-colors flex items-center gap-2"><i
                                     class="ri-linkedin-box-fill"></i> LinkedIn</a>
                             <a href="#" class="hover:text-yellow-500 transition-colors flex items-center gap-2"><i
                                     class="ri-mail-fill"></i> Email</a>
@@ -599,7 +616,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
             <div>
-                <h3 class="font-mono text-2xl font-bold mb-6 text-blue-500 dark:text-neonCyan flex items-center gap-3">
+                <h3 class="font-mono text-2xl font-bold mb-6 text-neonBlue dark:text-neonCyan flex items-center gap-3">
                     <i class="ri-code-s-slash-line"></i> Frontend Engineering
                 </h3>
                 <div class="space-y-6">
@@ -618,7 +635,7 @@
                             <span class="font-mono text-sm text-gray-400">95%</span>
                         </div>
                         <div class="skill-bar-container">
-                            <div class="skill-progress-bar bg-blue-500 dark:bg-neonCyan" data-progress="95"></div>
+                            <div class="skill-progress-bar bg-neonBlue dark:bg-neonCyan" data-progress="95"></div>
                         </div>
                     </div>
                     <div>
@@ -753,7 +770,7 @@
             </div>
         </div>
         <div class="text-center pt-8">
-            <a href="about.html" class="font-mono text-sm text-blue-500 dark:text-neonCyan hover:underline">
+            <a href="about.html" class="font-mono text-sm text-neonBlue dark:text-neonCyan hover:underline">
                 View Full Execution Log >
             </a>
         </div>
@@ -798,9 +815,10 @@
 
     <button id="terminal-toggle" aria-label="Open Terminal">
         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
-            <rect width="100" height="100" rx="10" ry="10" fill="#000000" stroke="#66fcf1" stroke-width="3" />
+            <rect width="100" height="100" rx="10" ry="10" fill="#000000" stroke="var(--accent-primary)"
+                stroke-width="3" />
             <text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif"
-                font-size="35" fill="#66fcf1" font-weight="bold">
+                font-size="35" fill="var(--accent-primary)" font-weight="bold">
                 &lt;/&gt;
             </text>
             <circle cx="80" cy="80" r="10" fill="#27c93f" stroke="#000000" stroke-width="2" />
@@ -835,46 +853,116 @@
 
             const PROMPT = 'Shash@port:~$';
 
+            // --- HISTORY LOGIC ---
+            let commandHistory = [];
+            let historyIndex = -1;
+
+            // --- THEME DATABASE & LOGIC ---
+            const themeData = {
+                'default': {
+                    '--bg-primary': '#050505',
+                    '--text-primary': '#e5e5e5',
+                    '--accent-primary': '#66fcf1', // Cyan
+                    '--accent-secondary': '#3b82f6', // Blue
+                    '--grid-color': 'rgba(102, 252, 241, 0.15)'
+                },
+                'matrix': {
+                    '--bg-primary': '#000000',
+                    '--text-primary': '#00dd00',
+                    '--accent-primary': '#00ff41', // Bright Green
+                    '--accent-secondary': '#008f11', // Darker Green
+                    '--grid-color': 'rgba(0, 255, 65, 0.2)'
+                },
+                'cyberpunk': {
+                    '--bg-primary': '#0f0014', // Deep Purple
+                    '--text-primary': '#fcee0a', // Cyber Yellow
+                    '--accent-primary': '#ff003c', // Cyber Red
+                    '--accent-secondary': '#00f0ff', // Cyber Blue
+                    '--grid-color': 'rgba(255, 0, 60, 0.2)'
+                },
+                'ocean': {
+                    '--bg-primary': '#001e2b', // Deep Sea
+                    '--text-primary': '#e0f7fa', // Light Cyan
+                    '--accent-primary': '#00e5ff', // Bright Teal
+                    '--accent-secondary': '#18ffff',
+                    '--grid-color': 'rgba(0, 229, 255, 0.15)'
+                },
+                'sunset': {
+                    '--bg-primary': '#2d1b2e',
+                    '--text-primary': '#ffcc00',
+                    '--accent-primary': '#ff5e62', // Orange/Red
+                    '--accent-secondary': '#ff9966',
+                    '--grid-color': 'rgba(255, 94, 98, 0.2)'
+                },
+                'dracula': {
+                    '--bg-primary': '#282a36',
+                    '--text-primary': '#f8f8f2',
+                    '--accent-primary': '#ff79c6', // Pink
+                    '--accent-secondary': '#bd93f9', // Purple
+                    '--grid-color': 'rgba(189, 147, 249, 0.15)'
+                },
+                'coffee': {
+                    '--bg-primary': '#2b211e',
+                    '--text-primary': '#dcc9bc',
+                    '--accent-primary': '#d4a373', // Caramel
+                    '--accent-secondary': '#a98467', // Light Brown
+                    '--grid-color': 'rgba(212, 163, 115, 0.15)'
+                },
+                'light': {
+                    '--bg-primary': '#ffffff',
+                    '--text-primary': '#111827',
+                    '--accent-primary': '#2563eb', // Standard Blue
+                    '--accent-secondary': '#4f46e5', // Indigo
+                    '--grid-color': 'rgba(37, 99, 235, 0.1)'
+                }
+            };
+
+            function applyTheme(themeName) {
+                const theme = themeData[themeName];
+                if (!theme) return false;
+
+                const root = document.documentElement;
+
+                // 1. Update CSS Variables
+                for (const [property, value] of Object.entries(theme)) {
+                    root.style.setProperty(property, value);
+                }
+
+                // 2. Handle Tailwind Dark Mode Class
+                if (themeName === 'light') {
+                    root.classList.remove('dark');
+                    localStorage.theme = 'light';
+                } else {
+                    root.classList.add('dark');
+                    localStorage.theme = 'dark';
+                }
+
+                // 3. Persist specific theme name
+                localStorage.customTheme = themeName;
+                return true;
+            }
+
+            // Restore theme on load
+            if (localStorage.customTheme && themeData[localStorage.customTheme]) {
+                applyTheme(localStorage.customTheme);
+            }
+
             // --- Terminal Utility Functions ---
 
-            // Function to echo user input and current prompt
             function echoInput(command) {
                 const outputLine = document.createElement('div');
                 outputLine.innerHTML = `<span class="term-prompt">${PROMPT}</span> ${command}`;
                 terminalOutput.appendChild(outputLine);
             }
 
-            // Function to print a response
             function print(message, colorClass = 'text-white') {
                 const outputLine = document.createElement('div');
                 outputLine.innerHTML = `<span class="${colorClass}">${message}</span>`;
                 terminalOutput.appendChild(outputLine);
             }
 
-            // Function to scroll to the latest input line
             function scrollToBottom() {
                 terminalOutput.scrollTop = terminalOutput.scrollHeight;
-            }
-
-            // --- Skill Bar Animation Logic ---
-            function animateSkillBars() {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const bars = entry.target.querySelectorAll('.skill-progress-bar');
-                            bars.forEach(bar => {
-                                const progress = bar.getAttribute('data-progress');
-                                bar.style.width = `${progress}%`;
-                            });
-                            observer.unobserve(entry.target); // Stop observing after animation runs once
-                        }
-                    });
-                }, { threshold: 0.5 }); // Trigger when 50% of the section is visible
-
-                const skillSection = document.getElementById('tech-matrix-section');
-                if (skillSection) {
-                    observer.observe(skillSection);
-                }
             }
 
             // --- Terminal Command Definitions ---
@@ -886,6 +974,27 @@
                         print("Name: Shashwat Singh", 'text-neonCyan');
                         print("Role: Full Stack Developer / System Architect", 'text-neonCyan');
                         print("Motto: Building scalable systems, line by line.", 'text-gray-400');
+                    }
+                },
+                'theme': {
+                    desc: 'Change system UI colors. Usage: theme [name] | theme list',
+                    exec: (args) => {
+                        const subCmd = args[1];
+
+                        if (subCmd === 'list') {
+                            print("Available Themes:", 'text-neonCyan');
+                            Object.keys(themeData).forEach(t => {
+                                print(`  - ${t}`, 'text-gray-400');
+                            });
+                            return;
+                        }
+
+                        if (themeData[subCmd]) {
+                            applyTheme(subCmd);
+                            print(`System Theme set to: [${subCmd.toUpperCase()}]`, 'text-green-500');
+                        } else {
+                            print(`Error: Theme '${subCmd}' not found. Type 'theme list' for options.`, 'text-error');
+                        }
                     }
                 },
                 'ls -l /': {
@@ -900,7 +1009,7 @@
                 'neofetch': {
                     desc: 'Displays stylized system specifications (Host, Shell, Status).',
                     exec: () => {
-                        print('<span style="color:#8B5CF6">/\_/\</span>', 'text-gray-400');
+                        print('<span style="color:#8B5CF6">/\\_/\\</span>', 'text-gray-400');
                         print('<span style="color:#8B5CF6">( o.o )</span> <span class="text-neonCyan font-semibold">Host</span>: Vercel Cloud', 'text-gray-400');
                         print('<span style="color:#8B5CF6"> > ^ < </span> <span class="text-neonCyan font-semibold">Loc</span>: 127.0.0.1', 'text-gray-400');
                         print('       <span class="text-neonCyan font-semibold">Shell</span>: ZSH v5.8', 'text-gray-400');
@@ -911,14 +1020,6 @@
                     desc: 'Displays the current local date and time.',
                     exec: () => {
                         print(new Date().toString(), 'text-neonCyan');
-                    }
-                },
-                'theme toggle': {
-                    desc: 'Switches the entire site between dark and light modes.',
-                    exec: () => {
-                        document.documentElement.classList.toggle('dark');
-                        localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-                        print("Theme switched.", 'text-green-500');
                     }
                 },
                 'clear': {
@@ -980,7 +1081,6 @@
                     desc: 'Initiates a simulated system reboot (redirects via confirmation).',
                     exec: () => {
                         print("[SUDO] WARNING: System will restart. Proceed? (y/n)", 'text-error');
-                        // Special state handling for confirmation
                         terminalInput.setAttribute('data-confirm', 'reboot');
                     }
                 },
@@ -1033,7 +1133,7 @@
                     }
                 }
 
-                // Handle complex commands (e.g., 'read -f /README.txt' or 'ls -l /')
+                // Handle complex commands
                 const complexCommand = command.trim().toLowerCase();
                 if (commands[complexCommand]) {
                     commands[complexCommand].exec(parts);
@@ -1051,12 +1151,39 @@
             // --- Input and Confirmation Handler ---
 
             terminalInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
+                // HISTORY NAVIGATION
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (historyIndex > 0) {
+                        historyIndex--;
+                        terminalInput.value = commandHistory[historyIndex];
+                    } else if (historyIndex === -1 && commandHistory.length > 0) {
+                        historyIndex = commandHistory.length - 1;
+                        terminalInput.value = commandHistory[historyIndex];
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (historyIndex < commandHistory.length - 1 && historyIndex !== -1) {
+                        historyIndex++;
+                        terminalInput.value = commandHistory[historyIndex];
+                    } else {
+                        historyIndex = commandHistory.length; // Past end
+                        terminalInput.value = '';
+                    }
+                }
+                // COMMAND EXECUTION
+                else if (e.key === 'Enter') {
                     e.preventDefault();
                     const command = terminalInput.value.trim();
                     const confirmState = terminalInput.getAttribute('data-confirm');
 
-                    echoInput(command); // Show input before running command
+                    // Add to history if not empty
+                    if (command) {
+                        commandHistory.push(command);
+                        historyIndex = commandHistory.length; // Reset index to end
+                    }
+
+                    echoInput(command);
 
                     if (confirmState === 'reboot') {
                         if (command === 'y') {
@@ -1065,7 +1192,7 @@
                         } else {
                             print("Reboot cancelled.", 'text-green-500');
                         }
-                        terminalInput.removeAttribute('data-confirm'); // Reset state
+                        terminalInput.removeAttribute('data-confirm');
                     } else {
                         runCommand(command);
                     }
@@ -1121,40 +1248,45 @@
                 }
             });
 
-            // --- Initial Setup and Event Handling (Existing Logic) ---
+            // --- Initial Setup and Event Handling ---
 
-            // Existing theme toggle logic
+            // Existing theme toggle logic (Icon Click)
             const themeBtn = document.getElementById('theme-toggle');
             const html = document.documentElement;
             themeBtn.addEventListener('click', () => {
+                // If current theme is custom (e.g. matrix), resetting to light/dark
+                if (localStorage.customTheme && localStorage.customTheme !== 'default' && localStorage.customTheme !== 'light') {
+                    // Reset variables to default before toggling
+                    applyTheme('default');
+                }
+
                 html.classList.toggle('dark');
-                localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
                 const isDark = html.classList.contains('dark');
+                localStorage.theme = isDark ? 'dark' : 'light';
+
+                // Update theme definition to match standard light/dark
+                if (isDark) applyTheme('default');
+                else applyTheme('light');
+
                 themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
                 themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
             });
 
-            // Function to update clock (existing)
+            // Clock Logic
             function updateClock() {
                 const now = new Date();
                 document.getElementById('clock').innerText = now.toUTCString().split(' ')[4] + ' UTC';
             }
             setInterval(updateClock, 1000);
 
-            // Spotlight/Glow Logic (existing)
+            // Spotlight Logic
             const grid = document.querySelector('.cyber-grid');
-            const heroSection = document.getElementById('hero-section');
-            const overviewSection = document.getElementById('overview-section');
-            const techMatrixSection = document.getElementById('tech-matrix-section');
-            const activityLogSection = document.getElementById('activity-log-section'); // New Section
-            const mainFooter = document.getElementById('main-footer');
             const body = document.body;
 
             function activateGlow() { body.classList.add('is-hovering'); }
             function deactivateGlow() { body.classList.remove('is-hovering'); }
 
-            const glowSections = [heroSection, overviewSection, techMatrixSection, activityLogSection, mainFooter].filter(el => el != null);
-
+            const glowSections = document.querySelectorAll('section, footer');
             glowSections.forEach(section => {
                 section.addEventListener('mouseenter', activateGlow);
             });
@@ -1172,9 +1304,8 @@
                 }
             });
 
-            // Typewriter Logic (existing)
+            // Typewriter Logic
             const inputName = document.getElementById('input-name');
-            const displayName = document.getElementById('live-name-display');
             const inputRoles = document.getElementById('input-roles');
             const typewriterElement = document.getElementById('typewriter');
 
@@ -1202,18 +1333,37 @@
                 setTimeout(type, typeSpeed);
             }
 
+            // Skill Bar Animation
+            function animateSkillBars() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const bars = entry.target.querySelectorAll('.skill-progress-bar');
+                            bars.forEach(bar => {
+                                const progress = bar.getAttribute('data-progress');
+                                bar.style.width = `${progress}%`;
+                            });
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                const skillSection = document.getElementById('tech-matrix-section');
+                if (skillSection) {
+                    observer.observe(skillSection);
+                }
+            }
+
             document.addEventListener('DOMContentLoaded', () => {
                 updateClock();
                 updatePhrases();
                 type();
-                animateSkillBars(); // Run the skill bar animation on load
+                animateSkillBars();
 
-                // Initialize theme icon
                 const isDark = html.classList.contains('dark');
                 themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
                 themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
 
-                // Prevent contenteditable enter key issues
                 const elements = [inputName, inputRoles].filter(el => el != null);
                 elements.forEach(el => {
                     el.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
