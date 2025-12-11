@@ -324,21 +324,24 @@
                     <div class="w-3 h-3 rounded-full bg-green-500"></div>
                 </div>
 
-                <form class="space-y-6">
+                 <form action="https://api.web3forms.com/submit" method="POST" class="space-y-6">
+                    <input type="hidden" name="access_key" value="e48ea064-c4b0-46d0-86c5-dbda6644e805">
+
                     <div>
                         <label class="block font-mono text-xs text-gray-500 mb-1">var Name =</label>
-                        <input type="text" placeholder="'Your Name'" class="term-input">
+                        <input type="text" name="name" placeholder="'Your Name'" class="term-input" required>
                     </div>
                     <div>
                         <label class="block font-mono text-xs text-gray-500 mb-1">var Email =</label>
-                        <input type="email" placeholder="'your@email.com'" class="term-input">
+                        <input type="email" name="email" placeholder="'your@email.com'" class="term-input" required>
                     </div>
                     <div>
                         <label class="block font-mono text-xs text-gray-500 mb-1">const Message =</label>
-                        <textarea rows="4" placeholder="// Type your message here..." class="term-input"></textarea>
+                        <textarea name="message" rows="4" placeholder="// Type your message here..." class="term-input"
+                            required></textarea>
                     </div>
-                    <button type="button"
-                        class="w-full py-3 bg-neonBlue dark:bg-neonCyan text-white dark:text-black font-bold font-mono rounded hover:shadow-lg transition-all">
+                    <button type="submit"
+                        class="w-full py-3 bg-neonBlue dark:bg-neonCyan text-white dark:text-black font-bold font-mono rounded hover:shadow-lg transition-all transform hover:translate-y-[-2px]">
                         > Execute Send()
                     </button>
                 </form>
