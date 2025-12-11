@@ -400,6 +400,45 @@
             width: 100%;
             font-size: 0.8rem;
         }
+
+        /* --- TIMELINE ANIMATIONS --- */
+        .timeline-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timeline-item.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Connector Lines */
+        .circuit-line {
+            position: absolute;
+            top: 50%;
+            height: 2px;
+            width: 0;
+            /* Animates to full width */
+            background: var(--accent-primary);
+            transition: width 0.8s ease 0.2s;
+        }
+
+        .timeline-item.in-view .circuit-line {
+            width: 2.5rem;
+            /* 40px */
+        }
+
+        /* Directional fixes */
+        .left-card .circuit-line {
+            right: -2.5rem;
+        }
+
+        .right-card .circuit-line {
+            left: -2.5rem;
+        }
+
+        /* Mobile adjustments handled via Tailwind classes */
     </style>
 </head>
 
@@ -739,6 +778,122 @@
             </div>
         </div>
     </section>
+    <section id="setup-section" class="py-10 container mx-auto px-6 relative z-10">
+        <h2 class="text-center font-mono text-xl mb-12 text-gray-500 dark:text-gray-400">&lt;System_Resources /&gt;</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+
+            <div class="terminal-card group p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="ri-hard-drive-2-line text-6xl text-neonBlue dark:text-neonCyan"></i>
+                </div>
+                <h3 class="font-mono text-lg font-bold text-neonBlue dark:text-neonCyan mb-4 flex items-center gap-2">
+                    <i class="ri-computer-line"></i> PRIMARY_NODE
+                </h3>
+                <ul class="space-y-2 font-mono text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex justify-between">
+                        <span>OS:</span>
+                        <span class="text-green-600 dark:text-green-400">Kali Linux / Win11</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Memory:</span>
+                        <span class="text-white">16GB DDR4</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Storage:</span>
+                        <span class="text-white">1TB NVMe SSD</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Uptime:</span>
+                        <span class="text-yellow-500">99.9%</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="terminal-card group p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="ri-code-s-slash-line text-6xl text-purple-500"></i>
+                </div>
+                <h3 class="font-mono text-lg font-bold text-purple-500 mb-4 flex items-center gap-2">
+                    <i class="ri-terminal-window-line"></i> DEV_ENV
+                </h3>
+                <ul class="space-y-2 font-mono text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex justify-between">
+                        <span>Editor:</span>
+                        <span class="text-white">VS Code</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Theme:</span>
+                        <span class="text-white">SynthWave '84</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Shell:</span>
+                        <span class="text-green-600 dark:text-green-400">ZSH + OhMyZsh</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Browser:</span>
+                        <span class="text-orange-500">Brave</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="terminal-card group p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="ri-database-2-line text-6xl text-yellow-500"></i>
+                </div>
+                <h3
+                    class="font-mono text-lg font-bold text-yellow-500 dark:text-yellow-400 mb-4 flex items-center gap-2">
+                    <i class="ri-tools-line"></i> TOOLKIT
+                </h3>
+                <ul class="space-y-2 font-mono text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex justify-between">
+                        <span>DB GUI:</span>
+                        <span class="text-white">Oracle APEX</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>API Test:</span>
+                        <span class="text-white">Postman</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Design:</span>
+                        <span class="text-pink-500">Figma</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Version:</span>
+                        <span class="text-red-500">Git / GitHub</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="terminal-card group p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="ri-headphone-line text-6xl text-pink-500"></i>
+                </div>
+                <h3 class="font-mono text-lg font-bold text-pink-500 mb-4 flex items-center gap-2">
+                    <i class="ri-pulse-line"></i> FUEL_SYSTEM
+                </h3>
+                <ul class="space-y-2 font-mono text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex justify-between">
+                        <span>Audio:</span>
+                        <span class="text-white">Sony WH-1000XM4</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Music:</span>
+                        <span class="text-green-500">Spotify Lo-Fi</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Liquid:</span>
+                        <span class="text-orange-900 dark:text-orange-400">Black Coffee</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Status:</span>
+                        <span class="text-green-500 animate-pulse">FLOW_STATE</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
     <section id="activity-log-section" class="py-10 container mx-auto px-6 relative z-10 pb-24 max-w-4xl">
         <h2 class="text-center font-mono text-xl mb-12 text-gray-500 dark:text-gray-400">&lt;Recent_Activity_Log /&gt;
         </h2>
@@ -773,6 +928,239 @@
             <a href="about.html" class="font-mono text-sm text-neonBlue dark:text-neonCyan hover:underline">
                 View Full Execution Log >
             </a>
+        </div>
+    </section>
+    <section id="timeline-section" class="py-24 relative z-10 overflow-hidden">
+
+        <div class="absolute inset-0 opacity-5 pointer-events-none"
+            style="background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 30px 30px;">
+        </div>
+
+        <div class="max-w-6xl mx-auto px-6 relative">
+            <h2 class="text-center font-mono text-2xl mb-20 text-gray-500 dark:text-gray-400 tracking-wider">
+                &lt;Execution_History /&gt;
+            </h2>
+
+            <div
+                class="absolute left-6 md:left-1/2 transform md:-translate-x-1/2 top-32 bottom-10 w-0.5 bg-gray-200 dark:bg-gray-800">
+                <div class="absolute inset-0 bg-gradient-to-b from-purple-500 via-orange-500 to-green-500 opacity-0 md:opacity-100 transition-opacity duration-500"
+                    id="progress-line"></div>
+
+                <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                    <i class="ri-arrow-up-double-line text-green-500/50 text-xl animate-bounce"></i>
+                    <div class="w-2 h-2 bg-green-500/50 rounded-full mt-1"></div>
+                </div>
+            </div>
+
+            <div
+                class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group right-card">
+                <div class="md:w-5/12 order-1"></div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-purple-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_purple] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-radar-line text-purple-500 animate-spin-slow"></i>
+                </div>
+
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2">
+                    <div class="circuit-line hidden md:block" style="background: #a855f7;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-purple-500 bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-purple-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-mono text-purple-500 bg-purple-500/10 px-2 py-1 rounded">Nov 2025
+                                - Present</span>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                <span class="text-xs font-mono text-green-500">[RUNNING]</span>
+                            </div>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-purple-400 transition-colors">
+                            Project: Commune-X</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed border-l-2 border-gray-700 pl-3">
+                            Architecting a secure, real-time communication protocol. Features personal VPN integration
+                            and low-latency voice/video channels.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#WebRTC</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Socket.io</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#VPN</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item flex justify-center mb-24 relative z-10 md:pl-0 pl-12">
+                <span
+                    class="bg-[#0a0a0a] border border-gray-800 px-4 py-1 rounded-full text-xs font-mono text-gray-500 shadow-lg">
+                    -- SYSTEM_CHECKPOINT: 2025 --
+                </span>
+            </div>
+
+            <div
+                class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group left-card">
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2 md:order-1">
+                    <div class="circuit-line hidden md:block" style="background: #f97316;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-r-4 md:border-r-orange-500 md:border-l-0 border-l-4 border-l-orange-500 md:text-right bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-orange-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between md:justify-end items-start mb-2 gap-4">
+                            <span class="text-xs font-mono text-green-500 order-2 md:order-1">[DEPLOYED]</span>
+                            <span
+                                class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-1 rounded order-1 md:order-2">Oct
+                                2025</span>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-orange-400 transition-colors">
+                            Dhanvaanijya Finance</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed md:border-r-2 md:border-l-0 border-l-2 border-gray-700 md:pr-3 pl-3 md:pl-0">
+                            Developed a financial tracking dashboard focusing on high-volume data handling and custom
+                            icon design.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono md:justify-end">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#OracleAPEX</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#SQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-orange-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_orange] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-bank-card-line text-orange-500"></i>
+                </div>
+
+                <div class="md:w-5/12 order-3"></div>
+            </div>
+
+            <div
+                class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group right-card">
+                <div class="md:w-5/12 order-1"></div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-red-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_red] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-shield-keyhole-line text-red-500"></i>
+                </div>
+
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2">
+                    <div class="circuit-line hidden md:block" style="background: #ef4444;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-red-500 bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-red-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-mono text-red-500 bg-red-500/10 px-2 py-1 rounded">Mid 2025</span>
+                            <span class="text-xs font-mono text-yellow-500">[RESEARCH]</span>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-red-400 transition-colors">
+                            Security Operations</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed border-l-2 border-gray-700 pl-3">
+                            Deep dive into Kali Linux environments, network troubleshooting, and understanding
+                            vulnerabilities.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Kali</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Bash</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item flex justify-center mb-24 relative z-10 md:pl-0 pl-12">
+                <span
+                    class="bg-[#0a0a0a] border border-gray-800 px-4 py-1 rounded-full text-xs font-mono text-gray-500 shadow-lg">
+                    -- SYSTEM_CHECKPOINT: 2024 --
+                </span>
+            </div>
+
+            <div
+                class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group left-card">
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2 md:order-1">
+                    <div class="circuit-line hidden md:block" style="background: #eab308;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-r-4 md:border-r-yellow-500 md:border-l-0 border-l-4 border-l-yellow-500 md:text-right bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-yellow-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between md:justify-end items-start mb-2 gap-4">
+                            <span class="text-xs font-mono text-green-500 order-2 md:order-1">[COMPLETED]</span>
+                            <span
+                                class="text-xs font-mono text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded order-1 md:order-2">Late
+                                2024</span>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-yellow-400 transition-colors">
+                            EduLink ERP System</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed md:border-r-2 md:border-l-0 border-l-2 border-gray-700 md:pr-3 pl-3 md:pl-0">
+                            Designed a low-cost Enterprise Resource Planning system for educational institutions to
+                            manage student data.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono md:justify-end">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#PHP</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#MySQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-yellow-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_yellow] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-building-2-line text-yellow-500"></i>
+                </div>
+
+                <div class="md:w-5/12 order-3"></div>
+            </div>
+
+            <div class="timeline-item relative flex flex-col md:flex-row items-center justify-between group right-card">
+                <div class="md:w-5/12 order-1"></div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-green-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_green] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-graduation-cap-fill text-green-500"></i>
+                </div>
+
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2">
+                    <div class="circuit-line hidden md:block" style="background: #22c55e;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-green-500 bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-green-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-mono text-green-500 bg-green-500/10 px-2 py-1 rounded">2020 -
+                                2023</span>
+                            <span class="text-xs font-mono text-gray-500">[INIT]</span>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-green-400 transition-colors">
+                            System Initialization</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed border-l-2 border-gray-700 pl-3">
+                            Started the journey with C++ and Python. Completed High School (Physics/CS) and entered the
+                            matrix of web dev.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#C++</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Python</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
     <footer id="main-footer" class="bg-black border-t border-gray-800 relative z-10">
@@ -1359,6 +1747,22 @@
                 updatePhrases();
                 type();
                 animateSkillBars();
+                // --- Timeline Scroll Animation ---
+                function animateTimeline() {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('in-view');
+                            }
+                        });
+                    }, { threshold: 0.2 }); // Trigger when 20% visible
+
+                    const items = document.querySelectorAll('.timeline-item');
+                    items.forEach(item => observer.observe(item));
+                }
+
+                // Call the function
+                animateTimeline();
 
                 const isDark = html.classList.contains('dark');
                 themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
