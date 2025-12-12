@@ -229,11 +229,21 @@
                 transform: translate3d(4px, 0, 0);
             }
         }
+        #manual-entry {
+    position: fixed;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: none; /* Hidden by default */
+}
     </style>
 </head>
 
 <body>
-
+<a id="manual-entry" href="home.html" class="text-neonCyan border border-neonCyan px-6 py-2 hover:bg-neonCyan hover:text-black font-bold transition-all">
+    [ MANUAL OVERRIDE: ENTER SYSTEM ]
+</a>
     <div class="scanlines"></div>
     <div class="crt-overlay"></div>
 
@@ -435,8 +445,11 @@
             }
 
             // PHASE 4: FINALE
-            hum.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5); // Fade out hum
-            setTimeout(() => hum.osc.stop(), 500);
+            if (hum && hum.gain) {
+                // Fix: Access .gain.gain to control volume
+                hum.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+                setTimeout(() => hum.osc.stop(), 500);
+            }
 
             playSuccessChime(); // Play Chime
 
@@ -449,12 +462,16 @@
 
             // PHASE 5: CRT OFF & REDIRECT
             document.body.classList.add('redirecting');
-
-            // Set flag so next visit skips boot
             sessionStorage.setItem('system_booted', 'true');
-
+            
             setTimeout(() => {
                 window.location.href = 'home.html';
+                
+                // FALLBACK: If redirect hasn't happened after 1 second, show button
+                setTimeout(() => {
+                    document.getElementById('manual-entry').style.display = 'block';
+                    document.body.classList.remove('redirecting'); // Stop the "screen off" effect so they can see the button
+                }, 1000);
             }, 600);
         }
 
