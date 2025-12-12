@@ -2410,37 +2410,6 @@
         }
 
         document.addEventListener('keydown', playKeyClick);
-        // --- AUTONOMOUS TERMINAL GHOST ---
-        const ghostMessages = [
-            "[SYSTEM] Garbage collection started...",
-            "[NETWORK] Handshake verified (Ping: 24ms)",
-            "[KERNEL] Optimizing V8 engine...",
-            "[SECURITY] Port 443 scan: CLEAN",
-            "[bg_task] Indexing assets...",
-            "[UPDATE] Patch 1.0.4 applied successfully.",
-            "[MEMORY] Heap snapshot taken."
-        ];
-
-        function ghostType() {
-            // Only print if the terminal is actually open
-            const term = document.getElementById('overlay-terminal');
-            if (term && term.style.display !== 'none') {
-                const msg = ghostMessages[Math.floor(Math.random() * ghostMessages.length)];
-                const termOutput = document.getElementById('terminal-output');
-
-                const div = document.createElement('div');
-                div.className = 'text-gray-500 text-xs opacity-70';
-                div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
-                termOutput.appendChild(div);
-                termOutput.scrollTop = termOutput.scrollHeight;
-            }
-
-            // Random interval between 5 and 15 seconds
-            setTimeout(ghostType, Math.random() * 10000 + 5000);
-        }
-
-        // Start the ghost
-        setTimeout(ghostType, 5000);
         // --- SYSTEM SLEEP MODE ---
         let idleTimer;
         const sleepOverlay = document.getElementById('sleep-mode');
