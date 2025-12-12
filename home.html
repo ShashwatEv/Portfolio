@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shashwat | Initialize Comm</title>
-    <link rel="icon" type="image/png" href="/assets/fevicon.png">
+    <title>Shashwat | System Core</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link
@@ -17,7 +17,10 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['Fira Code', 'monospace'] },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
                     colors: {
                         // Mapped to CSS Variables for Terminal Switching
                         bgDark: 'var(--bg-primary)',
@@ -25,7 +28,9 @@
                         neonCyan: 'var(--accent-primary)',
                         neonBlue: 'var(--accent-secondary)',
                     },
-                    animation: { 'infinite-scroll': 'infinite-scroll 25s linear infinite' },
+                    animation: {
+                        'infinite-scroll': 'infinite-scroll 25s linear infinite',
+                    },
                     keyframes: {
                         'infinite-scroll': {
                             from: { transform: 'translateX(0)' },
@@ -38,14 +43,14 @@
     </script>
 
     <script>
-            
+            (function () {
                 // Check for saved custom theme or default to system
                 if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                 } else {
                     document.documentElement.classList.remove('dark');
                 }
-            
+            })();
     </script>
 
     <style>
@@ -74,13 +79,11 @@
         p,
         i,
         button,
-        input,
-        textarea,
-        label {
+        input {
             transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
         }
 
-        /* BASE STYLES & SPOTLIGHT FIX */
+        /* BASE SETTINGS */
         html {
             scroll-behavior: smooth;
             -ms-overflow-style: none;
@@ -95,7 +98,23 @@
             overflow-x: hidden;
         }
 
-        /* CYBER GRID */
+        /* 1. SCROLL PROGRESS */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent-primary);
+            z-index: 100;
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        /* 2. CYBER GRID */
+        html.dark {
+            /* Grid color is now dynamic */
+        }
+
         .cyber-grid {
             position: fixed;
             inset: 0;
@@ -116,7 +135,62 @@
             -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 20%);
         }
 
-        /* GLASS NAV */
+        /* --- SKILL BARS --- */
+        .skill-bar-container {
+            height: 6px;
+            background: #222;
+            border-radius: 3px;
+            margin-top: 4px;
+        }
+
+        .skill-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.17, 0.84, 0.44, 1);
+        }
+
+        /* --- ACTIVITY LOG --- */
+        .log-entry {
+            border-left: 2px solid #333;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .log-entry:hover {
+            border-left-color: var(--accent-primary);
+        }
+
+        .log-time {
+            color: #9ca3af;
+        }
+
+        /* 3. RAINBOW TEXT */
+        .rainbow-text {
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: glowing 20s linear infinite;
+        }
+
+        @keyframes glowing {
+            0% {
+                background-position: 0 0;
+            }
+
+            50% {
+                background-position: 400% 0;
+            }
+
+            100% {
+                background-position: 0 0;
+            }
+        }
+
+        /* 4. GLASS NAV */
         .glass {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
@@ -128,33 +202,109 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* CONTACT FORM STYLES */
-        .term-input {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #ccc;
-            width: 100%;
-            padding: 10px 0;
-            outline: none;
-            transition: 0.3s;
-            font-family: 'Fira Code';
-            color: #333;
+        /* 5. TERMINAL CARD */
+        .terminal-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
-        .term-input:focus {
+        .dark .terminal-card {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            box-shadow: none;
+        }
+
+        .terminal-card:hover {
+            transform: translateY(-5px);
             border-color: var(--accent-secondary);
+            box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.4);
         }
 
-        .dark .term-input {
-            color: var(--text-primary);
-            border-bottom-color: #333;
-        }
-
-        .dark .term-input:focus {
+        .dark .terminal-card:hover {
             border-color: var(--accent-primary);
+            box-shadow: 0 0 30px var(--grid-color);
         }
 
-        /* OVERLAY TERMINAL STYLES */
+        .terminal-header {
+            background: #f3f4f6;
+            padding: 8px 12px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            gap: 6px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dark .terminal-header {
+            background: #171717;
+            border-bottom: 1px solid #333;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .red {
+            background: #ff5f56;
+        }
+
+        .yellow {
+            background: #ffbd2e;
+        }
+
+        .green {
+            background: #27c93f;
+        }
+
+        .terminal-body {
+            padding: 16px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            flex-grow: 1;
+            color: #1f2937;
+        }
+
+        .dark .terminal-body {
+            color: var(--text-primary);
+        }
+
+        .cmd {
+            color: #27c93f;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        /* 6. EDITABLE CODE */
+        .editable-code {
+            border-bottom: 1px dashed rgba(102, 252, 241, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0 4px;
+            border-radius: 4px;
+            outline: none;
+            color: #a5f3fc;
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+            color: var(--accent-primary);
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* 7. OVERLAY TERMINAL STYLES */
         #terminal-toggle {
             position: fixed;
             bottom: 30px;
@@ -186,7 +336,7 @@
             border: 1px solid #333;
             border-radius: 6px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px var(--grid-color);
-            display: flex;
+            display: none;
             flex-direction: column;
             font-family: 'Fira Code', monospace;
             overflow: hidden;
@@ -241,7 +391,7 @@
             margin-right: 5px;
         }
 
-        .term-input-cmd {
+        .term-input {
             background: transparent;
             border: none;
             color: var(--accent-primary);
@@ -249,18 +399,79 @@
             width: 100%;
             font-size: 0.8rem;
         }
-        /* --- SYSTEM CURSOR --- */
-        body {
-            cursor: crosshair;
+
+        /* --- TIMELINE ANIMATIONS --- */
+        .timeline-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        a, button, .terminal-card, input, textarea, .project-terminal, .skill-card, .cert-card {
-            cursor: pointer;
+
+        .timeline-item.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Connector Lines */
+        .circuit-line {
+            position: absolute;
+            top: 50%;
+            height: 2px;
+            width: 0;
+            /* Animates to full width */
+            background: var(--accent-primary);
+            transition: width 0.8s ease 0.2s;
+        }
+
+        .timeline-item.in-view .circuit-line {
+            width: 2.5rem;
+            /* 40px */
+        }
+
+        /* Directional fixes */
+        .left-card .circuit-line {
+            right: -2.5rem;
+        }
+
+        .right-card .circuit-line {
+            left: -2.5rem;
+        }
+
+        /* Mobile adjustments handled via Tailwind classes */
+        .terminal-card {
+            transition: transform 0.1s ease-out;
+            /* Fast transition for mousemove */
+            will-change: transform;
+        }
+
+        .cyber-grid {
+            /* Existing styles... */
+            transition: transform 0.1s ease-out;
+            /* Add this line */
+            will-change: transform;
+            /* Optimize performance */
+            width: 110vw;
+            /* Make it slightly bigger so edges don't show when moving */
+            height: 110vh;
+            left: -5vw;
+            /* Center it */
+            top: -5vh;
         }
     </style>
 </head>
 
 <body
-    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-textMain transition-colors duration-300 min-h-screen flex flex-col">
+    class="bg-gray-50 text-gray-900 dark:bg-bgDark dark:text-textMain transition-colors duration-300 relative flex flex-col min-h-screen">
+    <div id="sleep-mode"
+        class="fixed inset-0 bg-black z-[9990] hidden flex-col items-center justify-center transition-opacity duration-700 opacity-0 pointer-events-none">
+        <div class="text-neonBlue font-mono text-2xl animate-pulse tracking-widest">
+            &gt; SYSTEM_IDLE
+        </div>
+        <div class="text-gray-600 font-mono text-sm mt-2">
+            Awaiting Input...
+        </div>
+    </div>
+    <div id="scroll-progress"></div>
 
     <div class="cyber-grid"></div>
 
@@ -269,15 +480,22 @@
             <a href="home.html" class="flex items-center gap-2 group">
                 <div
                     class="w-8 h-8 bg-neonBlue dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
-                    &lt;/&gt;</div>
+                    &lt;/&gt;
+                </div>
                 <span class="self-center text-xl font-bold tracking-wide dark:text-textMain">CodeBaaz</span>
             </a>
-            <div class="flex items-center gap-6 font-mono text-sm">
-                <a href="home.html" class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Home</a>
-                <a href="about.html" class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/About</a>
-                <a href="projects.html"
-                    class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Work</a>
-                <a href="contact.html" class="text-neonBlue dark:text-neonCyan">~/Contact</a>
+
+            <div class="flex items-center gap-6">
+                <div class="hidden md:flex gap-6 font-mono text-sm">
+                    <a href="home.html"
+                        class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Home</a>
+                    <a href="about.html"
+                        class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/About</a>
+                    <a href="projects.html"
+                        class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Work</a>
+                    <a href="contact.html"
+                        class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Contact</a>
+                </div>
 
                 <button id="theme-toggle"
                     class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-all">
@@ -288,75 +506,689 @@
         </div>
     </nav>
 
-    <section id="contact-page"
-        class="relative z-10 pt-32 pb-20 container mx-auto px-6 min-h-[80vh] flex flex-col justify-center flex-grow">
-        <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+    <section id="hero-section" class="relative z-10 flex-grow flex items-center justify-center pt-32 pb-20">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-            <div class="space-y-8">
-                <h1 class="text-4xl md:text-5xl font-bold font-mono break-all leading-tight">
-                    <span class="text-neonBlue dark:text-neonCyan">./</span>Initialize_Comm
+            <div class="space-y-6 order-2 lg:order-1">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-neonCyan/10 text-neonBlue dark:text-neonCyan text-sm font-mono border border-blue-200 dark:border-neonCyan/20">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neonBlue dark:bg-neonCyan opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-neonBlue dark:bg-neonCyan"></span>
+                    </span>
+                    System Online v1.0
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-bold leading-tight dark:text-textMain">
+                    Hi, I'm <br>
+                    <span id="live-name-display" class="rainbow-text transition-colors duration-300">
+                        Shashwat
+                    </span>
                 </h1>
-                <p class="text-gray-600 dark:text-gray-400 text-lg">
-                    Have a project in mind or just want to discuss the latest tech? Execute the form command.
+
+                <h2 class="text-2xl md:text-3xl font-mono text-gray-500 dark:text-gray-400 h-10">
+                    I build <span id="typewriter" class="typing-cursor text-neonBlue dark:text-neonCyan"></span>
+                </h2>
+
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-lg leading-relaxed pt-2">
+                    A Full Stack Developer crafting interactive digital experiences.
                 </p>
 
-                <div class="space-y-4 font-mono">
-                    <div class="flex items-center gap-4 group cursor-pointer">
-                        <div
-                            class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded flex items-center justify-center group-hover:text-neonBlue dark:group-hover:text-neonCyan transition-colors">
-                            <i class="ri-mail-send-line text-xl"></i>
+                <div class="pt-4 flex gap-4">
+                    <a href="projects.html"
+                        class="px-6 py-2 bg-neonBlue dark:bg-neonCyan text-white dark:text-black font-bold rounded hover:shadow-lg transition-all transform hover:-translate-y-1">
+                        View Projects
+                    </a>
+                    <a href="contact.html"
+                        class="px-6 py-2 border border-gray-400 dark:border-gray-600 rounded-lg hover:border-neonBlue dark:hover:border-neonCyan hover:text-neonBlue dark:hover:text-neonCyan transition-all">
+                        Contact Me
+                    </a>
+                </div>
+            </div>
+
+            <div class="hidden lg:block relative perspective-container order-1 lg:order-2" id="card-container">
+                <div id="tilt-card"
+                    class="relative bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-gray-800 p-8 rounded-2xl shadow-2xl transform-gpu transition-transform duration-100 ease-out">
+                    <div
+                        class="flex justify-between items-center mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
                         </div>
-                        <span
-                            class="group-hover:text-neonBlue dark:group-hover:text-neonCyan break-all">shashwatop89@gmail.com</span>
+                        <span class="font-mono text-xs text-gray-400">user_profile.js</span>
                     </div>
-                    <div class="flex items-center gap-4 group cursor-pointer">
-                        <div
-                            class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded flex items-center justify-center group-hover:text-neonBlue dark:group-hover:text-neonCyan transition-colors">
-                            <i class="ri-github-line text-xl"></i>
+
+                    <div class="font-mono text-sm leading-8 select-none">
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">1</span><span
+                                class="text-purple-500">const</span> <span
+                                class="text-yellow-600 dark:text-yellow-400 ml-2">Dev</span> = {</div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">2</span><span
+                                class="ml-4">name: '<span contenteditable="true" spellcheck="false" id="input-name"
+                                    class="editable-code">Your Name</span>',</span></div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">3</span><span
+                                class="ml-4">roles: [</span></div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">4</span><span
+                                class="ml-8 text-green-600 dark:text-green-400" contenteditable="true"
+                                spellcheck="false" id="input-roles" class="editable-code">'Websites', 'Apps',
+                                'Systems'</span></div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">5</span><span
+                                class="ml-4">],</span></div>
+                        <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">6</span>};</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="overview-section" class="py-10 container mx-auto px-6 relative z-10 pb-24">
+        <h2 class="text-center font-mono text-xl mb-10 text-gray-500 dark:text-gray-400">&lt;System_Overview /&gt;</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+
+            <div class="terminal-card group">
+                <div class="terminal-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <div class="terminal-body">
+                    <div class="mb-2"><span class="cmd">user@system:~$</span> neofetch</div>
+                    <div class="flex gap-4 mt-4">
+                        <div class="text-purple-500 dark:text-purple-400 hidden sm:block font-bold">
+                            /\_/\<br>(o.o)<br> > ^ < </div>
+                                <div>
+                                    <p><span class="text-neonBlue dark:text-neonCyan font-semibold">Host</span>: Vercel
+                                        Cloud</p>
+                                    <p><span class="text-neonBlue dark:text-neonCyan font-semibold">Loc</span>:
+                                        127.0.0.1</p>
+                                    <p><span class="text-neonBlue dark:text-neonCyan font-semibold">Shell</span>: ZSH
+                                        v5.8</p>
+                                    <p class="text-green-600 dark:text-green-400 mt-2 font-bold">● Online</p>
+                                </div>
                         </div>
-                        <span
-                            class="group-hover:text-neonBlue dark:group-hover:text-neonCyan break-all">github.com/ShashwatEv</span>
+                    </div>
+                </div>
+
+                <div class="terminal-card group">
+                    <div class="terminal-header">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="mb-2"><span class="cmd">user@system:~$</span> ls skills/</div>
+                        <div class="grid grid-cols-2 gap-2 mt-4 text-sm font-semibold">
+                            <span class="text-green-600 dark:text-green-400"><i class="ri-code-line"></i>
+                                JavaScript</span>
+                            <span class="text-neonBlue dark:text-neonBlue"><i class="ri-reactjs-line"></i> React</span>
+                            <span class="text-yellow-600 dark:text-yellow-400"><i class="ri-nodejs-line"></i>
+                                Node.js</span>
+                            <span class="text-purple-600 dark:text-purple-400"><i class="ri-database-2-line"></i>
+                                SQL</span>
+                            <span class="text-orange-600 dark:text-orange-400"><i class="ri-amazon-line"></i> AWS</span>
+                            <span class="text-cyan-600 dark:text-cyan-400"><i class="ri-tailwind-css-fill"></i>
+                                Tailwind</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-card group">
+                    <div class="terminal-header">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="mb-2"><span class="cmd">user@system:~$</span> check_integrity</div>
+                        <div class="mt-4">
+                            <p>Status: <span class="text-purple-600 dark:text-purple-400 font-bold">OK</span></p>
+                            <p class="text-gray-500 mt-2">Core Services:</p>
+                            <p>API Endpoint: operational</p>
+                            <p>Database: operational</p>
+                            <p class="text-green-600 dark:text-green-400 mt-2 font-bold">✔ Integrity check complete
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-card group">
+                    <div class="terminal-header">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="mb-2"><span class="cmd">user@system:~$</span> ./contact.sh</div>
+                        <div class="flex flex-col gap-3 mt-4 font-medium">
+                            <a href="#" class="hover:text-neonBlue transition-colors flex items-center gap-2"><i
+                                    class="ri-linkedin-box-fill"></i> LinkedIn</a>
+                            <a href="#" class="hover:text-yellow-500 transition-colors flex items-center gap-2"><i
+                                    class="ri-mail-fill"></i> Email</a>
+                            <a href="contact.html"
+                                class="hover:text-cyan-500 transition-colors flex items-center gap-2"><i
+                                    class="ri-file-text-line"></i> Resume</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    </section>
+
+    <section id="tech-matrix-section" class="py-10 container mx-auto px-6 relative z-10 pb-24">
+        <h2 class="text-center font-mono text-xl mb-12 text-gray-500 dark:text-gray-400">&lt;Tech_Stack_Matrix /&gt;
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <div>
+                <h3 class="font-mono text-2xl font-bold mb-6 text-neonBlue dark:text-neonCyan flex items-center gap-3">
+                    <i class="ri-code-s-slash-line"></i> Frontend Engineering
+                </h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">HTML5 / CSS3</span>
+                            <span class="font-mono text-sm text-gray-400">99%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-orange-600 dark:bg-orange-500" data-progress="99"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">React / Next.js</span>
+                            <span class="font-mono text-sm text-gray-400">95%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-neonBlue dark:bg-neonCyan" data-progress="95"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">JavaScript (ES6+)</span>
+                            <span class="font-mono text-sm text-gray-400">90%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-yellow-500" data-progress="90"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Tailwind CSS / SCSS</span>
+                            <span class="font-mono text-sm text-gray-400">98%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-cyan-500" data-progress="98"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div
-                class="bg-white dark:bg-bgDark p-8 rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl relative overflow-hidden transition-colors duration-500">
-                <div
-                    class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-neonCyan dark:to-purple-500">
+            <div>
+                <h3 class="font-mono text-2xl font-bold mb-6 text-purple-500 flex items-center gap-3">
+                    <i class="ri-server-line"></i> Backend & Data
+                </h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">C/C++ & DSA</span>
+                            <span class="font-mono text-sm text-gray-400">85%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-pink-600" data-progress="85"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Node.js / Express</span>
+                            <span class="font-mono text-sm text-gray-400">85%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-green-500" data-progress="85"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">SQL / PostgreSQL</span>
+                            <span class="font-mono text-sm text-gray-400">80%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-indigo-500" data-progress="80"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Python / Django</span>
+                            <span class="font-mono text-sm text-gray-400">75%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-yellow-700" data-progress="75"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex gap-2 mb-6">
-                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            </div>
+
+            <div class="md:col-span-2">
+                <h3 class="font-mono text-2xl font-bold mb-6 text-orange-500 flex items-center gap-3">
+                    <i class="ri-terminal-box-line"></i> Infrastructure & DevOps
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">AWS</span>
+                            <span class="font-mono text-sm text-gray-400">70%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-orange-500" data-progress="70"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Docker / Containers</span>
+                            <span class="font-mono text-sm text-gray-400">85%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-blue-700" data-progress="85"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-mono text-lg">Git / CI/CD</span>
+                            <span class="font-mono text-sm text-gray-400">95%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-progress-bar bg-red-600" data-progress="95"></div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </section>
+    <section id="setup-section" class="py-10 container mx-auto px-6 relative z-10">
+        <h2 class="text-center font-mono text-xl mb-12 text-gray-500 dark:text-gray-400">&lt;System_Resources /&gt;</h2>
 
-                 <form action="https://api.web3forms.com/submit" method="POST" class="space-y-6">
-                    <input type="hidden" name="access_key" value="e48ea064-c4b0-46d0-86c5-dbda6644e805">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
 
-                    <div>
-                        <label class="block font-mono text-xs text-gray-500 mb-1">var Name =</label>
-                        <input type="text" name="name" placeholder="'Your Name'" class="term-input" required>
-                    </div>
-                    <div>
-                        <label class="block font-mono text-xs text-gray-500 mb-1">var Email =</label>
-                        <input type="email" name="email" placeholder="'your@email.com'" class="term-input" required>
-                    </div>
-                    <div>
-                        <label class="block font-mono text-xs text-gray-500 mb-1">const Message =</label>
-                        <textarea name="message" rows="4" placeholder="// Type your message here..." class="term-input"
-                            required></textarea>
-                    </div>
-                    <button type="submit"
-                        class="w-full py-3 bg-neonBlue dark:bg-neonCyan text-white dark:text-black font-bold font-mono rounded hover:shadow-lg transition-all transform hover:translate-y-[-2px]">
-                        > Execute Send()
-                    </button>
-                </form>
+            <div class="terminal-card group p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="ri-hard-drive-2-line text-6xl text-neonBlue dark:text-neonCyan"></i>
+                </div>
+                <h3 class="font-mono text-lg font-bold text-neonBlue dark:text-neonCyan mb-4 flex items-center gap-2">
+                    <i class="ri-computer-line"></i> PRIMARY_NODE
+                </h3>
+                <ul class="space-y-2 font-mono text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex justify-between">
+                        <span>OS:</span>
+                        <span class="text-green-600 dark:text-green-400">Kali Linux / Win11</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Memory:</span>
+                        <span class="text-white">16GB DDR4</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Storage:</span>
+                        <span class="text-white">1TB NVMe SSD</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Uptime:</span>
+                        <span class="text-yellow-500">99.9%</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="terminal-card group p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="ri-code-s-slash-line text-6xl text-purple-500"></i>
+                </div>
+                <h3 class="font-mono text-lg font-bold text-purple-500 mb-4 flex items-center gap-2">
+                    <i class="ri-terminal-window-line"></i> DEV_ENV
+                </h3>
+                <ul class="space-y-2 font-mono text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex justify-between">
+                        <span>Editor:</span>
+                        <span class="text-white">VS Code</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Theme:</span>
+                        <span class="text-white">SynthWave '84</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Shell:</span>
+                        <span class="text-green-600 dark:text-green-400">ZSH + OhMyZsh</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Browser:</span>
+                        <span class="text-orange-500">Brave</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="terminal-card group p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="ri-database-2-line text-6xl text-yellow-500"></i>
+                </div>
+                <h3
+                    class="font-mono text-lg font-bold text-yellow-500 dark:text-yellow-400 mb-4 flex items-center gap-2">
+                    <i class="ri-tools-line"></i> TOOLKIT
+                </h3>
+                <ul class="space-y-2 font-mono text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex justify-between">
+                        <span>DB GUI:</span>
+                        <span class="text-white">Oracle APEX</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>API Test:</span>
+                        <span class="text-white">Postman</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Design:</span>
+                        <span class="text-pink-500">Figma</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Version:</span>
+                        <span class="text-red-500">Git / GitHub</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="terminal-card group p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i class="ri-headphone-line text-6xl text-pink-500"></i>
+                </div>
+                <h3 class="font-mono text-lg font-bold text-pink-500 mb-4 flex items-center gap-2">
+                    <i class="ri-pulse-line"></i> FUEL_SYSTEM
+                </h3>
+                <ul class="space-y-2 font-mono text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex justify-between">
+                        <span>Audio:</span>
+                        <span class="text-white">Sony WH-1000XM4</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Music:</span>
+                        <span class="text-green-500">Spotify Lo-Fi</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Liquid:</span>
+                        <span class="text-orange-900 dark:text-orange-400">Black Coffee</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Status:</span>
+                        <span class="text-green-500 animate-pulse">FLOW_STATE</span>
+                    </li>
+                </ul>
             </div>
 
         </div>
     </section>
+    <section id="activity-log-section" class="py-10 container mx-auto px-6 relative z-10 pb-24 max-w-4xl">
+        <h2 class="text-center font-mono text-xl mb-12 text-gray-500 dark:text-gray-400">&lt;Recent_Activity_Log /&gt;
+        </h2>
 
+        <div class="space-y-4 font-mono">
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-09 11:30</span>
+                <p class="text-green-500">PULL /home/ -> [PASS] Code optimized for mobile viewport.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-08 19:45</span>
+                <p>TASK /api/auth: Added WebAuthn support for login flow.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-08 10:15</span>
+                <p class="text-yellow-500">DB_UPDATE /skills: Changed 'SQL' proficiency from 75% to 80%.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-07 14:00</span>
+                <p>TASK /projects/commune-x: Implemented WebSocket reconnection logic.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-06 23:10</span>
+                <p class="text-green-500">PUSH /loading.html: Added new dynamic terminal boot sequence.</p>
+            </div>
+            <div class="log-entry">
+                <span class="log-time text-xs">2025-12-05 08:00</span>
+                <p>AUDIT /core: Security check completed. [VULNERABILITIES: 0]</p>
+            </div>
+        </div>
+        <div class="text-center pt-8">
+            <a href="about.html" class="font-mono text-sm text-neonBlue dark:text-neonCyan hover:underline">
+                View Full Execution Log >
+            </a>
+        </div>
+    </section>
+    <section id="timeline-section" class="py-24 relative z-10 overflow-hidden">
+
+        <div class="absolute inset-0 opacity-5 pointer-events-none"
+            style="background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 30px 30px;">
+        </div>
+
+        <div class="max-w-6xl mx-auto px-6 relative">
+            <h2 class="text-center font-mono text-2xl mb-20 text-gray-500 dark:text-gray-400 tracking-wider">
+                &lt;Execution_History /&gt;
+            </h2>
+
+            <div
+                class="absolute left-6 md:left-1/2 transform md:-translate-x-1/2 top-32 bottom-10 w-0.5 bg-gray-200 dark:bg-gray-800">
+                <div class="absolute inset-0 bg-gradient-to-b from-purple-500 via-orange-500 to-green-500 opacity-0 md:opacity-100 transition-opacity duration-500"
+                    id="progress-line"></div>
+
+                <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                    <i class="ri-arrow-up-double-line text-green-500/50 text-xl animate-bounce"></i>
+                    <div class="w-2 h-2 bg-green-500/50 rounded-full mt-1"></div>
+                </div>
+            </div>
+
+            <div
+                class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group right-card">
+                <div class="md:w-5/12 order-1"></div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-purple-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_purple] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-radar-line text-purple-500 animate-spin-slow"></i>
+                </div>
+
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2">
+                    <div class="circuit-line hidden md:block" style="background: #a855f7;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-purple-500 bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-purple-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-mono text-purple-500 bg-purple-500/10 px-2 py-1 rounded">Nov 2025
+                                - Present</span>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                <span class="text-xs font-mono text-green-500">[RUNNING]</span>
+                            </div>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-purple-400 transition-colors">
+                            Project: Commune-X</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed border-l-2 border-gray-700 pl-3">
+                            Architecting a secure, real-time communication protocol. Features personal VPN integration
+                            and low-latency voice/video channels.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#WebRTC</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Socket.io</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#VPN</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item flex justify-center mb-24 relative z-10 md:pl-0 pl-12">
+                <span
+                    class="bg-[#0a0a0a] border border-gray-800 px-4 py-1 rounded-full text-xs font-mono text-gray-500 shadow-lg">
+                    -- SYSTEM_CHECKPOINT: 2025 --
+                </span>
+            </div>
+
+            <div
+                class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group left-card">
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2 md:order-1">
+                    <div class="circuit-line hidden md:block" style="background: #f97316;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-r-4 md:border-r-orange-500 md:border-l-0 border-l-4 border-l-orange-500 md:text-right bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-orange-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between md:justify-end items-start mb-2 gap-4">
+                            <span class="text-xs font-mono text-green-500 order-2 md:order-1">[DEPLOYED]</span>
+                            <span
+                                class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-1 rounded order-1 md:order-2">Oct
+                                2025</span>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-orange-400 transition-colors">
+                            Dhanvaanijya Finance</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed md:border-r-2 md:border-l-0 border-l-2 border-gray-700 md:pr-3 pl-3 md:pl-0">
+                            Developed a financial tracking dashboard focusing on high-volume data handling and custom
+                            icon design.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono md:justify-end">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#OracleAPEX</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#SQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-orange-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_orange] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-bank-card-line text-orange-500"></i>
+                </div>
+
+                <div class="md:w-5/12 order-3"></div>
+            </div>
+
+            <div
+                class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group right-card">
+                <div class="md:w-5/12 order-1"></div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-red-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_red] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-shield-keyhole-line text-red-500"></i>
+                </div>
+
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2">
+                    <div class="circuit-line hidden md:block" style="background: #ef4444;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-red-500 bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-red-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-mono text-red-500 bg-red-500/10 px-2 py-1 rounded">Mid 2025</span>
+                            <span class="text-xs font-mono text-yellow-500">[RESEARCH]</span>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-red-400 transition-colors">
+                            Security Operations</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed border-l-2 border-gray-700 pl-3">
+                            Deep dive into Kali Linux environments, network troubleshooting, and understanding
+                            vulnerabilities.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Kali</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Bash</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item flex justify-center mb-24 relative z-10 md:pl-0 pl-12">
+                <span
+                    class="bg-[#0a0a0a] border border-gray-800 px-4 py-1 rounded-full text-xs font-mono text-gray-500 shadow-lg">
+                    -- SYSTEM_CHECKPOINT: 2024 --
+                </span>
+            </div>
+
+            <div
+                class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group left-card">
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2 md:order-1">
+                    <div class="circuit-line hidden md:block" style="background: #eab308;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-r-4 md:border-r-yellow-500 md:border-l-0 border-l-4 border-l-yellow-500 md:text-right bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-yellow-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between md:justify-end items-start mb-2 gap-4">
+                            <span class="text-xs font-mono text-green-500 order-2 md:order-1">[COMPLETED]</span>
+                            <span
+                                class="text-xs font-mono text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded order-1 md:order-2">Late
+                                2024</span>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-yellow-400 transition-colors">
+                            EduLink ERP System</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed md:border-r-2 md:border-l-0 border-l-2 border-gray-700 md:pr-3 pl-3 md:pl-0">
+                            Designed a low-cost Enterprise Resource Planning system for educational institutions to
+                            manage student data.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono md:justify-end">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#PHP</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#MySQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-yellow-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_yellow] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-building-2-line text-yellow-500"></i>
+                </div>
+
+                <div class="md:w-5/12 order-3"></div>
+            </div>
+
+            <div class="timeline-item relative flex flex-col md:flex-row items-center justify-between group right-card">
+                <div class="md:w-5/12 order-1"></div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-green-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_green] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-graduation-cap-fill text-green-500"></i>
+                </div>
+
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2">
+                    <div class="circuit-line hidden md:block" style="background: #22c55e;"></div>
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-green-500 bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-green-500 rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-mono text-green-500 bg-green-500/10 px-2 py-1 rounded">2020 -
+                                2023</span>
+                            <span class="text-xs font-mono text-gray-500">[INIT]</span>
+                        </div>
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-green-400 transition-colors">
+                            System Initialization</h3>
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed border-l-2 border-gray-700 pl-3">
+                            Started the journey with C++ and Python. Completed High School (Physics/CS) and entered the
+                            matrix of web dev.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#C++</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Python</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
     <footer id="main-footer" class="bg-black border-t border-gray-800 relative z-10">
         <div class="w-full py-8 overflow-hidden relative border-b border-gray-800">
             <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black z-10 pointer-events-none">
@@ -392,8 +1224,24 @@
             <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                 System Operational</div>
             <div id="clock">00:00:00 UTC</div>
+
+            <div class="flex items-center gap-1" title="Network Round-Trip Time">
+                <i class="ri-wifi-line text-gray-500"></i>
+                <span>PING: <span id="net-ping" class="text-neonBlue">--</span>ms</span>
+            </div>
+
+            <div class="flex items-center gap-1" title="Rendering Performance">
+                <i class="ri-dashboard-3-line text-gray-500"></i>
+                <span>FPS: <span id="sys-fps" class="text-green-500">--</span></span>
+            </div>
+
+            <div class="flex items-center gap-1" title="JS Heap Size">
+                <i class="ri-cpu-line text-gray-500"></i>
+                <span>MEM: <span id="sys-mem" class="text-purple-500">--</span>MB</span>
+            </div>
         </div>
     </footer>
+
     <button id="terminal-toggle" aria-label="Open Terminal">
         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
             <rect width="100" height="100" rx="10" ry="10" fill="#000000" stroke="var(--accent-primary)"
@@ -408,7 +1256,7 @@
 
     <div id="overlay-terminal" style="display: none;">
         <div class="term-bar" id="term-header">
-            <span class="text-neonCyan font-bold text-sm">System Terminal — contact.html</span>
+            <span class="text-neonCyan font-bold text-sm">System Terminal — home</span>
             <span class="text-sm cursor-pointer"
                 onclick="document.getElementById('overlay-terminal').style.display='none';"><i
                     class="ri-close-line text-white/50 hover:text-white"></i></span>
@@ -420,12 +1268,12 @@
         </div>
         <div class="term-input-line">
             <span class="term-prompt" id="current-prompt">Shash@port:~$</span>
-            <input type="text" id="terminal-input" class="term-input-cmd" autocomplete="off" autofocus>
+            <input type="text" id="terminal-input" class="term-input" autocomplete="off" autofocus>
         </div>
     </div>
     <script>
         // --- Shared Terminal Logic (STARTS HERE) ---
-        
+        (function () {
             const terminalOutput = document.getElementById('terminal-output');
             const terminalInput = document.getElementById('terminal-input');
             const overlayTerminal = document.getElementById('overlay-terminal');
@@ -433,6 +1281,23 @@
             const promptSpan = document.getElementById('current-prompt');
 
             const PROMPT = 'Shash@port:~$';
+            // --- NEURAL VOICE MODULE ---
+            function speak(text) {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel(); // Stop any previous speech
+                    const utterance = new SpeechSynthesisUtterance(text);
+
+                    // Try to get a specific "robotic" voice
+                    const voices = window.speechSynthesis.getVoices();
+                    utterance.voice = voices.find(v => v.name.includes('Google US English')) || voices[0];
+
+                    utterance.pitch = 0.8; // Lower pitch = more robotic
+                    utterance.rate = 1.1;  // Slightly faster
+                    utterance.volume = 0.5;
+
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
 
             // --- HISTORY LOGIC ---
             let commandHistory = [];
@@ -443,57 +1308,57 @@
                 'default': {
                     '--bg-primary': '#050505',
                     '--text-primary': '#e5e5e5',
-                    '--accent-primary': '#66fcf1',
-                    '--accent-secondary': '#3b82f6',
+                    '--accent-primary': '#66fcf1', // Cyan
+                    '--accent-secondary': '#3b82f6', // Blue
                     '--grid-color': 'rgba(102, 252, 241, 0.15)'
                 },
                 'matrix': {
                     '--bg-primary': '#000000',
                     '--text-primary': '#00dd00',
-                    '--accent-primary': '#00ff41',
-                    '--accent-secondary': '#008f11',
+                    '--accent-primary': '#00ff41', // Bright Green
+                    '--accent-secondary': '#008f11', // Darker Green
                     '--grid-color': 'rgba(0, 255, 65, 0.2)'
                 },
                 'cyberpunk': {
-                    '--bg-primary': '#0f0014',
-                    '--text-primary': '#fcee0a',
-                    '--accent-primary': '#ff003c',
-                    '--accent-secondary': '#00f0ff',
+                    '--bg-primary': '#0f0014', // Deep Purple
+                    '--text-primary': '#fcee0a', // Cyber Yellow
+                    '--accent-primary': '#ff003c', // Cyber Red
+                    '--accent-secondary': '#00f0ff', // Cyber Blue
                     '--grid-color': 'rgba(255, 0, 60, 0.2)'
                 },
                 'ocean': {
-                    '--bg-primary': '#001e2b',
-                    '--text-primary': '#e0f7fa',
-                    '--accent-primary': '#00e5ff',
+                    '--bg-primary': '#001e2b', // Deep Sea
+                    '--text-primary': '#e0f7fa', // Light Cyan
+                    '--accent-primary': '#00e5ff', // Bright Teal
                     '--accent-secondary': '#18ffff',
                     '--grid-color': 'rgba(0, 229, 255, 0.15)'
                 },
                 'sunset': {
                     '--bg-primary': '#2d1b2e',
                     '--text-primary': '#ffcc00',
-                    '--accent-primary': '#ff5e62',
+                    '--accent-primary': '#ff5e62', // Orange/Red
                     '--accent-secondary': '#ff9966',
                     '--grid-color': 'rgba(255, 94, 98, 0.2)'
                 },
                 'dracula': {
                     '--bg-primary': '#282a36',
                     '--text-primary': '#f8f8f2',
-                    '--accent-primary': '#ff79c6',
-                    '--accent-secondary': '#bd93f9',
+                    '--accent-primary': '#ff79c6', // Pink
+                    '--accent-secondary': '#bd93f9', // Purple
                     '--grid-color': 'rgba(189, 147, 249, 0.15)'
                 },
                 'coffee': {
                     '--bg-primary': '#2b211e',
                     '--text-primary': '#dcc9bc',
-                    '--accent-primary': '#d4a373',
-                    '--accent-secondary': '#a98467',
+                    '--accent-primary': '#d4a373', // Caramel
+                    '--accent-secondary': '#a98467', // Light Brown
                     '--grid-color': 'rgba(212, 163, 115, 0.15)'
                 },
                 'light': {
                     '--bg-primary': '#ffffff',
                     '--text-primary': '#111827',
-                    '--accent-primary': '#2563eb',
-                    '--accent-secondary': '#4f46e5',
+                    '--accent-primary': '#2563eb', // Standard Blue
+                    '--accent-secondary': '#4f46e5', // Indigo
                     '--grid-color': 'rgba(37, 99, 235, 0.1)'
                 }
             };
@@ -867,7 +1732,7 @@
                     }
                 }
 
-                // Handle complex commands (e.g., 'read -f /README.txt' or 'ls -l /')
+                // Handle complex commands
                 const complexCommand = command.trim().toLowerCase();
                 if (commands[complexCommand]) {
                     commands[complexCommand].exec(parts);
@@ -901,19 +1766,20 @@
                         historyIndex++;
                         terminalInput.value = commandHistory[historyIndex];
                     } else {
-                        historyIndex = commandHistory.length;
+                        historyIndex = commandHistory.length; // Past end
                         terminalInput.value = '';
                     }
                 }
-                // EXECUTION
+                // COMMAND EXECUTION
                 else if (e.key === 'Enter') {
                     e.preventDefault();
                     const command = terminalInput.value.trim();
                     const confirmState = terminalInput.getAttribute('data-confirm');
 
+                    // Add to history if not empty
                     if (command) {
                         commandHistory.push(command);
-                        historyIndex = commandHistory.length;
+                        historyIndex = commandHistory.length; // Reset index to end
                     }
 
                     echoInput(command);
@@ -987,13 +1853,17 @@
             const themeBtn = document.getElementById('theme-toggle');
             const html = document.documentElement;
             themeBtn.addEventListener('click', () => {
+                // If current theme is custom (e.g. matrix), resetting to light/dark
                 if (localStorage.customTheme && localStorage.customTheme !== 'default' && localStorage.customTheme !== 'light') {
+                    // Reset variables to default before toggling
                     applyTheme('default');
                 }
+
                 html.classList.toggle('dark');
                 const isDark = html.classList.contains('dark');
                 localStorage.theme = isDark ? 'dark' : 'light';
 
+                // Update theme definition to match standard light/dark
                 if (isDark) applyTheme('default');
                 else applyTheme('light');
 
@@ -1001,24 +1871,21 @@
                 themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
             });
 
-            // Function to update clock
+            // Clock Logic
             function updateClock() {
                 const now = new Date();
                 document.getElementById('clock').innerText = now.toUTCString().split(' ')[4] + ' UTC';
             }
             setInterval(updateClock, 1000);
 
-            // Spotlight/Glow Logic
+            // Spotlight Logic
             const grid = document.querySelector('.cyber-grid');
-            const contactPage = document.getElementById('contact-page');
-            const mainFooter = document.getElementById('main-footer');
             const body = document.body;
 
             function activateGlow() { body.classList.add('is-hovering'); }
             function deactivateGlow() { body.classList.remove('is-hovering'); }
 
-            const glowSections = [contactPage, mainFooter].filter(el => el != null);
-
+            const glowSections = document.querySelectorAll('section, footer');
             glowSections.forEach(section => {
                 section.addEventListener('mouseenter', activateGlow);
             });
@@ -1036,16 +1903,72 @@
                 }
             });
 
-            document.addEventListener('DOMContentLoaded', () => {
-                updateClock();
-                
-                // Theme Icon
-                const isDark = html.classList.contains('dark');
-                themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
-                themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
+            // Typewriter Logic
+            const inputName = document.getElementById('input-name');
+            const inputRoles = document.getElementById('input-roles');
+            const typewriterElement = document.getElementById('typewriter');
 
-                // --- PARTICLES ---
-               const cursorCanvas = document.createElement('canvas');
+            let phrases = ["Websites", "Apps", "Systems"];
+            let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+
+            function updatePhrases() {
+                const text = inputRoles.innerText.trim();
+                const parts = text.split(',').map(part => part.trim().replace(/['"]/g, ''));
+                if (parts.length > 0) phrases = parts.filter(p => p.length > 0);
+                else phrases = ["Code"];
+            }
+            inputRoles.addEventListener('input', () => { updatePhrases(); });
+
+            function type() {
+                const currentPhrase = phrases[phraseIndex % phrases.length];
+                if (isDeleting) {
+                    typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1); charIndex--;
+                } else {
+                    typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1); charIndex++;
+                }
+                let typeSpeed = isDeleting ? 50 : 100;
+                if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; }
+                else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex++; typeSpeed = 500; }
+                setTimeout(type, typeSpeed);
+            }
+
+            // Skill Bar Animation
+            function animateSkillBars() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const bars = entry.target.querySelectorAll('.skill-progress-bar');
+                            bars.forEach(bar => {
+                                const progress = bar.getAttribute('data-progress');
+                                bar.style.width = `${progress}%`;
+                            });
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.5 });
+                // Speak welcome message (ONLY ONCE PER SESSION)
+            if (!sessionStorage.getItem('system_welcomed')) {
+                setTimeout(() => {
+                    speak("System online.");
+                    sessionStorage.setItem('system_welcomed', 'true');
+                }, 1000);
+            }
+
+                const skillSection = document.getElementById('tech-matrix-section');
+                if (skillSection) {
+                    observer.observe(skillSection);
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                // 1. Basic Initializations
+                updateClock();
+                updatePhrases();
+                type();
+                animateSkillBars();
+
+                // --- 2. DIGITAL PARTICLE TRAIL ---
+                const cursorCanvas = document.createElement('canvas');
                 const cursorCtx = cursorCanvas.getContext('2d');
                 cursorCanvas.style.position = 'fixed';
                 cursorCanvas.style.top = '0';
@@ -1108,13 +2031,149 @@
                 }
                 animateParticles();
 
-                // --- INPUT HAPTICS ---
-                document.querySelectorAll('input, textarea, button').forEach(el => {
-                    el.addEventListener('focus', () => { if(navigator.vibrate) navigator.vibrate(10); });
-                    el.addEventListener('click', () => { if(navigator.vibrate) navigator.vibrate(15); });
+                // --- 3. REAL SYSTEM MONITORING ---
+                (function initSystemMonitor() {
+                    const fpsElem = document.getElementById('sys-fps');
+                    const memElem = document.getElementById('sys-mem');
+                    const pingElem = document.getElementById('net-ping');
+                    let lastTime = performance.now();
+                    let frameCount = 0;
+
+                    function monitorLoop() {
+                        const now = performance.now();
+                        frameCount++;
+                        if (now - lastTime >= 1000) {
+                            const fps = frameCount;
+                            frameCount = 0;
+                            lastTime = now;
+                            if (fpsElem) {
+                                fpsElem.innerText = fps;
+                                if (fps < 30) fpsElem.className = 'text-red-500 font-bold';
+                                else if (fps < 50) fpsElem.className = 'text-yellow-500';
+                                else fpsElem.className = 'text-green-500';
+                            }
+                            if (memElem) {
+                                // @ts-ignore
+                                if (performance && performance.memory) {
+                                    memElem.innerText = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
+                                } else {
+                                    const sim = 45 + (Math.random() * 10);
+                                    memElem.innerText = sim.toFixed(1) + '*';
+                                }
+                            }
+                            if (pingElem) {
+                                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                                if (conn && conn.rtt) {
+                                    pingElem.innerText = conn.rtt;
+                                } else {
+                                    const timing = performance.getEntriesByType("navigation")[0];
+                                    const loadTime = timing ? Math.round(timing.domComplete) : 25;
+                                    pingElem.innerText = loadTime;
+                                }
+                            }
+                        }
+                        requestAnimationFrame(monitorLoop);
+                    }
+                    monitorLoop();
+                })();
+
+                // --- 4. PHANTOM TOUCH ---
+                function triggerHaptic(pattern) {
+                    if (navigator.vibrate) navigator.vibrate(pattern);
+                }
+                const interactiveElements = document.querySelectorAll('button, a, .terminal-card, input');
+                interactiveElements.forEach(el => {
+                    el.addEventListener('click', () => triggerHaptic(15));
+                    el.addEventListener('mouseenter', () => triggerHaptic(5));
+                });
+
+                // --- 5. HOLOGRAPHIC DECK ---
+                if (window.DeviceOrientationEvent) {
+                    window.addEventListener('deviceorientation', (e) => {
+                        if (e.beta === null || e.gamma === null) return;
+                        const tiltX = e.gamma;
+                        const tiltY = e.beta;
+                        const grid = document.querySelector('.cyber-grid');
+                        if (grid) grid.style.transform = `translate(${tiltX * 2}px, ${tiltY * 2}px)`;
+                        const heroCard = document.getElementById('tilt-card');
+                        if (heroCard) heroCard.style.transform = `perspective(1000px) rotateY(${tiltX / 10}deg) rotateX(${-tiltY / 10}deg)`;
+                    });
+                }
+
+                // --- 6. DATA INGESTION ---
+                const dropZone = document.body;
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+                });
+
+                dropZone.addEventListener('dragenter', () => {
+                    document.body.style.border = '4px dashed var(--accent-primary)';
+                    document.body.style.opacity = '0.7';
+                    const term = document.getElementById('overlay-terminal');
+                    if (term) term.style.display = 'flex';
+                    print("[SYSTEM] DETECTING EXTERNAL DATA STREAM...", "text-neonCyan animate-pulse");
+                });
+
+                dropZone.addEventListener('dragleave', () => {
+                    document.body.style.border = 'none';
+                    document.body.style.opacity = '1';
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    document.body.style.border = 'none';
+                    document.body.style.opacity = '1';
+                    const files = e.dataTransfer.files;
+                    handleFiles(files);
+                });
+
+                function handleFiles(files) {
+                    const term = document.getElementById('overlay-terminal');
+                    if (term) term.style.display = 'flex';
+                    ([...files]).forEach(file => {
+                        print(`> UPLOADING: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`, "text-white");
+                        if (typeof triggerHaptic === 'function') triggerHaptic(20);
+                        if (typeof playSound === 'function') playSound('click');
+                        setTimeout(() => print(`  [SCANNING HEX DUMP...]`, "text-gray-500"), 600);
+                        setTimeout(() => print(`  [ANALYZING METADATA...]`, "text-gray-500"), 1200);
+                        setTimeout(() => {
+                            const isSafe = Math.random() > 0.2;
+                            if (isSafe) {
+                                print(`  [RESULT] FILE INTEGRITY VERIFIED. ACCEPTED.`, "text-green-500");
+                                if (typeof speak === 'function') speak("File accepted.");
+                            } else {
+                                print(`  [WARNING] ANOMALY DETECTED IN ${file.name}. QUARANTINED.`, "text-red-500 font-bold");
+                                if (typeof speak === 'function') speak("Warning. Malicious data detected.");
+                                if (typeof triggerHaptic === 'function') triggerHaptic([50, 50, 200]);
+                            }
+                        }, 2500);
+                    });
+                }
+
+                // --- 7. TIMELINE ---
+                function animateTimeline() {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('in-view');
+                            }
+                        });
+                    }, { threshold: 0.2 });
+                    const items = document.querySelectorAll('.timeline-item');
+                    items.forEach(item => observer.observe(item));
+                }
+                animateTimeline();
+
+                // --- 8. THEME & INPUT ---
+                const isDark = html.classList.contains('dark');
+                themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
+                themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
+
+                const elements = [inputName, inputRoles].filter(el => el != null);
+                elements.forEach(el => {
+                    el.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
                 });
             });
-        
+        })();
         // --- Shared Terminal Logic (ENDS HERE) ---
         // --- HACKER TEXT DECODE EFFECT ---
         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*";
@@ -1683,19 +2742,6 @@
                 document.documentElement.style.removeProperty('--time-scale');
             }
         });
-        // --- NEURAL VOICE MODULE ---
-        function speak(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                const voices = window.speechSynthesis.getVoices();
-                utterance.voice = voices.find(v => v.name.includes('Google US English')) || voices[0];
-                utterance.pitch = 0.8;
-                utterance.rate = 1.1;
-                utterance.volume = 0.5;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
     </script>
 </body>
 

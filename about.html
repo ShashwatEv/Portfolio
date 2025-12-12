@@ -330,14 +330,14 @@
 
     <nav class="fixed w-full z-50 top-0 start-0 glass transition-all duration-300">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4">
-            <a href="index.html" class="flex items-center gap-2 group">
+            <a href="home.html" class="flex items-center gap-2 group">
                 <div
                     class="w-8 h-8 bg-neonBlue dark:bg-neonCyan rounded flex items-center justify-center text-white dark:text-black font-bold font-mono group-hover:rotate-12 transition-transform">
                     &lt;/&gt;</div>
                 <span class="self-center text-xl font-bold tracking-wide dark:text-textMain">CodeBaaz</span>
             </a>
             <div class="flex items-center gap-6 font-mono text-sm">
-                <a href="index.html" class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Home</a>
+                <a href="home.html" class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Home</a>
                 <a href="about.html" class="text-neonBlue dark:text-neonCyan">~/About</a>
                 <a href="projects.html"
                     class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Work</a>
@@ -1079,7 +1079,7 @@
                 if (baseCommand === 'cd' && parts.length === 2) {
                     const dir = parts[1];
                     let url = '';
-                    if (dir === 'home') url = 'index.html';
+                    if (dir === 'home') url = 'home.html';
                     else if (dir === 'about') url = 'about.html';
                     else if (dir === 'work' || dir === 'projects') url = 'projects.html';
                     else if (dir === 'contact' || dir === 'comm') url = 'contact.html';
@@ -1606,7 +1606,7 @@
                 print(`> Voice Input: "${transcript}"`, 'text-neonCyan');
 
                 // Command Logic
-                if (transcript.includes('home')) { window.location.href = 'index.html'; }
+                if (transcript.includes('home')) { window.location.href = 'home.html'; }
                 else if (transcript.includes('project') || transcript.includes('work')) { window.location.href = 'projects.html'; }
                 else if (transcript.includes('contact')) { window.location.href = 'contact.html'; }
                 else if (transcript.includes('theme matrix')) { applyTheme('matrix'); }
