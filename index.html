@@ -1946,10 +1946,13 @@
                         }
                     });
                 }, { threshold: 0.5 });
-                // Speak welcome message
+                // Speak welcome message (ONLY ONCE PER SESSION)
+            if (!sessionStorage.getItem('system_welcomed')) {
                 setTimeout(() => {
                     speak("System online.");
-                }, 1000); // Small delay so it doesn't startle you instantly
+                    sessionStorage.setItem('system_welcomed', 'true');
+                }, 1000);
+            }
 
                 const skillSection = document.getElementById('tech-matrix-section');
                 if (skillSection) {

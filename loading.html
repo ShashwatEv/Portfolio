@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Initializing System...</title>
+    <title>BOOT_SEQUENCE // SHASHWAT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
 
@@ -14,7 +13,7 @@
             theme: {
                 extend: {
                     fontFamily: { mono: ['Fira Code', 'monospace'] },
-                    colors: { neonCyan: '#66fcf1', neonBlue: '#3b82f6' }
+                    colors: { neonCyan: '#66fcf1', neonBlue: '#3b82f6', matrixGreen: '#0f0' }
                 }
             }
         }
@@ -22,287 +21,454 @@
 
     <style>
         body {
-            background: #000;
+            background-color: #050505;
+            color: #66fcf1;
+            font-family: 'Fira Code', monospace;
+            height: 100vh;
             margin: 0;
             overflow: hidden;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            font-family: 'Fira Code', monospace;
-            color: #66fcf1;
-            flex-direction: column;
-            padding: 20px;
+            justify-content: center;
             position: relative;
         }
 
-        /* CYBER GRID STYLES */
-        :root {
-            --grid-color: rgba(59, 130, 246, 0.25);
-        }
-
-        html.dark {
-            --grid-color: rgba(102, 252, 241, 0.15);
-        }
-
-        .cyber-grid {
+        /* --- CRT SCREEN EFFECTS --- */
+        .scanlines {
             position: fixed;
-            inset: 0;
-            z-index: 0;
-            /* FIX: Grid lines are now active on this screen */
-            background-image:
-                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
-            background-size: 40px 40px;
-            /* Spotlight mask is active and follows mouse on this screen */
-            mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 20%);
-            -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 20%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0),
+                rgba(255, 255, 255, 0) 50%,
+                rgba(0, 0, 0, 0.2) 50%,
+                rgba(0, 0, 0, 0.2)
+            );
+            background-size: 100% 4px;
+            z-index: 50;
             pointer-events: none;
         }
 
-        /* Fixed Terminal Box */
-        .terminal-box {
-            position: relative;
-            /* Ensure it is above the grid */
-            z-index: 10;
-            width: 90%;
-            max-width: 700px;
-            height: 500px;
-            /* Fixed height */
-            border: 1px solid #333;
-            background: rgba(10, 10, 10, 0.9);
-            box-shadow: 0 0 20px rgba(102, 252, 241, 0.15);
-            display: flex;
-            flex-direction: column;
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+            z-index: 51;
+            pointer-events: none;
         }
 
-        .terminal-header {
-            padding: 8px 15px;
-            background: rgba(102, 252, 241, 0.1);
-            /* Subtle neon header */
-            border-bottom: 1px solid #333;
+        /* Text Glow Animation */
+        @keyframes textShadow {
+            0% { text-shadow: 0.4px 0 1px rgba(0,30,255,0.5), -0.4px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+            5% { text-shadow: 2px 0 1px rgba(0,30,255,0.5), -2px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+            100% { text-shadow: 0.4px 0 1px rgba(0,30,255,0.5), -0.4px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+        }
+
+        .glow-text {
+            animation: textShadow 1.6s infinite;
+        }
+
+        /* --- TERMINAL BOX --- */
+        .terminal-container {
+            width: 90%;
+            max-width: 800px;
+            height: 600px;
             display: flex;
-            align-items: center;
-            font-size: 0.75rem;
-            color: #ccc;
+            flex-direction: column;
+            z-index: 10;
+            padding: 20px;
         }
 
         .terminal-output {
             flex-grow: 1;
-            overflow-y: auto;
-            padding: 15px;
-            line-height: 1.4;
-            font-size: 0.8rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
         }
 
-        /* Hide Scrollbar for Terminal Output */
-        .terminal-output::-webkit-scrollbar {
-            display: none;
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 15px;
+            border: 1px solid #333;
+            padding: 2px;
+            height: 24px;
+            width: 100%;
+            position: relative;
         }
-
-        .terminal-output {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        .progress-fill {
+            height: 100%;
+            background: #66fcf1;
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(102, 252, 241, 0.5);
         }
 
         /* Status Colors */
-        .text-ok {
-            color: #10b981;
+        .text-ok { color: #10b981; font-weight: bold; }
+        .text-warn { color: #f59e0b; }
+        .text-err { color: #ef4444; }
+        .text-dim { color: #4b5563; }
+        
+        /* The "Scanline" Bar moving down */
+        .scanlines::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
         }
 
-        /* Emerald Green */
-        .text-fail {
-            color: #ef4444;
+        /* CRT Turn Off Animation */
+        @keyframes turn-off {
+            0% { transform: scale(1, 1.3) translate3d(0, 0, 0); filter: brightness(1); opacity: 1; }
+            60% { transform: scale(1, 0.001) translate3d(0, 0, 0); filter: brightness(10); }
+            100% { animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06); transform: scale(0, 0.001) translate3d(0, 0, 0); opacity: 0; }
         }
 
-        /* Red */
-        .text-warn {
-            color: #f59e0b;
+        body.redirecting {
+            animation: turn-off 0.55s cubic-bezier(0.23, 1, 0.32, 1);
+            animation-fill-mode: forwards;
         }
 
-        /* Amber */
-        .text-info {
-            color: #3b82f6;
+        /* Red Alert State */
+        body.alert-state {
+            background-color: #1a0000;
         }
-
-        /* Blue */
-        .text-module {
-            color: #8B5CF6;
+        body.alert-state .terminal-container {
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.3);
+            border-color: #ef4444;
         }
-
-        /* Purple */
-        .text-file {
-            color: #66fcf1;
+        body.alert-state .text-neonCyan, 
+        body.alert-state .text-neonBlue {
+            color: #ef4444 !important;
+            text-shadow: 0 0 5px red;
         }
-
-        /* Cyan */
-
-        /* Prompt Styling */
-        .prompt {
-            color: #27c93f;
-            /* Green color for the prompt */
-            margin-right: 8px;
-            font-weight: bold;
+        
+        /* Screen Shake */
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
-
-        /* Cursor blink effect */
-        .cursor::after {
-            content: '|';
-            animation: blink 1s step-start infinite;
-            color: #66fcf1;
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
+        /* CRT Flicker Animation */
+@keyframes textShadow {
+    0% { text-shadow: 0.4389924193300864px 0 1px rgba(0,30,255,0.5), -0.4389924193300864px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+    5% { text-shadow: 2.7928974010788217px 0 1px rgba(0,30,255,0.5), -2.7928974010788217px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+    /* ... random values make it look glitchy ... */
+    100% { text-shadow: 0.4389924193300864px 0 1px rgba(0,30,255,0.5), -0.4389924193300864px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+}
 
-        @keyframes blink {
-            50% {
-                opacity: 0;
-            }
-        }
+.terminal-output {
+    animation: textShadow 1.6s infinite; /* Adds subtle color separation */
+}
+
+/* The "Scanline" Bar moving down */
+.scanlines::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
     </style>
 </head>
-
 <body>
 
-    <div class="cyber-grid"></div>
+    <div class="scanlines"></div>
+    <div class="crt-overlay"></div>
 
-    <div class="terminal-box">
-        <div class="terminal-header">
-            <span class="text-neonCyan mr-2">█</span> SYSTEM_INIT_LOG.sh — ZSH
+    <div class="fixed top-4 right-4 font-mono text-xs text-gray-500 text-right z-50 pointer-events-none hidden sm:block">
+        <div>CPU_CORE_0: <span id="cpu-temp" class="text-neonCyan">45°C</span></div>
+        <div>VOLTAGE: <span id="sys-volt" class="text-neonBlue">1.2V</span></div>
+        <div>MEM_ALLOC: <span id="mem-usage" class="text-yellow-500">124MB</span></div>
+    </div>
+
+    <div class="terminal-container glow-text">
+        <div class="terminal-output" id="console"></div>
+        
+        <div class="mt-4 flex justify-between text-xs font-mono text-gray-500 mb-1">
+            <span id="task-status">SYSTEM BOOT SEQUENCE</span>
+            <span id="percentage">0%</span>
         </div>
-        <div class="terminal-output" id="terminal-output">
-            <div class="text-info mb-3">Initializing hardware diagnostics...</div>
+        <div class="progress-container">
+            <div class="progress-fill" id="progress-bar"></div>
         </div>
     </div>
 
-    <div class="mt-4 text-xs text-gray-500" id="status-text"></div>
-
-
     <script>
-        const terminalOutput = document.getElementById('terminal-output');
-        const statusText = document.getElementById('status-text');
-        const grid = document.querySelector('.cyber-grid');
+        const consoleDiv = document.getElementById('console');
+        const progressBar = document.getElementById('progress-bar');
+        const percentageText = document.getElementById('percentage');
+        const taskStatus = document.getElementById('task-status');
 
-        const PROMPT_ROOT = '<span class="prompt">root@shashwat:~$</span>';
-        const PROMPT_BUILD = '<span class="prompt text-module">[BUILD] ></span>';
-        const PROMPT_MAPPER = '<span class="prompt text-info">[MAP] $</span>';
+        const ASCII_LOGO = `
+   _____ __  __  ___  _____ __ __ __          __ ___  ______
+  / ___// / / / /   |/ ___// // /| |  /\\  / //   |/_  __/
+  \\__ \\/ /_/ / / /| |\\__ \\/ // / | | /  \\/ // /| | / /   
+ ___/ / __  / / ___ ___/ / __  /  | |/ /\\  // ___ |/ /    
+/____/_/ /_/ /_/  |_/____/_/ /_/   |___/  \\/_/  |_/_/     
+                                                          
+ >> INITIALIZING KERNEL v4.0.2...
+`;
 
-        const sequence = [
-            // Phase 1: File System Scan
-            { cmd: "fsck -y /root/portfolio", status: "Scanning file integrity..." },
-            { log: "Scanning Directory: <span class='text-module'>/assets</span>", delay: 100 },
-            { log: "├── <span class='text-file'>fevicon.png</span> ............................................ <span class='text-ok'>[PASS]</span>", delay: 50 },
-            { log: "└── <span class='text-file'>profile.jpg</span> ............................................ <span class='text-ok'>[PASS]</span>", delay: 50 },
-            { log: "Scanning Directory: <span class='text-module'>/src</span>", delay: 100 },
-            { log: "├── <span class='text-file'>index.html</span> ............................................. <span class='text-ok'>[PASS]</span>", delay: 50 },
-            { log: "├── <span class='text-file'>contact.html</span> ........................................... <span class='text-ok'>[PASS]</span>", delay: 50 },
-            { log: "└── <span class='text-file'>about.html</span> ............................................. <span class='text-ok'>[PASS]</span>", delay: 50 },
-            { log: "<span class='text-ok'>[ OK ]</span> File system check complete (32ms)", delay: 500 },
+        // --- 1. HOLLYWOOD AUDIO MODULE ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-            // Phase 2: Compilation and Debug
-            { cmd: "npm run build --mode=production", status: "Starting compilation..." },
-            { log: "Compiling <span class='text-file'>typing-engine.js</span>...", delay: 50 },
-            { log: "Compiling <span class='text-file'>tilt-card.js</span>...", delay: 50 },
-            { log: "<span class='text-warn'>[WARNING]</span> Global var 'Dev' in user_profile.js. Ignoring.", delay: 300 },
-            { log: "Compiling <span class='text-file'>main.css</span>...", delay: 50 },
-            { log: "Compiling <span class='text-file'>tailwind.config.js</span>...", delay: 50 },
-            { log: "Minifying bundle.js........................................ <span class='text-ok'>[DONE]</span>", delay: 150 },
-            { log: "Optimizing images.......................................... <span class='text-ok'>[DONE]</span>", delay: 150 },
-            { cmd: PROMPT_BUILD + "check_dependency_tree", status: "Verifying module integrity..." },
-            { log: "Dependency <span class='text-module'>TailwindCSS</span> .................................. <span class='text-ok'>[PASS]</span>", delay: 100 },
-            { log: "Dependency <span class='text-module'>RemixIcon</span> .................................... <span class='text-ok'>[PASS]</span>", delay: 100 },
-            { log: "Dependency <span class='text-module'>GoogleFonts</span> .................................. <span class='text-ok'>[PASS]</span>", delay: 100 },
+        // Data Stream Noise (Matrix Style)
+        function playDataNoise() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(Math.random() * 1000 + 500, audioCtx.currentTime);
+            
+            gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        }
 
-            // Phase 3: Resource Allocation & Launch
-            { cmd: "resource map --host=vercel", status: "Mapping and allocating network resources..." },
-            { log: PROMPT_MAPPER + "API Endpoint allocation: <span class='text-module'>0x01A</span>", delay: 150 },
-            { log: PROMPT_MAPPER + "DB Connection status: <span class='text-ok'>ACTIVE</span>", delay: 150 },
-            { log: PROMPT_MAPPER + "Load Balancer status: <span class='text-ok'>ACTIVE</span>", delay: 150 },
-            { log: "<span class='text-ok'>[ SUCCESS ]</span> All resources allocated (15ms)", delay: 400 },
-            { cmd: "system launch", status: "Executing final launch command..." },
-            { log: "<br><span class='text-neonCyan font-bold'>SYSTEM INTERFACE READY.</span>", delay: 300, final: true }
+        // Sub-Bass Hum (Server Room Ambiance)
+        function playHum() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(60, audioCtx.currentTime); // 60Hz hum
+            
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 2); // Fade In
+            
+            osc.start();
+            return { osc, gain };
+        }
+
+        // Unlock Chime (Success)
+        function playSuccessChime() {
+            const frequencies = [523.25, 659.25, 783.99, 1046.50]; // C Major
+            frequencies.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                
+                const start = audioCtx.currentTime + (i * 0.05);
+                gain.gain.setValueAtTime(0, start);
+                gain.gain.linearRampToValueAtTime(0.1, start + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.001, start + 1.5);
+                
+                osc.start(start);
+                osc.stop(start + 2);
+            });
+        }
+
+        // --- 2. UTILITY FUNCTIONS ---
+        function generateHex() {
+            let hex = "";
+            for(let i=0; i<40; i++) hex += Math.floor(Math.random()*16).toString(16).toUpperCase() + " ";
+            return hex;
+        }
+
+        function log(text, type='normal') {
+            const line = document.createElement('div');
+            if (type === 'hex') {
+                line.className = 'text-dim text-xs';
+                line.textContent = text;
+            } else if (type === 'ascii') {
+                line.className = 'text-neonCyan leading-tight font-bold mb-4';
+                line.textContent = text;
+            } else {
+                line.innerHTML = text;
+            }
+            consoleDiv.appendChild(line);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        function decryptText(targetElement, text, speed = 50) {
+            let iterations = 0;
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*";
+            const interval = setInterval(() => {
+                targetElement.innerHTML = text
+                    .split("")
+                    .map((letter, index) => {
+                        if (index < iterations) return text[index];
+                        return chars[Math.floor(Math.random() * chars.length)];
+                    })
+                    .join("");
+                
+                if (iterations >= text.length) clearInterval(interval);
+                iterations += 1 / 3;
+            }, speed);
+        }
+
+        // --- 3. BOOT SEQUENCE DATA ---
+        const bootSequence = [
+            { text: "Mounting Virtual File System...", delay: 200 },
+            { text: "Loading driver: <span class='text-white'>gpu_shader_core.so</span>", delay: 100 },
+            { text: "Loading driver: <span class='text-white'>neural_net_v2.so</span>", delay: 100 },
+            { text: "Allocating memory block 0x000A4F...", delay: 50 },
+            { text: "Checking integrity of /root/portfolio...", delay: 300 },
+            { text: "├── index.html ......................... <span class='text-ok'>[OK]</span>", delay: 100 },
+            { text: "├── about.html ......................... <span class='text-ok'>[OK]</span>", delay: 100 },
+            { text: "├── projects.html ...................... <span class='text-ok'>[OK]</span>", delay: 100 },
+            { text: "└── contact.html ....................... <span class='text-ok'>[OK]</span>", delay: 100 },
+            { text: "Calibrating cyber-grid visualizer...", delay: 400 },
+            { text: "<span class='text-err'>[CRITICAL ERROR]</span> SEGMENTATION FAULT IN SECTOR 7G.", delay: 800 },
+            { text: "Attempting auto-recovery...", delay: 400 },
+            { text: "Rerouting power to auxiliary core...", delay: 300 },
+            { text: "<span class='text-ok'>[SUCCESS]</span> Core stabilized. Resuming boot.", delay: 300 },
+            { text: "Connection established. Latency: 12ms", delay: 150 },
+            { text: "Decrypting user interface...", delay: 500 }
         ];
 
-        let seqIndex = 0;
-        let launchReady = false;
+        // --- 4. MAIN RUNNER ---
+        async function runBoot() {
+            // Start Ambient Hum
+            const hum = playHum();
 
-        function scrollToBottom() {
-            terminalOutput.scrollTop = terminalOutput.scrollHeight;
-        }
-
-        async function executeSequence() {
-            if (seqIndex >= sequence.length) {
-                // Sequence finished, prompt user to press enter
-                const finalPrompt = document.createElement('div');
-                finalPrompt.innerHTML = PROMPT_ROOT + '<span class="text-neonCyan">Press ENTER to continue...</span><span id="final-cursor" class="cursor"></span>';
-                terminalOutput.appendChild(finalPrompt);
-                statusText.innerHTML = '<span class="text-neonCyan">System Ready. Awaiting user input...</span>';
-                launchReady = true;
-                scrollToBottom();
-                return;
+            // PHASE 1: HEX DUMP TORRENT
+            const torrentStartTime = Date.now();
+            while (Date.now() - torrentStartTime < 1500) {
+                const hex = Array(8).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('').toUpperCase();
+                const binary = Math.random().toString(2).substr(2, 8);
+                const memAddr = `0x${Math.floor(Math.random() * 9999).toString(16).toUpperCase().padStart(4, '0')}`;
+                
+                log(`${memAddr} :: ${hex} :: ${binary} ... [ALLOCATING]`, 'hex');
+                playDataNoise(); // Audio Trigger
+                await new Promise(r => setTimeout(r, 10)); 
             }
+            consoleDiv.innerHTML = ''; 
 
-            const current = sequence[seqIndex];
+            // PHASE 2: ASCII LOGO
+            log(ASCII_LOGO, 'ascii');
+            await new Promise(r => setTimeout(r, 500));
 
-            if (current.cmd) {
-                // Command line execution with typing effect
-                const newLine = document.createElement('div');
-                const promptHtml = current.cmd.startsWith('<span') ? current.cmd : PROMPT_ROOT + current.cmd;
-
-                newLine.innerHTML = promptHtml + '<span id="typing-cursor" class="cursor"></span>';
-                terminalOutput.appendChild(newLine);
-                scrollToBottom();
-
-                const commandText = current.cmd.startsWith('<span') ? current.cmd.split('></span>')[1] : current.cmd;
-                const typingElement = newLine.querySelector('#typing-cursor');
-
-                for (let i = 0; i <= commandText.length; i++) {
-                    await new Promise(r => setTimeout(r, 15)); // Typing speed
-                    typingElement.innerHTML = commandText.substring(0, i);
+            // PHASE 3: LOG SEQUENCE
+            for (let i = 0; i < bootSequence.length; i++) {
+                const step = bootSequence[i];
+                
+                // Red Alert Logic
+                if (step.text.includes("ERROR")) {
+                    document.body.classList.add('alert-state');
+                    document.querySelector('.terminal-container').classList.add('shake');
+                } 
+                if (step.text.includes("SUCCESS") || step.text.includes("stabilized")) {
+                    document.body.classList.remove('alert-state');
+                    document.querySelector('.terminal-container').classList.remove('shake');
                 }
 
-                typingElement.classList.remove('cursor');
-                typingElement.id = ''; // Remove ID for next line
-
-                const statusLine = document.createElement('div');
-                statusLine.innerHTML = `<span class="text-gray-500">//</span> ${current.status}`;
-                terminalOutput.appendChild(statusLine);
-
-                await new Promise(r => setTimeout(r, 400)); // Delay after command completes
-
-            } else if (current.log) {
-                // Simple log message (instant display)
-                const newLine = document.createElement('div');
-                newLine.innerHTML = current.log;
-                terminalOutput.appendChild(newLine);
-                await new Promise(r => setTimeout(r, current.delay || 150));
+                // Update UI
+                const percent = Math.round(((i + 1) / bootSequence.length) * 100);
+                progressBar.style.width = `${percent}%`;
+                percentageText.innerText = `${percent}%`;
+                
+                const prompt = `<span class="text-green-500 mr-2">➜</span>`;
+                log(`${prompt} ${step.text}`);
+                taskStatus.innerText = step.text.replace(/<[^>]*>?/gm, '').substring(0, 30) + "...";
+                
+                playDataNoise(); // Audio Trigger
+                
+                // Delay with Overclock Multiplier
+                await new Promise(r => setTimeout(r, step.delay * bootDelayMultiplier));
             }
 
-            seqIndex++;
-            scrollToBottom();
-            executeSequence(); // Move to next item
+            // PHASE 4: FINALE
+            hum.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5); // Fade out hum
+            setTimeout(() => hum.osc.stop(), 500);
+            
+            playSuccessChime(); // Play Chime
+
+            const finalLine = document.createElement('div');
+            finalLine.className = 'text-green-500 font-bold text-xl mt-4';
+            consoleDiv.appendChild(finalLine);
+            
+            decryptText(finalLine, "ACCESS GRANTED // WELCOME USER_01");
+            await new Promise(r => setTimeout(r, 1500));
+
+            // PHASE 5: CRT OFF & REDIRECT
+            document.body.classList.add('redirecting');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 600);
         }
 
-        // Final Event Listener: Redirect on Enter Key
+        // --- 5. EXTRAS (Overclock & Telemetry) ---
+        let isOverclocked = false;
+        let bootDelayMultiplier = 1;
+
         document.addEventListener('keydown', (e) => {
-            if (launchReady && e.key === 'Enter') {
-                document.getElementById('final-cursor').style.display = 'none';
-                statusText.innerText = 'Redirecting to index.html...';
-                window.location.href = 'index.html';
+            if (e.code === 'Space' && !isOverclocked) {
+                isOverclocked = true;
+                bootDelayMultiplier = 0.1; 
+                taskStatus.innerText = ">> SYSTEM OVERCLOCK ACTIVE <<";
+                taskStatus.classList.add('text-red-500', 'animate-pulse');
+                document.body.style.border = "5px solid red"; 
             }
         });
 
-        // Mousemove listener for background grid spotlight
-        window.addEventListener('mousemove', (e) => {
-            if (grid) {
-                grid.style.setProperty('--x', `${e.clientX}px`);
-                grid.style.setProperty('--y', `${e.clientY}px`);
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') {
+                isOverclocked = false;
+                bootDelayMultiplier = 1; 
+                taskStatus.innerText = "SYSTEM BOOT SEQUENCE";
+                taskStatus.classList.remove('text-red-500', 'animate-pulse');
+                document.body.style.border = "none";
             }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Start the sequence after a slight delay
-            setTimeout(executeSequence, 500);
-        });
+        // Telemetry Loop
+        setInterval(() => {
+            const temp = Math.floor(Math.random() * (75 - 40) + 40);
+            const volt = (Math.random() * (1.4 - 1.1) + 1.1).toFixed(2);
+            const mem = Math.floor(Math.random() * (4096 - 200) + 200);
+            
+            document.getElementById('cpu-temp').innerText = `${temp}°C`;
+            document.getElementById('sys-volt').innerText = `${volt}V`;
+            document.getElementById('mem-usage').innerText = `${mem}MB`;
+            
+            const tempEl = document.getElementById('cpu-temp');
+            if (temp > 70) tempEl.className = 'text-err font-bold animate-pulse';
+            else tempEl.className = 'text-neonCyan';
+        }, 800);
+
+        // Start
+        window.onload = runBoot;
+
     </script>
 </body>
-
 </html>
