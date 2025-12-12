@@ -1958,11 +1958,13 @@
             }
 
             document.addEventListener('DOMContentLoaded', () => {
+                // 1. Basic Initializations
                 updateClock();
                 updatePhrases();
                 type();
                 animateSkillBars();
-                // --- DIGITAL PARTICLE TRAIL ---
+
+                // --- 2. DIGITAL PARTICLE TRAIL ---
                 const cursorCanvas = document.createElement('canvas');
                 const cursorCtx = cursorCanvas.getContext('2d');
                 cursorCanvas.style.position = 'fixed';
@@ -1971,7 +1973,7 @@
                 cursorCanvas.style.width = '100%';
                 cursorCanvas.style.height = '100%';
                 cursorCanvas.style.pointerEvents = 'none';
-                cursorCanvas.style.zIndex = '9998'; // Just below scanlines
+                cursorCanvas.style.zIndex = '9998';
                 document.body.appendChild(cursorCanvas);
 
                 let cursorParticles = [];
@@ -1991,24 +1993,23 @@
                         this.speedX = Math.random() * 2 - 1;
                         this.speedY = Math.random() * 2 - 1;
                         this.color = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim();
-                        this.life = 1.0; // Opacity
+                        this.life = 1.0;
                     }
                     update() {
                         this.x += this.speedX;
                         this.y += this.speedY;
-                        this.life -= 0.02; // Fade out speed
+                        this.life -= 0.02;
                         if (this.size > 0.1) this.size -= 0.1;
                     }
                     draw() {
                         cursorCtx.fillStyle = this.color;
                         cursorCtx.globalAlpha = this.life;
-                        cursorCtx.fillRect(this.x, this.y, this.size, this.size); // Square pixels
+                        cursorCtx.fillRect(this.x, this.y, this.size, this.size);
                         cursorCtx.globalAlpha = 1.0;
                     }
                 }
 
                 window.addEventListener('mousemove', (e) => {
-                    // Spawn 2 particles per mouse move
                     cursorParticles.push(new Particle(e.clientX, e.clientY));
                     cursorParticles.push(new Particle(e.clientX, e.clientY));
                 });
@@ -2018,7 +2019,6 @@
                     for (let i = 0; i < cursorParticles.length; i++) {
                         cursorParticles[i].update();
                         cursorParticles[i].draw();
-
                         if (cursorParticles[i].life <= 0) {
                             cursorParticles.splice(i, 1);
                             i--;
@@ -2027,171 +2027,42 @@
                     requestAnimationFrame(animateParticles);
                 }
                 animateParticles();
-                // --- REAL SYSTEM MONITORING ---
+
+                // --- 3. REAL SYSTEM MONITORING ---
                 (function initSystemMonitor() {
                     const fpsElem = document.getElementById('sys-fps');
                     const memElem = document.getElementById('sys-mem');
                     const pingElem = document.getElementById('net-ping');
-
-                    // 1. FPS COUNTER (Rendering Load)
                     let lastTime = performance.now();
                     let frameCount = 0;
 
                     function monitorLoop() {
                         const now = performance.now();
                         frameCount++;
-
-                        if (now - lastTime >= 1000) { // Update every second
+                        if (now - lastTime >= 1000) {
                             const fps = frameCount;
                             frameCount = 0;
                             lastTime = now;
-
                             if (fpsElem) {
                                 fpsElem.innerText = fps;
-                                // Color coding based on performance
                                 if (fps < 30) fpsElem.className = 'text-red-500 font-bold';
                                 else if (fps < 50) fpsElem.className = 'text-yellow-500';
                                 else fpsElem.className = 'text-green-500';
                             }
-                            // --- 2. PHANTOM TOUCH (HAPTIC FEEDBACK) ---
-                            function triggerHaptic(pattern) {
-                                // Only runs if the device supports vibration
-                                if (navigator.vibrate) {
-                                    navigator.vibrate(pattern);
-                                }
-                            }
-
-                            // Attach haptics to all interactive elements
-                            const interactiveElements = document.querySelectorAll('button, a, .terminal-card, input');
-                            interactiveElements.forEach(el => {
-                                el.addEventListener('click', () => {
-                                    triggerHaptic(15); // A short, crisp 15ms "tick"
-                                });
-                                // Optional: A tiny buzz on hover for desktop users with gamepads/touchpads
-                                el.addEventListener('mouseenter', () => {
-                                    triggerHaptic(5);
-                                });
-                            });
-                            // --- 3. HOLOGRAPHIC DECK (GYROSCOPE PARALLAX) ---
-                            if (window.DeviceOrientationEvent) {
-                                window.addEventListener('deviceorientation', (e) => {
-                                    // Check if the device is actually reporting data (null on some desktops)
-                                    if (e.beta === null || e.gamma === null) return;
-
-                                    // Gamma: Left/Right tilt (-90 to 90)
-                                    // Beta: Front/Back tilt (-180 to 180)
-                                    const tiltX = e.gamma;
-                                    const tiltY = e.beta;
-
-                                    // 1. Move the background grid deep in space
-                                    const grid = document.querySelector('.cyber-grid');
-                                    if (grid) {
-                                        // Multiplied by 2 for noticeable movement
-                                        grid.style.transform = `translate(${tiltX * 2}px, ${tiltY * 2}px)`;
-                                    }
-
-                                    // 2. Tilt the Hero Card in 3D space
-                                    const heroCard = document.getElementById('tilt-card');
-                                    if (heroCard) {
-                                        // We divide by 10 to make the tilt subtle and smooth
-                                        heroCard.style.transform = `perspective(1000px) rotateY(${tiltX / 10}deg) rotateX(${-tiltY / 10}deg)`;
-                                    }
-                                });
-                            }
-                            // --- 4. DATA INGESTION (FILE DRAG & DROP) ---
-                            const dropZone = document.body;
-
-                            // 1. Prevent default browser behavior (opening the file)
-                            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                                dropZone.addEventListener(eventName, preventDefaults, false);
-                            });
-
-                            function preventDefaults(e) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }
-
-                            // 2. Visual Cues when dragging over
-                            dropZone.addEventListener('dragenter', () => {
-                                // Add a cyberpunk dashed border
-                                document.body.style.border = '4px dashed var(--accent-primary)';
-                                document.body.style.opacity = '0.7';
-
-                                // Force terminal open to show status
-                                const term = document.getElementById('overlay-terminal');
-                                if (term) term.style.display = 'flex';
-
-                                print("[SYSTEM] DETECTING EXTERNAL DATA STREAM...", "text-neonCyan animate-pulse");
-                            });
-
-                            dropZone.addEventListener('dragleave', () => {
-                                document.body.style.border = 'none';
-                                document.body.style.opacity = '1';
-                            });
-
-                            // 3. Handle the Drop
-                            dropZone.addEventListener('drop', (e) => {
-                                // Reset visuals
-                                document.body.style.border = 'none';
-                                document.body.style.opacity = '1';
-
-                                const files = e.dataTransfer.files;
-                                handleFiles(files);
-                            });
-
-                            function handleFiles(files) {
-                                // Ensure terminal is visible
-                                const term = document.getElementById('overlay-terminal');
-                                if (term) term.style.display = 'flex';
-
-                                ([...files]).forEach(file => {
-                                    // Log file details
-                                    print(`> UPLOADING: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`, "text-white");
-
-                                    // Trigger Haptic & Sound (if you added those modules)
-                                    if (typeof triggerHaptic === 'function') triggerHaptic(20);
-                                    if (typeof playSound === 'function') playSound('click');
-
-                                    // Fake analysis sequence
-                                    setTimeout(() => print(`  [SCANNING HEX DUMP...]`, "text-gray-500"), 600);
-                                    setTimeout(() => print(`  [ANALYZING METADATA...]`, "text-gray-500"), 1200);
-
-                                    setTimeout(() => {
-                                        // Randomly decide if file is "Safe" or "Malicious" for fun
-                                        const isSafe = Math.random() > 0.2; // 80% chance safe
-
-                                        if (isSafe) {
-                                            print(`  [RESULT] FILE INTEGRITY VERIFIED. ACCEPTED.`, "text-green-500");
-                                            if (typeof speak === 'function') speak("File accepted.");
-                                        } else {
-                                            print(`  [WARNING] ANOMALY DETECTED IN ${file.name}. QUARANTINED.`, "text-red-500 font-bold");
-                                            if (typeof speak === 'function') speak("Warning. Malicious data detected.");
-                                            if (typeof triggerHaptic === 'function') triggerHaptic([50, 50, 200]); // Alarm buzz
-                                        }
-                                    }, 2500);
-                                });
-                            }
-
-                            // 5. MEMORY MONITOR (Chrome/Edge Only)
                             if (memElem) {
-                                // @ts-ignore - performance.memory is non-standard but works in Chromium
+                                // @ts-ignore
                                 if (performance && performance.memory) {
-                                    const used = performance.memory.usedJSHeapSize / 1048576; // Convert Bytes to MB
-                                    memElem.innerText = used.toFixed(1);
+                                    memElem.innerText = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
                                 } else {
-                                    // Fallback for Firefox/Safari (Simulated fluctuation around 50MB)
                                     const sim = 45 + (Math.random() * 10);
-                                    memElem.innerText = sim.toFixed(1) + '*'; // * denotes simulated
+                                    memElem.innerText = sim.toFixed(1) + '*';
                                 }
                             }
-
-                            // 6. NETWORK LATENCY (Real RTT)
                             if (pingElem) {
                                 const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
                                 if (conn && conn.rtt) {
                                     pingElem.innerText = conn.rtt;
                                 } else {
-                                    // Fallback: Check performance timing
                                     const timing = performance.getEntriesByType("navigation")[0];
                                     const loadTime = timing ? Math.round(timing.domComplete) : 25;
                                     pingElem.innerText = loadTime;
@@ -2200,10 +2071,82 @@
                         }
                         requestAnimationFrame(monitorLoop);
                     }
-
                     monitorLoop();
                 })();
-                // --- Timeline Scroll Animation ---
+
+                // --- 4. PHANTOM TOUCH ---
+                function triggerHaptic(pattern) {
+                    if (navigator.vibrate) navigator.vibrate(pattern);
+                }
+                const interactiveElements = document.querySelectorAll('button, a, .terminal-card, input');
+                interactiveElements.forEach(el => {
+                    el.addEventListener('click', () => triggerHaptic(15));
+                    el.addEventListener('mouseenter', () => triggerHaptic(5));
+                });
+
+                // --- 5. HOLOGRAPHIC DECK ---
+                if (window.DeviceOrientationEvent) {
+                    window.addEventListener('deviceorientation', (e) => {
+                        if (e.beta === null || e.gamma === null) return;
+                        const tiltX = e.gamma;
+                        const tiltY = e.beta;
+                        const grid = document.querySelector('.cyber-grid');
+                        if (grid) grid.style.transform = `translate(${tiltX * 2}px, ${tiltY * 2}px)`;
+                        const heroCard = document.getElementById('tilt-card');
+                        if (heroCard) heroCard.style.transform = `perspective(1000px) rotateY(${tiltX / 10}deg) rotateX(${-tiltY / 10}deg)`;
+                    });
+                }
+
+                // --- 6. DATA INGESTION ---
+                const dropZone = document.body;
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+                });
+
+                dropZone.addEventListener('dragenter', () => {
+                    document.body.style.border = '4px dashed var(--accent-primary)';
+                    document.body.style.opacity = '0.7';
+                    const term = document.getElementById('overlay-terminal');
+                    if (term) term.style.display = 'flex';
+                    print("[SYSTEM] DETECTING EXTERNAL DATA STREAM...", "text-neonCyan animate-pulse");
+                });
+
+                dropZone.addEventListener('dragleave', () => {
+                    document.body.style.border = 'none';
+                    document.body.style.opacity = '1';
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    document.body.style.border = 'none';
+                    document.body.style.opacity = '1';
+                    const files = e.dataTransfer.files;
+                    handleFiles(files);
+                });
+
+                function handleFiles(files) {
+                    const term = document.getElementById('overlay-terminal');
+                    if (term) term.style.display = 'flex';
+                    ([...files]).forEach(file => {
+                        print(`> UPLOADING: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`, "text-white");
+                        if (typeof triggerHaptic === 'function') triggerHaptic(20);
+                        if (typeof playSound === 'function') playSound('click');
+                        setTimeout(() => print(`  [SCANNING HEX DUMP...]`, "text-gray-500"), 600);
+                        setTimeout(() => print(`  [ANALYZING METADATA...]`, "text-gray-500"), 1200);
+                        setTimeout(() => {
+                            const isSafe = Math.random() > 0.2;
+                            if (isSafe) {
+                                print(`  [RESULT] FILE INTEGRITY VERIFIED. ACCEPTED.`, "text-green-500");
+                                if (typeof speak === 'function') speak("File accepted.");
+                            } else {
+                                print(`  [WARNING] ANOMALY DETECTED IN ${file.name}. QUARANTINED.`, "text-red-500 font-bold");
+                                if (typeof speak === 'function') speak("Warning. Malicious data detected.");
+                                if (typeof triggerHaptic === 'function') triggerHaptic([50, 50, 200]);
+                            }
+                        }, 2500);
+                    });
+                }
+
+                // --- 7. TIMELINE ---
                 function animateTimeline() {
                     const observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
@@ -2211,15 +2154,13 @@
                                 entry.target.classList.add('in-view');
                             }
                         });
-                    }, { threshold: 0.2 }); // Trigger when 20% visible
-
+                    }, { threshold: 0.2 });
                     const items = document.querySelectorAll('.timeline-item');
                     items.forEach(item => observer.observe(item));
                 }
-
-                // Call the function
                 animateTimeline();
 
+                // --- 8. THEME & INPUT ---
                 const isDark = html.classList.contains('dark');
                 themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
                 themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
@@ -2764,40 +2705,40 @@
 
         observer.observe(document.body, { childList: true, subtree: true });
         // --- BULLET TIME PROTOCOL ---
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Shift') {
-        document.body.style.transition = 'all 0.5s ease';
-        // Force hardware acceleration on everything
-        document.documentElement.style.setProperty('--time-scale', '0.1'); 
-        
-        // This is the magic CSS injection
-        const css = `* { animation-duration: 10s !important; transition-duration: 2s !important; }`;
-        const style = document.createElement('style');
-        style.id = 'bullet-time-css';
-        style.innerText = css;
-        document.head.appendChild(style);
-        
-        // Play "Power Down" sound
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.frequency.setValueAtTime(500, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 1);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
-        osc.start(); osc.stop(audioCtx.currentTime + 1);
-    }
-});
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Shift') {
+                document.body.style.transition = 'all 0.5s ease';
+                // Force hardware acceleration on everything
+                document.documentElement.style.setProperty('--time-scale', '0.1');
 
-document.addEventListener('keyup', (e) => {
-    if (e.key === 'Shift') {
-        const style = document.getElementById('bullet-time-css');
-        if (style) style.remove();
-        document.documentElement.style.removeProperty('--time-scale');
-    }
-});
+                // This is the magic CSS injection
+                const css = `* { animation-duration: 10s !important; transition-duration: 2s !important; }`;
+                const style = document.createElement('style');
+                style.id = 'bullet-time-css';
+                style.innerText = css;
+                document.head.appendChild(style);
+
+                // Play "Power Down" sound
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 1);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+                osc.start(); osc.stop(audioCtx.currentTime + 1);
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'Shift') {
+                const style = document.getElementById('bullet-time-css');
+                if (style) style.remove();
+                document.documentElement.style.removeProperty('--time-scale');
+            }
+        });
     </script>
 </body>
 
