@@ -2052,9 +2052,87 @@
             document.addEventListener('DOMContentLoaded', () => {
                 // 1. Basic Initializations
                 updateClock();
-                updatePhrases();
-                type();
                 animateSkillBars();
+
+                // --- TYPEWRITER & LIVE EDIT LOGIC (Fixed) ---
+                const inputName = document.getElementById('input-name');
+                const liveName = document.getElementById('live-name-display');
+                const inputRoles = document.getElementById('input-roles');
+                const typewriterElement = document.getElementById('typewriter');
+
+                let phrases = ["Websites", "Apps", "Systems"];
+                let phraseIndex = 0;
+                let charIndex = 0;
+                let isDeleting = false;
+                let typeTimeout; // To control the loop
+
+                // A. Sync Name Immediately
+                if (inputName && liveName) {
+                    inputName.addEventListener('input', () => {
+                        const rawText = inputName.innerText.trim();
+                        // Remove quotes if the user accidentally types them
+                        const cleanText = rawText.replace(/['"]/g, '');
+                        liveName.innerText = cleanText || 'User';
+                    });
+                }
+
+                // B. Sync Typewriter Immediately
+                function updatePhrases() {
+                    if (!inputRoles) return;
+                    const text = inputRoles.innerText.trim();
+                    // Split by comma, remove quotes/brackets
+                    const parts = text.split(',').map(part => part.trim().replace(/['"\[\]]/g, ''));
+
+                    const newPhrases = parts.filter(p => p.length > 0);
+
+                    // If we have valid words, update and RESET animation instantly
+                    if (newPhrases.length > 0) {
+                        phrases = newPhrases;
+                        // Reset Loop
+                        clearTimeout(typeTimeout);
+                        phraseIndex = 0;
+                        charIndex = 0;
+                        isDeleting = false;
+                        typewriterElement.textContent = ''; // Clear text
+                        type(); // Restart immediately
+                    }
+                }
+
+                if (inputRoles) {
+                    inputRoles.addEventListener('input', () => {
+                        // Debounce slightly so it doesn't glitch while typing
+                        clearTimeout(typeTimeout);
+                        setTimeout(updatePhrases, 500);
+                    });
+                }
+
+                function type() {
+                    const currentPhrase = phrases[phraseIndex % phrases.length];
+
+                    if (isDeleting) {
+                        typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                        charIndex--;
+                    } else {
+                        typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                        charIndex++;
+                    }
+
+                    let typeSpeed = isDeleting ? 50 : 100;
+
+                    if (!isDeleting && charIndex === currentPhrase.length) {
+                        isDeleting = true;
+                        typeSpeed = 2000; // Pause at end
+                    } else if (isDeleting && charIndex === 0) {
+                        isDeleting = false;
+                        phraseIndex++;
+                        typeSpeed = 500; // Pause before next word
+                    }
+
+                    typeTimeout = setTimeout(type, typeSpeed);
+                }
+
+                // Start the loop
+                type();
 
                 // --- 2. DIGITAL PARTICLE TRAIL ---
                 const cursorCanvas = document.createElement('canvas');
