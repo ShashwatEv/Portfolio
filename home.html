@@ -2373,8 +2373,11 @@
             }, 30);
         }
 
-        // Apply to all Section Headings (h2)
+       // Apply to Section Headings (Excluding the Hero Typewriter)
         document.querySelectorAll('h2').forEach(header => {
+            // FIXED: If this header contains the typewriter, do NOT apply the effect
+            if (header.querySelector('#typewriter')) return;
+            
             header.addEventListener('mouseover', hackerEffect);
         });
         // --- AUDIO SYSTEM (Synthesized Sounds) ---
