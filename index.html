@@ -7,7 +7,7 @@
     <title>BOOT_SEQUENCE // SHASHWAT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
-
+    <meta name="theme-color" content="#050505">
     <script>
         // --- 0. SMART SKIP LOGIC ---
         // If the user has already seen the boot sequence this session, skip immediately to home.
@@ -229,40 +229,50 @@
                 transform: translate3d(4px, 0, 0);
             }
         }
+
         #manual-entry {
-    position: fixed;
-    bottom: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    display: none; /* Hidden by default */
-}
-/* --- MOBILE OPTIMIZATION (LOADING SCREEN) --- */
+            position: fixed;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: none;
+            /* Hidden by default */
+        }
+
+        /* --- MOBILE OPTIMIZATION (LOADING SCREEN) --- */
         @media (max-width: 640px) {
             .terminal-container {
                 width: 95%;
-                height: 85vh; /* Taller on mobile to fit logs */
+                height: 85vh;
+                /* Taller on mobile to fit logs */
                 padding: 10px;
             }
+
             .terminal-output {
-                font-size: 11px; /* Smaller font for mobile */
+                font-size: 11px;
+                /* Smaller font for mobile */
                 line-height: 1.4;
             }
-            #task-status, #percentage {
+
+            #task-status,
+            #percentage {
                 font-size: 10px;
             }
+
             /* Hide the heavy scanlines on mobile to save battery/performance */
             .scanlines {
-                background-size: 100% 2px; 
+                background-size: 100% 2px;
             }
         }
     </style>
 </head>
 
 <body>
-<a id="manual-entry" href="home.html" class="text-neonCyan border border-neonCyan px-6 py-2 hover:bg-neonCyan hover:text-black font-bold transition-all">
-    [ MANUAL OVERRIDE: ENTER SYSTEM ]
-</a>
+    <a id="manual-entry" href="home.html"
+        class="text-neonCyan border border-neonCyan px-6 py-2 hover:bg-neonCyan hover:text-black font-bold transition-all">
+        [ MANUAL OVERRIDE: ENTER SYSTEM ]
+    </a>
     <div class="scanlines"></div>
     <div class="crt-overlay"></div>
 
@@ -482,10 +492,10 @@
             // PHASE 5: CRT OFF & REDIRECT
             document.body.classList.add('redirecting');
             sessionStorage.setItem('system_booted', 'true');
-            
+
             setTimeout(() => {
                 window.location.href = 'home.html';
-                
+
                 // FALLBACK: If redirect hasn't happened after 1 second, show button
                 setTimeout(() => {
                     document.getElementById('manual-entry').style.display = 'block';

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shashwat | System Core</title>
-
+    <meta name="theme-color" content="#050505">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link
@@ -520,6 +520,30 @@
                 background-size: 20px 20px;
                 /* Smaller grid cells */
             }
+        }
+
+        @media (max-width: 640px) {
+
+            /* Prevent iOS Zoom on focus */
+            input,
+            textarea,
+            .term-input,
+            .term-input-cmd {
+                font-size: 16px !important;
+            }
+        }
+
+        /* UI Polish */
+        #terminal-toggle,
+        .term-bar,
+        .term-prompt,
+        nav a {
+            -webkit-user-select: none;
+            /* Safari */
+            user-select: none;
+            /* Standard */
+            -webkit-tap-highlight-color: transparent;
+            /* Removes blue tap box on Android */
         }
     </style>
 </head>
