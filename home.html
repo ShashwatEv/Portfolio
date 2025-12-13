@@ -649,18 +649,18 @@
                         <span class="font-mono text-xs text-gray-400">user_profile.js</span>
                     </div>
 
-                    <div class="font-mono text-sm leading-8 select-none">
+                    <div class="font-mono text-sm leading-8">
                         <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">1</span><span
                                 class="text-purple-500">const</span> <span
                                 class="text-yellow-600 dark:text-yellow-400 ml-2">Dev</span> = {</div>
                         <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">2</span><span
                                 class="ml-4">name: '<span contenteditable="true" spellcheck="false" id="input-name"
-                                    class="editable-code">Your Name</span>',</span></div>
+                                    class="editable-code cursor-text">Your Name</span>',</span></div>
                         <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">3</span><span
                                 class="ml-4">roles: [</span></div>
                         <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">4</span><span
-                                class="ml-8 text-green-600 dark:text-green-400" contenteditable="true"
-                                spellcheck="false" id="input-roles" class="editable-code">'Websites', 'Apps',
+                                class="ml-8 text-green-600 dark:text-green-400 editable-code cursor-text"
+                                contenteditable="true" spellcheck="false" id="input-roles">'Websites', 'Apps',
                                 'Systems'</span></div>
                         <div class="flex"><span class="w-8 text-gray-500 text-right mr-4">5</span><span
                                 class="ml-4">],</span></div>
@@ -1362,985 +1362,984 @@
     </div>
     <script>
         // --- Shared Terminal Logic (STARTS HERE) ---
-        (function () {
-            const terminalOutput = document.getElementById('terminal-output');
-            const terminalInput = document.getElementById('terminal-input');
-            const overlayTerminal = document.getElementById('overlay-terminal');
-            const toggleButton = document.getElementById('terminal-toggle');
-            const promptSpan = document.getElementById('current-prompt');
+        const terminalOutput = document.getElementById('terminal-output');
+        const terminalInput = document.getElementById('terminal-input');
+        const overlayTerminal = document.getElementById('overlay-terminal');
+        const toggleButton = document.getElementById('terminal-toggle');
+        const promptSpan = document.getElementById('current-prompt');
 
-            const PROMPT = 'Shash@port:~$';
-            // --- NEURAL VOICE MODULE ---
-            function speak(text) {
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel(); // Stop any previous speech
-                    const utterance = new SpeechSynthesisUtterance(text);
+        const PROMPT = 'Shash@port:~$';
+        // --- NEURAL VOICE MODULE ---
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop any previous speech
+                const utterance = new SpeechSynthesisUtterance(text);
 
-                    // Try to get a specific "robotic" voice
-                    const voices = window.speechSynthesis.getVoices();
-                    utterance.voice = voices.find(v => v.name.includes('Google US English')) || voices[0];
+                // Try to get a specific "robotic" voice
+                const voices = window.speechSynthesis.getVoices();
+                utterance.voice = voices.find(v => v.name.includes('Google US English')) || voices[0];
 
-                    utterance.pitch = 0.8; // Lower pitch = more robotic
-                    utterance.rate = 1.1;  // Slightly faster
-                    utterance.volume = 0.5;
+                utterance.pitch = 0.8; // Lower pitch = more robotic
+                utterance.rate = 1.1;  // Slightly faster
+                utterance.volume = 0.5;
 
-                    window.speechSynthesis.speak(utterance);
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // --- HISTORY LOGIC ---
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        // --- THEME DATABASE & LOGIC ---
+        const themeData = {
+            'default': {
+                '--bg-primary': '#050505',
+                '--text-primary': '#e5e5e5',
+                '--accent-primary': '#66fcf1', // Cyan
+                '--accent-secondary': '#3b82f6', // Blue
+                '--grid-color': 'rgba(102, 252, 241, 0.15)'
+            },
+            'matrix': {
+                '--bg-primary': '#000000',
+                '--text-primary': '#00dd00',
+                '--accent-primary': '#00ff41', // Bright Green
+                '--accent-secondary': '#008f11', // Darker Green
+                '--grid-color': 'rgba(0, 255, 65, 0.2)'
+            },
+            'cyberpunk': {
+                '--bg-primary': '#0f0014', // Deep Purple
+                '--text-primary': '#fcee0a', // Cyber Yellow
+                '--accent-primary': '#ff003c', // Cyber Red
+                '--accent-secondary': '#00f0ff', // Cyber Blue
+                '--grid-color': 'rgba(255, 0, 60, 0.2)'
+            },
+            'ocean': {
+                '--bg-primary': '#001e2b', // Deep Sea
+                '--text-primary': '#e0f7fa', // Light Cyan
+                '--accent-primary': '#00e5ff', // Bright Teal
+                '--accent-secondary': '#18ffff',
+                '--grid-color': 'rgba(0, 229, 255, 0.15)'
+            },
+            'sunset': {
+                '--bg-primary': '#2d1b2e',
+                '--text-primary': '#ffcc00',
+                '--accent-primary': '#ff5e62', // Orange/Red
+                '--accent-secondary': '#ff9966',
+                '--grid-color': 'rgba(255, 94, 98, 0.2)'
+            },
+            'dracula': {
+                '--bg-primary': '#282a36',
+                '--text-primary': '#f8f8f2',
+                '--accent-primary': '#ff79c6', // Pink
+                '--accent-secondary': '#bd93f9', // Purple
+                '--grid-color': 'rgba(189, 147, 249, 0.15)'
+            },
+            'coffee': {
+                '--bg-primary': '#2b211e',
+                '--text-primary': '#dcc9bc',
+                '--accent-primary': '#d4a373', // Caramel
+                '--accent-secondary': '#a98467', // Light Brown
+                '--grid-color': 'rgba(212, 163, 115, 0.15)'
+            },
+            'light': {
+                '--bg-primary': '#ffffff',
+                '--text-primary': '#111827',
+                '--accent-primary': '#2563eb', // Standard Blue
+                '--accent-secondary': '#4f46e5', // Indigo
+                '--grid-color': 'rgba(37, 99, 235, 0.1)'
+            }
+        };
+
+        function applyTheme(themeName) {
+            const theme = themeData[themeName];
+            if (!theme) return false;
+
+            const root = document.documentElement;
+
+            // 1. Update CSS Variables
+            for (const [property, value] of Object.entries(theme)) {
+                root.style.setProperty(property, value);
+            }
+
+            // 2. Handle Tailwind Dark Mode Class
+            if (themeName === 'light') {
+                root.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                root.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+
+            // 3. Persist specific theme name
+            localStorage.customTheme = themeName;
+            return true;
+        }
+
+        // Restore theme on load
+        if (localStorage.customTheme && themeData[localStorage.customTheme]) {
+            applyTheme(localStorage.customTheme);
+        }
+
+        // --- Terminal Utility Functions ---
+
+        function echoInput(command) {
+            const outputLine = document.createElement('div');
+            outputLine.innerHTML = `<span class="term-prompt">${PROMPT}</span> ${command}`;
+            terminalOutput.appendChild(outputLine);
+        }
+
+        function print(message, colorClass = 'text-white') {
+            const outputLine = document.createElement('div');
+            outputLine.innerHTML = `<span class="${colorClass}">${message}</span>`;
+            terminalOutput.appendChild(outputLine);
+        }
+
+        function scrollToBottom() {
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        // --- Terminal Command Definitions ---
+
+        const commands = {
+            'whoami': {
+                desc: 'Displays author bio and primary role.',
+                exec: () => {
+                    speak("Authenticating user... Identity verified: Shashwat Singh."); // <--- ADD THIS
+                    print("Name: Shashwat Singh", 'text-neonCyan');
+                    print("Role: Full Stack Developer / System Architect", 'text-neonCyan');
+                    print("Motto: Building scalable systems, line by line.", 'text-gray-400');
                 }
-            }
+            },
+            'cam': {
+                desc: 'Activates the ASCII Reflection Protocol (Webcam).',
+                exec: () => {
+                    print("[INIT] Accessing optical sensors...", "text-yellow-500");
 
-            // --- HISTORY LOGIC ---
-            let commandHistory = [];
-            let historyIndex = -1;
+                    const video = document.createElement('video');
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-            // --- THEME DATABASE & LOGIC ---
-            const themeData = {
-                'default': {
-                    '--bg-primary': '#050505',
-                    '--text-primary': '#e5e5e5',
-                    '--accent-primary': '#66fcf1', // Cyan
-                    '--accent-secondary': '#3b82f6', // Blue
-                    '--grid-color': 'rgba(102, 252, 241, 0.15)'
-                },
-                'matrix': {
-                    '--bg-primary': '#000000',
-                    '--text-primary': '#00dd00',
-                    '--accent-primary': '#00ff41', // Bright Green
-                    '--accent-secondary': '#008f11', // Darker Green
-                    '--grid-color': 'rgba(0, 255, 65, 0.2)'
-                },
-                'cyberpunk': {
-                    '--bg-primary': '#0f0014', // Deep Purple
-                    '--text-primary': '#fcee0a', // Cyber Yellow
-                    '--accent-primary': '#ff003c', // Cyber Red
-                    '--accent-secondary': '#00f0ff', // Cyber Blue
-                    '--grid-color': 'rgba(255, 0, 60, 0.2)'
-                },
-                'ocean': {
-                    '--bg-primary': '#001e2b', // Deep Sea
-                    '--text-primary': '#e0f7fa', // Light Cyan
-                    '--accent-primary': '#00e5ff', // Bright Teal
-                    '--accent-secondary': '#18ffff',
-                    '--grid-color': 'rgba(0, 229, 255, 0.15)'
-                },
-                'sunset': {
-                    '--bg-primary': '#2d1b2e',
-                    '--text-primary': '#ffcc00',
-                    '--accent-primary': '#ff5e62', // Orange/Red
-                    '--accent-secondary': '#ff9966',
-                    '--grid-color': 'rgba(255, 94, 98, 0.2)'
-                },
-                'dracula': {
-                    '--bg-primary': '#282a36',
-                    '--text-primary': '#f8f8f2',
-                    '--accent-primary': '#ff79c6', // Pink
-                    '--accent-secondary': '#bd93f9', // Purple
-                    '--grid-color': 'rgba(189, 147, 249, 0.15)'
-                },
-                'coffee': {
-                    '--bg-primary': '#2b211e',
-                    '--text-primary': '#dcc9bc',
-                    '--accent-primary': '#d4a373', // Caramel
-                    '--accent-secondary': '#a98467', // Light Brown
-                    '--grid-color': 'rgba(212, 163, 115, 0.15)'
-                },
-                'light': {
-                    '--bg-primary': '#ffffff',
-                    '--text-primary': '#111827',
-                    '--accent-primary': '#2563eb', // Standard Blue
-                    '--accent-secondary': '#4f46e5', // Indigo
-                    '--grid-color': 'rgba(37, 99, 235, 0.1)'
+                    // ASCII Setup
+                    const chars = "Ñ@#W$9876543210?!abc;:+=-,._                    ";
+                    const termOutput = document.getElementById('terminal-output');
+                    const asciiDiv = document.createElement('div');
+                    asciiDiv.style.fontFamily = 'monospace';
+                    asciiDiv.style.fontSize = '6px'; // Tiny font for high res
+                    asciiDiv.style.lineHeight = '6px';
+                    asciiDiv.style.whiteSpace = 'pre';
+                    asciiDiv.style.overflow = 'hidden';
+                    asciiDiv.className = 'text-neonBlue animate-pulse';
+                    termOutput.appendChild(asciiDiv);
+
+                    navigator.mediaDevices.getUserMedia({ video: { width: 100, height: 100 } })
+                        .then(stream => {
+                            video.srcObject = stream;
+                            video.play();
+
+                            const frame = () => {
+                                if (!video.srcObject) return; // Stop if stream cut
+
+                                canvas.width = 100;
+                                canvas.height = 60; // Aspect ratio adjustment
+                                ctx.drawImage(video, 0, 0, 100, 60);
+
+                                const imageData = ctx.getImageData(0, 0, 100, 60);
+                                const data = imageData.data;
+                                let asciiStr = "";
+
+                                for (let i = 0; i < data.length; i += 4) {
+                                    const r = data[i];
+                                    const g = data[i + 1];
+                                    const b = data[i + 2];
+                                    const avg = (r + g + b) / 3;
+                                    const charIndex = Math.floor((avg / 255) * (chars.length - 1));
+
+                                    asciiStr += chars[charIndex];
+                                    if ((i / 4 + 1) % 100 === 0) asciiStr += "\n";
+                                }
+
+                                asciiDiv.innerText = asciiStr;
+                                requestAnimationFrame(frame);
+                            };
+                            frame();
+                            print("[SUCCESS] Optical feed established.", "text-green-500");
+                        })
+                        .catch(e => print("[ERROR] Sensor access denied.", "text-red-500"));
                 }
-            };
+            },
+            'theme': {
+                desc: 'Change system UI colors. Usage: theme [name] | theme list',
+                exec: (args) => {
+                    const subCmd = args[1];
 
-            function applyTheme(themeName) {
-                const theme = themeData[themeName];
-                if (!theme) return false;
-
-                const root = document.documentElement;
-
-                // 1. Update CSS Variables
-                for (const [property, value] of Object.entries(theme)) {
-                    root.style.setProperty(property, value);
-                }
-
-                // 2. Handle Tailwind Dark Mode Class
-                if (themeName === 'light') {
-                    root.classList.remove('dark');
-                    localStorage.theme = 'light';
-                } else {
-                    root.classList.add('dark');
-                    localStorage.theme = 'dark';
-                }
-
-                // 3. Persist specific theme name
-                localStorage.customTheme = themeName;
-                return true;
-            }
-
-            // Restore theme on load
-            if (localStorage.customTheme && themeData[localStorage.customTheme]) {
-                applyTheme(localStorage.customTheme);
-            }
-
-            // --- Terminal Utility Functions ---
-
-            function echoInput(command) {
-                const outputLine = document.createElement('div');
-                outputLine.innerHTML = `<span class="term-prompt">${PROMPT}</span> ${command}`;
-                terminalOutput.appendChild(outputLine);
-            }
-
-            function print(message, colorClass = 'text-white') {
-                const outputLine = document.createElement('div');
-                outputLine.innerHTML = `<span class="${colorClass}">${message}</span>`;
-                terminalOutput.appendChild(outputLine);
-            }
-
-            function scrollToBottom() {
-                terminalOutput.scrollTop = terminalOutput.scrollHeight;
-            }
-
-            // --- Terminal Command Definitions ---
-
-            const commands = {
-                'whoami': {
-                    desc: 'Displays author bio and primary role.',
-                    exec: () => {
-                        speak("Authenticating user... Identity verified: Shashwat Singh."); // <--- ADD THIS
-                        print("Name: Shashwat Singh", 'text-neonCyan');
-                        print("Role: Full Stack Developer / System Architect", 'text-neonCyan');
-                        print("Motto: Building scalable systems, line by line.", 'text-gray-400');
-                    }
-                },
-                'cam': {
-                    desc: 'Activates the ASCII Reflection Protocol (Webcam).',
-                    exec: () => {
-                        print("[INIT] Accessing optical sensors...", "text-yellow-500");
-
-                        const video = document.createElement('video');
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-                        // ASCII Setup
-                        const chars = "Ñ@#W$9876543210?!abc;:+=-,._                    ";
-                        const termOutput = document.getElementById('terminal-output');
-                        const asciiDiv = document.createElement('div');
-                        asciiDiv.style.fontFamily = 'monospace';
-                        asciiDiv.style.fontSize = '6px'; // Tiny font for high res
-                        asciiDiv.style.lineHeight = '6px';
-                        asciiDiv.style.whiteSpace = 'pre';
-                        asciiDiv.style.overflow = 'hidden';
-                        asciiDiv.className = 'text-neonBlue animate-pulse';
-                        termOutput.appendChild(asciiDiv);
-
-                        navigator.mediaDevices.getUserMedia({ video: { width: 100, height: 100 } })
-                            .then(stream => {
-                                video.srcObject = stream;
-                                video.play();
-
-                                const frame = () => {
-                                    if (!video.srcObject) return; // Stop if stream cut
-
-                                    canvas.width = 100;
-                                    canvas.height = 60; // Aspect ratio adjustment
-                                    ctx.drawImage(video, 0, 0, 100, 60);
-
-                                    const imageData = ctx.getImageData(0, 0, 100, 60);
-                                    const data = imageData.data;
-                                    let asciiStr = "";
-
-                                    for (let i = 0; i < data.length; i += 4) {
-                                        const r = data[i];
-                                        const g = data[i + 1];
-                                        const b = data[i + 2];
-                                        const avg = (r + g + b) / 3;
-                                        const charIndex = Math.floor((avg / 255) * (chars.length - 1));
-
-                                        asciiStr += chars[charIndex];
-                                        if ((i / 4 + 1) % 100 === 0) asciiStr += "\n";
-                                    }
-
-                                    asciiDiv.innerText = asciiStr;
-                                    requestAnimationFrame(frame);
-                                };
-                                frame();
-                                print("[SUCCESS] Optical feed established.", "text-green-500");
-                            })
-                            .catch(e => print("[ERROR] Sensor access denied.", "text-red-500"));
-                    }
-                },
-                'theme': {
-                    desc: 'Change system UI colors. Usage: theme [name] | theme list',
-                    exec: (args) => {
-                        const subCmd = args[1];
-
-                        if (subCmd === 'list') {
-                            print("Available Themes:", 'text-neonCyan');
-                            Object.keys(themeData).forEach(t => {
-                                print(`  - ${t}`, 'text-gray-400');
-                            });
-                            return;
-                        }
-
-                        if (themeData[subCmd]) {
-                            applyTheme(subCmd);
-                            print(`System Theme set to: [${subCmd.toUpperCase()}]`, 'text-green-500');
-                        } else {
-                            print(`Error: Theme '${subCmd}' not found. Type 'theme list' for options.`, 'text-error');
-                        }
-                    }
-                },
-                'ls -l /': {
-                    desc: 'Lists main system directories (navigation links).',
-                    exec: () => {
-                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>home</span>", 'text-neonCyan');
-                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>about</span>", 'text-neonCyan');
-                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>work</span>", 'text-neonCyan');
-                        print("drwxrwxr-x 4096 <span class='text-neonCyan'>contact</span>", 'text-neonCyan');
-                    }
-                },
-                'neofetch': {
-                    desc: 'Displays stylized system specifications (Host, Shell, Status).',
-                    exec: () => {
-                        print('<span style="color:#8B5CF6">/\\_/\\</span>', 'text-gray-400');
-                        print('<span style="color:#8B5CF6">( o.o )</span> <span class="text-neonCyan font-semibold">Host</span>: Vercel Cloud', 'text-gray-400');
-                        print('<span style="color:#8B5CF6"> > ^ < </span> <span class="text-neonCyan font-semibold">Loc</span>: 127.0.0.1', 'text-gray-400');
-                        print('       <span class="text-neonCyan font-semibold">Shell</span>: ZSH v5.8', 'text-gray-400');
-                        print('       <span class="text-green-500 font-bold">● Online</span>');
-                    }
-                },
-                'date': {
-                    desc: 'Displays the current local date and time.',
-                    exec: () => {
-                        print(new Date().toString(), 'text-neonCyan');
-                    }
-                },
-                'clear': {
-                    desc: 'Clears the terminal output screen.',
-                    exec: () => {
-                        terminalOutput.innerHTML = '';
-                    }
-                },
-                'exit': {
-                    desc: 'Closes the terminal overlay.',
-                    exec: () => {
-                        overlayTerminal.style.display = 'none';
-                    }
-                },
-                'help': {
-                    desc: 'Lists all available commands.',
-                    exec: () => {
-                        print("Available Commands:", 'text-neonCyan');
-                        Object.keys(commands).forEach(cmd => {
-                            print(`  ${cmd.padEnd(15, ' ')} -> ${commands[cmd].desc}`, 'text-gray-400');
+                    if (subCmd === 'list') {
+                        print("Available Themes:", 'text-neonCyan');
+                        Object.keys(themeData).forEach(t => {
+                            print(`  - ${t}`, 'text-gray-400');
                         });
-                        print("Navigation: cd home | cd work | cd contact", 'text-info');
-                    }
-                },
-                'ping': {
-                    desc: 'Simulates a network latency check.',
-                    exec: (args) => {
-                        const host = args[1] || 'shashwat.dev';
-                        print(`PING ${host} (${Math.random().toFixed(2)}): 64 bytes from ${host}: icmp_seq=1 time=${(Math.random() * 10).toFixed(2)} ms`, 'text-green-500');
-                    }
-                },
-                'grep': {
-                    desc: 'Searches the skills list for a keyword (e.g., grep react /skills).',
-                    exec: (args) => {
-                        const term = (args[1] || '').toLowerCase();
-                        const skills = "React, Next.js, Tailwind, HTML5, CSS3, C/C++, Node.js, Python, Django, PostgreSQL, Mongo, Redis, Docker, AWS, Git";
-                        const results = skills.split(', ').filter(s => s.toLowerCase().includes(term));
-
-                        if (term && results.length > 0) {
-                            print(`Found matching skills: ${results.join(', ')}`, 'text-neonCyan');
-                        } else if (term) {
-                            print(`No skills found matching '${term}'.`, 'text-error');
-                        } else {
-                            print("Usage: grep [keyword] /skills", 'text-gray-400');
-                        }
-                    }
-                },
-                'read -f /readme.txt': {
-                    desc: 'Prints a philosophy/future plans statement.',
-                    exec: () => {
-                        print("##################################################", 'text-info');
-                        print("// System Philosophy:", 'text-neonCyan');
-                        print("// I believe software should be fast, reliable, and deeply intentional.", 'text-gray-400');
-                        print("// Next Goal: Dive deep into WebAssembly and Rust for performance optimization.", 'text-gray-400');
-                        print("##################################################", 'text-info');
-                    }
-                },
-                'sudo reboot': {
-                    desc: 'Initiates a simulated system reboot (redirects via confirmation).',
-                    exec: () => {
-                        print("[SUDO] WARNING: System will restart. Proceed? (y/n)", 'text-error');
-                        terminalInput.setAttribute('data-confirm', 'reboot');
-                    }
-                },
-                'reactor': {
-                    desc: 'Links the Cyber-Grid to ambient audio (Music/Voice).',
-                    exec: async () => {
-                        try {
-                            print("[INIT] Calibrating auditory sensors...", "text-yellow-500");
-                            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                            const source = audioCtx.createMediaStreamSource(stream);
-                            const analyser = audioCtx.createAnalyser();
-                            analyser.fftSize = 256;
-                            source.connect(analyser);
-
-                            const bufferLength = analyser.frequencyBinCount;
-                            const dataArray = new Uint8Array(bufferLength);
-                            const grid = document.querySelector('.cyber-grid');
-
-                            print("[SUCCESS] Reactor Online. Play some music.", "text-green-500");
-
-                            function renderFrame() {
-                                requestAnimationFrame(renderFrame);
-                                analyser.getByteFrequencyData(dataArray);
-
-                                // Calculate average volume (Bass/Low-Mids focus)
-                                let sum = 0;
-                                for (let i = 0; i < 50; i++) { sum += dataArray[i]; }
-                                const average = sum / 50;
-
-                                // Map volume to CSS properties
-                                // Opacity pulses, Scale zooms in/out slightly
-                                const opacity = 0.1 + (average / 255) * 0.5;
-                                const scale = 1 + (average / 1000);
-
-                                if (grid) {
-                                    grid.style.opacity = opacity;
-                                    grid.style.transform = `scale(${scale})`;
-                                    // Optional: Change color based on intensity
-                                    if (average > 100) grid.style.setProperty('--grid-color', 'rgba(255, 0, 60, 0.4)'); // Red on drop
-                                    else grid.style.setProperty('--grid-color', 'rgba(102, 252, 241, 0.15)'); // Cyan default
-                                }
-                            }
-                            renderFrame();
-                        } catch (e) {
-                            print("[ERROR] Audio access denied.", "text-red-500");
-                        }
-                    }
-                },
-                'man': {
-                    desc: 'Displays the manual page for a command (e.g., man cd).',
-                    exec: (args) => {
-                        const command = args[1];
-                        if (command === 'cd') {
-                            print("NAME: cd - Change the active directory/section.", 'text-neonCyan');
-                            print("SYNOPSIS: cd [home|about|work|contact]", 'text-gray-400');
-                        } else if (commands[command]) {
-                            print(`MANUAL: ${command} -> ${commands[command].desc}`, 'text-neonCyan');
-                        } else {
-                            print("Error: No manual entry for command.", 'text-error');
-                        }
-                    }
-                },
-                'rm -rf /': {
-                    desc: 'WARNING: INITIATES SYSTEM PURGE.',
-                    exec: () => {
-                        print("WARNING: ROOT DELETION INITIATED...", "text-red-600 font-bold animate-pulse");
-                        print("Are you sure? This cannot be undone.", "text-red-600");
-
-                        setTimeout(() => {
-                            const allElements = document.body.querySelectorAll('*');
-                            const total = allElements.length;
-                            let count = 0;
-
-                            // Nuke sound
-                            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-                            const interval = setInterval(() => {
-                                if (count >= total) {
-                                    clearInterval(interval);
-                                    document.body.innerHTML = '<div style="height:100vh;background:black;display:flex;align-items:center;justify-content:center;color:red;font-family:monospace;">SYSTEM_OFFLINE</div>';
-                                    return;
-                                }
-
-                                // Randomly select an element to delete
-                                const target = allElements[Math.floor(Math.random() * total)];
-                                if (target && target.parentNode) {
-                                    target.style.transition = "all 0.1s";
-                                    target.style.transform = "scale(0) rotate(20deg)";
-                                    target.style.opacity = "0";
-                                    setTimeout(() => target.remove(), 100);
-
-                                    // Zapping Sound
-                                    if (count % 5 === 0) { // Don't play on every single one (too loud)
-                                        const osc = audioCtx.createOscillator();
-                                        const gain = audioCtx.createGain();
-                                        osc.connect(gain);
-                                        gain.connect(audioCtx.destination);
-                                        osc.type = 'sawtooth';
-                                        osc.frequency.setValueAtTime(100, audioCtx.currentTime);
-                                        osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.1);
-                                        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                                        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
-                                        osc.start();
-                                        osc.stop(audioCtx.currentTime + 0.1);
-                                    }
-                                }
-                                count++;
-                            }, 10); // Very fast deletion
-                        }, 2000);
-                    }
-                },
-                'ssh': {
-                    desc: 'Simulates a secure connection attempt.',
-                    exec: () => {
-                        print("Handshake initiated...", 'text-info');
-                        setTimeout(() => {
-                            print("SUCCESS: Connection to api.shash.dev Established.", 'text-green-500');
-                            scrollToBottom();
-                        }, 500);
-                    }
-                },
-            };
-
-            // --- Command Runner ---
-
-            function runCommand(command) {
-                if (!command) return;
-
-                const parts = command.trim().toLowerCase().split(/\s+/);
-                const baseCommand = parts[0];
-
-                if (baseCommand === 'cd' && parts.length === 2) {
-                    const dir = parts[1];
-                    let url = '';
-                    if (dir === 'home') url = 'home.html';
-                    else if (dir === 'about') url = 'about.html';
-                    else if (dir === 'work' || dir === 'projects') url = 'projects.html';
-                    else if (dir === 'contact' || dir === 'comm') url = 'contact.html';
-
-                    if (url) {
-                        print(`Navigating to /${dir} ...`, 'text-info');
-                        setTimeout(() => window.location.href = url, 300);
                         return;
                     }
-                }
 
-                // Handle complex commands
-                const complexCommand = command.trim().toLowerCase();
-                if (commands[complexCommand]) {
-                    commands[complexCommand].exec(parts);
-                    return;
-                }
-
-                if (commands[baseCommand]) {
-                    commands[baseCommand].exec(parts);
-                    return;
-                }
-
-                print(`Error: command not found: ${command}`, 'text-error');
-            }
-
-            // --- Input and Confirmation Handler ---
-
-            terminalInput.addEventListener('keydown', (e) => {
-                // HISTORY NAVIGATION
-                if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    if (historyIndex > 0) {
-                        historyIndex--;
-                        terminalInput.value = commandHistory[historyIndex];
-                    } else if (historyIndex === -1 && commandHistory.length > 0) {
-                        historyIndex = commandHistory.length - 1;
-                        terminalInput.value = commandHistory[historyIndex];
-                    }
-                } else if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    if (historyIndex < commandHistory.length - 1 && historyIndex !== -1) {
-                        historyIndex++;
-                        terminalInput.value = commandHistory[historyIndex];
+                    if (themeData[subCmd]) {
+                        applyTheme(subCmd);
+                        print(`System Theme set to: [${subCmd.toUpperCase()}]`, 'text-green-500');
                     } else {
-                        historyIndex = commandHistory.length; // Past end
-                        terminalInput.value = '';
+                        print(`Error: Theme '${subCmd}' not found. Type 'theme list' for options.`, 'text-error');
                     }
                 }
-                // COMMAND EXECUTION
-                else if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const command = terminalInput.value.trim();
-                    const confirmState = terminalInput.getAttribute('data-confirm');
+            },
+            'ls -l /': {
+                desc: 'Lists main system directories (navigation links).',
+                exec: () => {
+                    print("drwxrwxr-x 4096 <span class='text-neonCyan'>home</span>", 'text-neonCyan');
+                    print("drwxrwxr-x 4096 <span class='text-neonCyan'>about</span>", 'text-neonCyan');
+                    print("drwxrwxr-x 4096 <span class='text-neonCyan'>work</span>", 'text-neonCyan');
+                    print("drwxrwxr-x 4096 <span class='text-neonCyan'>contact</span>", 'text-neonCyan');
+                }
+            },
+            'neofetch': {
+                desc: 'Displays stylized system specifications (Host, Shell, Status).',
+                exec: () => {
+                    print('<span style="color:#8B5CF6">/\\_/\\</span>', 'text-gray-400');
+                    print('<span style="color:#8B5CF6">( o.o )</span> <span class="text-neonCyan font-semibold">Host</span>: Vercel Cloud', 'text-gray-400');
+                    print('<span style="color:#8B5CF6"> > ^ < </span> <span class="text-neonCyan font-semibold">Loc</span>: 127.0.0.1', 'text-gray-400');
+                    print('       <span class="text-neonCyan font-semibold">Shell</span>: ZSH v5.8', 'text-gray-400');
+                    print('       <span class="text-green-500 font-bold">● Online</span>');
+                }
+            },
+            'date': {
+                desc: 'Displays the current local date and time.',
+                exec: () => {
+                    print(new Date().toString(), 'text-neonCyan');
+                }
+            },
+            'clear': {
+                desc: 'Clears the terminal output screen.',
+                exec: () => {
+                    terminalOutput.innerHTML = '';
+                }
+            },
+            'exit': {
+                desc: 'Closes the terminal overlay.',
+                exec: () => {
+                    overlayTerminal.style.display = 'none';
+                }
+            },
+            'help': {
+                desc: 'Lists all available commands.',
+                exec: () => {
+                    print("Available Commands:", 'text-neonCyan');
+                    Object.keys(commands).forEach(cmd => {
+                        print(`  ${cmd.padEnd(15, ' ')} -> ${commands[cmd].desc}`, 'text-gray-400');
+                    });
+                    print("Navigation: cd home | cd work | cd contact", 'text-info');
+                }
+            },
+            'ping': {
+                desc: 'Simulates a network latency check.',
+                exec: (args) => {
+                    const host = args[1] || 'shashwat.dev';
+                    print(`PING ${host} (${Math.random().toFixed(2)}): 64 bytes from ${host}: icmp_seq=1 time=${(Math.random() * 10).toFixed(2)} ms`, 'text-green-500');
+                }
+            },
+            'grep': {
+                desc: 'Searches the skills list for a keyword (e.g., grep react /skills).',
+                exec: (args) => {
+                    const term = (args[1] || '').toLowerCase();
+                    const skills = "React, Next.js, Tailwind, HTML5, CSS3, C/C++, Node.js, Python, Django, PostgreSQL, Mongo, Redis, Docker, AWS, Git";
+                    const results = skills.split(', ').filter(s => s.toLowerCase().includes(term));
 
-                    // Add to history if not empty
-                    if (command) {
-                        commandHistory.push(command);
-                        historyIndex = commandHistory.length; // Reset index to end
+                    if (term && results.length > 0) {
+                        print(`Found matching skills: ${results.join(', ')}`, 'text-neonCyan');
+                    } else if (term) {
+                        print(`No skills found matching '${term}'.`, 'text-error');
+                    } else {
+                        print("Usage: grep [keyword] /skills", 'text-gray-400');
                     }
+                }
+            },
+            'read -f /readme.txt': {
+                desc: 'Prints a philosophy/future plans statement.',
+                exec: () => {
+                    print("##################################################", 'text-info');
+                    print("// System Philosophy:", 'text-neonCyan');
+                    print("// I believe software should be fast, reliable, and deeply intentional.", 'text-gray-400');
+                    print("// Next Goal: Dive deep into WebAssembly and Rust for performance optimization.", 'text-gray-400');
+                    print("##################################################", 'text-info');
+                }
+            },
+            'sudo reboot': {
+                desc: 'Initiates a simulated system reboot (redirects via confirmation).',
+                exec: () => {
+                    print("[SUDO] WARNING: System will restart. Proceed? (y/n)", 'text-error');
+                    terminalInput.setAttribute('data-confirm', 'reboot');
+                }
+            },
+            'reactor': {
+                desc: 'Links the Cyber-Grid to ambient audio (Music/Voice).',
+                exec: async () => {
+                    try {
+                        print("[INIT] Calibrating auditory sensors...", "text-yellow-500");
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        const source = audioCtx.createMediaStreamSource(stream);
+                        const analyser = audioCtx.createAnalyser();
+                        analyser.fftSize = 256;
+                        source.connect(analyser);
 
-                    echoInput(command);
+                        const bufferLength = analyser.frequencyBinCount;
+                        const dataArray = new Uint8Array(bufferLength);
+                        const grid = document.querySelector('.cyber-grid');
 
-                    if (confirmState === 'reboot') {
-                        if (command === 'y') {
-                            print("System rebooting...", 'text-error');
-                            setTimeout(() => window.location.href = 'loading.html', 500);
-                        } else {
-                            print("Reboot cancelled.", 'text-green-500');
+                        print("[SUCCESS] Reactor Online. Play some music.", "text-green-500");
+
+                        function renderFrame() {
+                            requestAnimationFrame(renderFrame);
+                            analyser.getByteFrequencyData(dataArray);
+
+                            // Calculate average volume (Bass/Low-Mids focus)
+                            let sum = 0;
+                            for (let i = 0; i < 50; i++) { sum += dataArray[i]; }
+                            const average = sum / 50;
+
+                            // Map volume to CSS properties
+                            // Opacity pulses, Scale zooms in/out slightly
+                            const opacity = 0.1 + (average / 255) * 0.5;
+                            const scale = 1 + (average / 1000);
+
+                            if (grid) {
+                                grid.style.opacity = opacity;
+                                grid.style.transform = `scale(${scale})`;
+                                // Optional: Change color based on intensity
+                                if (average > 100) grid.style.setProperty('--grid-color', 'rgba(255, 0, 60, 0.4)'); // Red on drop
+                                else grid.style.setProperty('--grid-color', 'rgba(102, 252, 241, 0.15)'); // Cyan default
+                            }
                         }
-                        terminalInput.removeAttribute('data-confirm');
-                    } else {
-                        runCommand(command);
+                        renderFrame();
+                    } catch (e) {
+                        print("[ERROR] Audio access denied.", "text-red-500");
                     }
-
-                    terminalInput.value = '';
-                    scrollToBottom();
                 }
-            });
-
-            // --- Drag and Resize Logic ---
-            const termHeader = document.getElementById('term-header');
-            let isDragging = false;
-            let offsetX, offsetY;
-
-            termHeader.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                const rect = overlayTerminal.getBoundingClientRect();
-                offsetX = e.clientX - rect.left;
-                offsetY = e.clientY - rect.top;
-
-                overlayTerminal.style.cursor = 'move';
-                overlayTerminal.style.position = 'fixed';
-                overlayTerminal.style.right = 'auto';
-                overlayTerminal.style.bottom = 'auto';
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-
-                let newX = e.clientX - offsetX;
-                let newY = e.clientY - offsetY;
-
-                if (newX < 0) newX = 0;
-                if (newY < 0) newY = 0;
-                if (newX + overlayTerminal.offsetWidth > window.innerWidth) newX = window.innerWidth - overlayTerminal.offsetWidth;
-                if (newY + overlayTerminal.offsetHeight > window.innerHeight) newY = window.innerHeight - overlayTerminal.offsetHeight;
-
-                overlayTerminal.style.left = newX + 'px';
-                overlayTerminal.style.top = newY + 'px';
-            });
-
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-                overlayTerminal.style.cursor = 'default';
-            });
-
-            // --- Toggle Button Logic ---
-            toggleButton.addEventListener('click', () => {
-                const isHidden = overlayTerminal.style.display === 'none';
-                overlayTerminal.style.display = isHidden ? 'flex' : 'none';
-                if (isHidden) {
-                    terminalInput.focus();
+            },
+            'man': {
+                desc: 'Displays the manual page for a command (e.g., man cd).',
+                exec: (args) => {
+                    const command = args[1];
+                    if (command === 'cd') {
+                        print("NAME: cd - Change the active directory/section.", 'text-neonCyan');
+                        print("SYNOPSIS: cd [home|about|work|contact]", 'text-gray-400');
+                    } else if (commands[command]) {
+                        print(`MANUAL: ${command} -> ${commands[command].desc}`, 'text-neonCyan');
+                    } else {
+                        print("Error: No manual entry for command.", 'text-error');
+                    }
                 }
-            });
+            },
+            'rm -rf /': {
+                desc: 'WARNING: INITIATES SYSTEM PURGE.',
+                exec: () => {
+                    print("WARNING: ROOT DELETION INITIATED...", "text-red-600 font-bold animate-pulse");
+                    print("Are you sure? This cannot be undone.", "text-red-600");
 
-            // --- Initial Setup and Event Handling ---
+                    setTimeout(() => {
+                        const allElements = document.body.querySelectorAll('*');
+                        const total = allElements.length;
+                        let count = 0;
 
-            // Existing theme toggle logic (Icon Click)
-            const themeBtn = document.getElementById('theme-toggle');
-            const html = document.documentElement;
-            themeBtn.addEventListener('click', () => {
-                // If current theme is custom (e.g. matrix), resetting to light/dark
-                if (localStorage.customTheme && localStorage.customTheme !== 'default' && localStorage.customTheme !== 'light') {
-                    // Reset variables to default before toggling
-                    applyTheme('default');
+                        // Nuke sound
+                        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+                        const interval = setInterval(() => {
+                            if (count >= total) {
+                                clearInterval(interval);
+                                document.body.innerHTML = '<div style="height:100vh;background:black;display:flex;align-items:center;justify-content:center;color:red;font-family:monospace;">SYSTEM_OFFLINE</div>';
+                                return;
+                            }
+
+                            // Randomly select an element to delete
+                            const target = allElements[Math.floor(Math.random() * total)];
+                            if (target && target.parentNode) {
+                                target.style.transition = "all 0.1s";
+                                target.style.transform = "scale(0) rotate(20deg)";
+                                target.style.opacity = "0";
+                                setTimeout(() => target.remove(), 100);
+
+                                // Zapping Sound
+                                if (count % 5 === 0) { // Don't play on every single one (too loud)
+                                    const osc = audioCtx.createOscillator();
+                                    const gain = audioCtx.createGain();
+                                    osc.connect(gain);
+                                    gain.connect(audioCtx.destination);
+                                    osc.type = 'sawtooth';
+                                    osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                                    osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.1);
+                                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
+                                    osc.start();
+                                    osc.stop(audioCtx.currentTime + 0.1);
+                                }
+                            }
+                            count++;
+                        }, 10); // Very fast deletion
+                    }, 2000);
                 }
+            },
+            'ssh': {
+                desc: 'Simulates a secure connection attempt.',
+                exec: () => {
+                    print("Handshake initiated...", 'text-info');
+                    setTimeout(() => {
+                        print("SUCCESS: Connection to api.shash.dev Established.", 'text-green-500');
+                        scrollToBottom();
+                    }, 500);
+                }
+            },
+        };
 
-                html.classList.toggle('dark');
-                const isDark = html.classList.contains('dark');
-                localStorage.theme = isDark ? 'dark' : 'light';
+        // --- Command Runner ---
 
-                // Update theme definition to match standard light/dark
-                if (isDark) applyTheme('default');
-                else applyTheme('light');
+        function runCommand(command) {
+            if (!command) return;
 
-                themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
-                themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
-            });
+            const parts = command.trim().toLowerCase().split(/\s+/);
+            const baseCommand = parts[0];
 
-            // Clock Logic
-            function updateClock() {
-                const now = new Date();
-                document.getElementById('clock').innerText = now.toUTCString().split(' ')[4] + ' UTC';
+            if (baseCommand === 'cd' && parts.length === 2) {
+                const dir = parts[1];
+                let url = '';
+                if (dir === 'home') url = 'home.html';
+                else if (dir === 'about') url = 'about.html';
+                else if (dir === 'work' || dir === 'projects') url = 'projects.html';
+                else if (dir === 'contact' || dir === 'comm') url = 'contact.html';
+
+                if (url) {
+                    print(`Navigating to /${dir} ...`, 'text-info');
+                    setTimeout(() => window.location.href = url, 300);
+                    return;
+                }
             }
-            setInterval(updateClock, 1000);
 
-            // Spotlight Logic
-            const grid = document.querySelector('.cyber-grid');
-            const body = document.body;
+            // Handle complex commands
+            const complexCommand = command.trim().toLowerCase();
+            if (commands[complexCommand]) {
+                commands[complexCommand].exec(parts);
+                return;
+            }
 
-            function activateGlow() { body.classList.add('is-hovering'); }
-            function deactivateGlow() { body.classList.remove('is-hovering'); }
+            if (commands[baseCommand]) {
+                commands[baseCommand].exec(parts);
+                return;
+            }
 
-            const glowSections = document.querySelectorAll('section, footer');
-            glowSections.forEach(section => {
-                section.addEventListener('mouseenter', activateGlow);
-            });
+            print(`Error: command not found: ${command}`, 'text-error');
+        }
 
-            document.addEventListener('mouseout', function (e) {
-                if (!e.relatedTarget && !e.toElement) {
-                    deactivateGlow();
+        // --- Input and Confirmation Handler ---
+
+        terminalInput.addEventListener('keydown', (e) => {
+            // HISTORY NAVIGATION
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    terminalInput.value = commandHistory[historyIndex];
+                } else if (historyIndex === -1 && commandHistory.length > 0) {
+                    historyIndex = commandHistory.length - 1;
+                    terminalInput.value = commandHistory[historyIndex];
                 }
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (grid) {
-                    grid.style.setProperty('--x', `${e.clientX}px`);
-                    grid.style.setProperty('--y', `${e.clientY}px`);
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1 && historyIndex !== -1) {
+                    historyIndex++;
+                    terminalInput.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length; // Past end
+                    terminalInput.value = '';
                 }
-            });
+            }
+            // COMMAND EXECUTION
+            else if (e.key === 'Enter') {
+                e.preventDefault();
+                const command = terminalInput.value.trim();
+                const confirmState = terminalInput.getAttribute('data-confirm');
 
-            // Typewriter Logic
+                // Add to history if not empty
+                if (command) {
+                    commandHistory.push(command);
+                    historyIndex = commandHistory.length; // Reset index to end
+                }
+
+                echoInput(command);
+
+                if (confirmState === 'reboot') {
+                    if (command === 'y') {
+                        print("System rebooting...", 'text-error');
+                        setTimeout(() => window.location.href = 'loading.html', 500);
+                    } else {
+                        print("Reboot cancelled.", 'text-green-500');
+                    }
+                    terminalInput.removeAttribute('data-confirm');
+                } else {
+                    runCommand(command);
+                }
+
+                terminalInput.value = '';
+                scrollToBottom();
+            }
+        });
+
+        // --- Drag and Resize Logic ---
+        const termHeader = document.getElementById('term-header');
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        termHeader.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            const rect = overlayTerminal.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+
+            overlayTerminal.style.cursor = 'move';
+            overlayTerminal.style.position = 'fixed';
+            overlayTerminal.style.right = 'auto';
+            overlayTerminal.style.bottom = 'auto';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            let newX = e.clientX - offsetX;
+            let newY = e.clientY - offsetY;
+
+            if (newX < 0) newX = 0;
+            if (newY < 0) newY = 0;
+            if (newX + overlayTerminal.offsetWidth > window.innerWidth) newX = window.innerWidth - overlayTerminal.offsetWidth;
+            if (newY + overlayTerminal.offsetHeight > window.innerHeight) newY = window.innerHeight - overlayTerminal.offsetHeight;
+
+            overlayTerminal.style.left = newX + 'px';
+            overlayTerminal.style.top = newY + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            overlayTerminal.style.cursor = 'default';
+        });
+
+        // --- Toggle Button Logic ---
+        toggleButton.addEventListener('click', () => {
+            const isHidden = overlayTerminal.style.display === 'none';
+            overlayTerminal.style.display = isHidden ? 'flex' : 'none';
+            if (isHidden) {
+                terminalInput.focus();
+            }
+        });
+
+        // --- Initial Setup and Event Handling ---
+
+        // Existing theme toggle logic (Icon Click)
+        const themeBtn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        themeBtn.addEventListener('click', () => {
+            // If current theme is custom (e.g. matrix), resetting to light/dark
+            if (localStorage.customTheme && localStorage.customTheme !== 'default' && localStorage.customTheme !== 'light') {
+                // Reset variables to default before toggling
+                applyTheme('default');
+            }
+
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            localStorage.theme = isDark ? 'dark' : 'light';
+
+            // Update theme definition to match standard light/dark
+            if (isDark) applyTheme('default');
+            else applyTheme('light');
+
+            themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
+            themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
+        });
+
+        // Clock Logic
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toUTCString().split(' ')[4] + ' UTC';
+        }
+        setInterval(updateClock, 1000);
+
+        // Spotlight Logic
+        const grid = document.querySelector('.cyber-grid');
+        const body = document.body;
+
+        function activateGlow() { body.classList.add('is-hovering'); }
+        function deactivateGlow() { body.classList.remove('is-hovering'); }
+
+        const glowSections = document.querySelectorAll('section, footer');
+        glowSections.forEach(section => {
+            section.addEventListener('mouseenter', activateGlow);
+        });
+
+        document.addEventListener('mouseout', function (e) {
+            if (!e.relatedTarget && !e.toElement) {
+                deactivateGlow();
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (grid) {
+                grid.style.setProperty('--x', `${e.clientX}px`);
+                grid.style.setProperty('--y', `${e.clientY}px`);
+            }
+        });
+
+        // Typewriter Logic
+        const inputName = document.getElementById('input-name');
+        const inputRoles = document.getElementById('input-roles');
+        const typewriterElement = document.getElementById('typewriter');
+
+        let phrases = ["Websites", "Apps", "Systems"];
+        let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+
+        function updatePhrases() {
+            const text = inputRoles.innerText.trim();
+            const parts = text.split(',').map(part => part.trim().replace(/['"]/g, ''));
+            if (parts.length > 0) phrases = parts.filter(p => p.length > 0);
+            else phrases = ["Code"];
+        }
+        inputRoles.addEventListener('input', () => { updatePhrases(); });
+
+        function type() {
+            const currentPhrase = phrases[phraseIndex % phrases.length];
+            if (isDeleting) {
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1); charIndex--;
+            } else {
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1); charIndex++;
+            }
+            let typeSpeed = isDeleting ? 50 : 100;
+            if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; }
+            else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex++; typeSpeed = 500; }
+            setTimeout(type, typeSpeed);
+        }
+
+        // Skill Bar Animation
+        function animateSkillBars() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const bars = entry.target.querySelectorAll('.skill-progress-bar');
+                        bars.forEach(bar => {
+                            const progress = bar.getAttribute('data-progress');
+                            bar.style.width = `${progress}%`;
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            // Speak welcome message (ONLY ONCE PER SESSION)
+            if (!sessionStorage.getItem('system_welcomed')) {
+                setTimeout(() => {
+                    speak("System online.");
+                    sessionStorage.setItem('system_welcomed', 'true');
+                }, 1000);
+            }
+
+            const skillSection = document.getElementById('tech-matrix-section');
+            if (skillSection) {
+                observer.observe(skillSection);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Basic Initializations
+            updateClock();
+            animateSkillBars();
+
+            // --- TYPEWRITER & LIVE EDIT LOGIC (Fixed) ---
             const inputName = document.getElementById('input-name');
+            const liveName = document.getElementById('live-name-display');
             const inputRoles = document.getElementById('input-roles');
             const typewriterElement = document.getElementById('typewriter');
 
             let phrases = ["Websites", "Apps", "Systems"];
-            let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+            let phraseIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let typeTimeout; // To control the loop
 
-            function updatePhrases() {
-                const text = inputRoles.innerText.trim();
-                const parts = text.split(',').map(part => part.trim().replace(/['"]/g, ''));
-                if (parts.length > 0) phrases = parts.filter(p => p.length > 0);
-                else phrases = ["Code"];
+            // A. Sync Name Immediately
+            if (inputName && liveName) {
+                inputName.addEventListener('input', () => {
+                    const rawText = inputName.innerText.trim();
+                    // Remove quotes if the user accidentally types them
+                    const cleanText = rawText.replace(/['"]/g, '');
+                    liveName.innerText = cleanText || 'User';
+                });
             }
-            inputRoles.addEventListener('input', () => { updatePhrases(); });
+
+            // B. Sync Typewriter Immediately
+            function updatePhrases() {
+                if (!inputRoles) return;
+                const text = inputRoles.innerText.trim();
+                // Split by comma, remove quotes/brackets
+                const parts = text.split(',').map(part => part.trim().replace(/['"\[\]]/g, ''));
+
+                const newPhrases = parts.filter(p => p.length > 0);
+
+                // If we have valid words, update and RESET animation instantly
+                if (newPhrases.length > 0) {
+                    phrases = newPhrases;
+                    // Reset Loop
+                    clearTimeout(typeTimeout);
+                    phraseIndex = 0;
+                    charIndex = 0;
+                    isDeleting = false;
+                    typewriterElement.textContent = ''; // Clear text
+                    type(); // Restart immediately
+                }
+            }
+
+            if (inputRoles) {
+                inputRoles.addEventListener('input', () => {
+                    // Debounce slightly so it doesn't glitch while typing
+                    clearTimeout(typeTimeout);
+                    setTimeout(updatePhrases, 500);
+                });
+            }
 
             function type() {
                 const currentPhrase = phrases[phraseIndex % phrases.length];
+
                 if (isDeleting) {
-                    typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1); charIndex--;
+                    typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                    charIndex--;
                 } else {
-                    typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1); charIndex++;
+                    typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
                 }
+
                 let typeSpeed = isDeleting ? 50 : 100;
-                if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; }
-                else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex++; typeSpeed = 500; }
-                setTimeout(type, typeSpeed);
+
+                if (!isDeleting && charIndex === currentPhrase.length) {
+                    isDeleting = true;
+                    typeSpeed = 2000; // Pause at end
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex++;
+                    typeSpeed = 500; // Pause before next word
+                }
+
+                typeTimeout = setTimeout(type, typeSpeed);
             }
 
-            // Skill Bar Animation
-            function animateSkillBars() {
+            // Start the loop
+            type();
+
+            // --- 2. DIGITAL PARTICLE TRAIL ---
+            const cursorCanvas = document.createElement('canvas');
+            const cursorCtx = cursorCanvas.getContext('2d');
+            cursorCanvas.style.position = 'fixed';
+            cursorCanvas.style.top = '0';
+            cursorCanvas.style.left = '0';
+            cursorCanvas.style.width = '100%';
+            cursorCanvas.style.height = '100%';
+            cursorCanvas.style.pointerEvents = 'none';
+            cursorCanvas.style.zIndex = '9998';
+            document.body.appendChild(cursorCanvas);
+
+            let cursorParticles = [];
+
+            function resizeCursorCanvas() {
+                cursorCanvas.width = window.innerWidth;
+                cursorCanvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCursorCanvas);
+            resizeCursorCanvas();
+
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = Math.random() * 2 - 1;
+                    this.speedY = Math.random() * 2 - 1;
+                    this.color = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim();
+                    this.life = 1.0;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.life -= 0.02;
+                    if (this.size > 0.1) this.size -= 0.1;
+                }
+                draw() {
+                    cursorCtx.fillStyle = this.color;
+                    cursorCtx.globalAlpha = this.life;
+                    cursorCtx.fillRect(this.x, this.y, this.size, this.size);
+                    cursorCtx.globalAlpha = 1.0;
+                }
+            }
+
+            window.addEventListener('mousemove', (e) => {
+                cursorParticles.push(new Particle(e.clientX, e.clientY));
+                cursorParticles.push(new Particle(e.clientX, e.clientY));
+            });
+
+            function animateParticles() {
+                cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+                for (let i = 0; i < cursorParticles.length; i++) {
+                    cursorParticles[i].update();
+                    cursorParticles[i].draw();
+                    if (cursorParticles[i].life <= 0) {
+                        cursorParticles.splice(i, 1);
+                        i--;
+                    }
+                }
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+
+            // --- 3. REAL SYSTEM MONITORING ---
+            (function initSystemMonitor() {
+                const fpsElem = document.getElementById('sys-fps');
+                const memElem = document.getElementById('sys-mem');
+                const pingElem = document.getElementById('net-ping');
+                let lastTime = performance.now();
+                let frameCount = 0;
+
+                function monitorLoop() {
+                    const now = performance.now();
+                    frameCount++;
+                    if (now - lastTime >= 1000) {
+                        const fps = frameCount;
+                        frameCount = 0;
+                        lastTime = now;
+                        if (fpsElem) {
+                            fpsElem.innerText = fps;
+                            if (fps < 30) fpsElem.className = 'text-red-500 font-bold';
+                            else if (fps < 50) fpsElem.className = 'text-yellow-500';
+                            else fpsElem.className = 'text-green-500';
+                        }
+                        if (memElem) {
+                            // @ts-ignore
+                            if (performance && performance.memory) {
+                                memElem.innerText = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
+                            } else {
+                                const sim = 45 + (Math.random() * 10);
+                                memElem.innerText = sim.toFixed(1) + '*';
+                            }
+                        }
+                        if (pingElem) {
+                            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                            if (conn && conn.rtt) {
+                                pingElem.innerText = conn.rtt;
+                            } else {
+                                const timing = performance.getEntriesByType("navigation")[0];
+                                const loadTime = timing ? Math.round(timing.domComplete) : 25;
+                                pingElem.innerText = loadTime;
+                            }
+                        }
+                    }
+                    requestAnimationFrame(monitorLoop);
+                }
+                monitorLoop();
+            })();
+
+            // --- 4. PHANTOM TOUCH ---
+            function triggerHaptic(pattern) {
+                if (navigator.vibrate) navigator.vibrate(pattern);
+            }
+            const interactiveElements = document.querySelectorAll('button, a, .terminal-card, input');
+            interactiveElements.forEach(el => {
+                el.addEventListener('click', () => triggerHaptic(15));
+                el.addEventListener('mouseenter', () => triggerHaptic(5));
+            });
+
+            // --- 5. HOLOGRAPHIC DECK ---
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', (e) => {
+                    if (e.beta === null || e.gamma === null) return;
+                    const tiltX = e.gamma;
+                    const tiltY = e.beta;
+                    const grid = document.querySelector('.cyber-grid');
+                    if (grid) grid.style.transform = `translate(${tiltX * 2}px, ${tiltY * 2}px)`;
+                    const heroCard = document.getElementById('tilt-card');
+                    if (heroCard) heroCard.style.transform = `perspective(1000px) rotateY(${tiltX / 10}deg) rotateX(${-tiltY / 10}deg)`;
+                });
+            }
+
+            // --- 6. DATA INGESTION ---
+            const dropZone = document.body;
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+            });
+
+            dropZone.addEventListener('dragenter', () => {
+                document.body.style.border = '4px dashed var(--accent-primary)';
+                document.body.style.opacity = '0.7';
+                const term = document.getElementById('overlay-terminal');
+                if (term) term.style.display = 'flex';
+                print("[SYSTEM] DETECTING EXTERNAL DATA STREAM...", "text-neonCyan animate-pulse");
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                document.body.style.border = 'none';
+                document.body.style.opacity = '1';
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                document.body.style.border = 'none';
+                document.body.style.opacity = '1';
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            });
+
+            function handleFiles(files) {
+                const term = document.getElementById('overlay-terminal');
+                if (term) term.style.display = 'flex';
+                ([...files]).forEach(file => {
+                    print(`> UPLOADING: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`, "text-white");
+                    if (typeof triggerHaptic === 'function') triggerHaptic(20);
+                    if (typeof playSound === 'function') playSound('click');
+                    setTimeout(() => print(`  [SCANNING HEX DUMP...]`, "text-gray-500"), 600);
+                    setTimeout(() => print(`  [ANALYZING METADATA...]`, "text-gray-500"), 1200);
+                    setTimeout(() => {
+                        const isSafe = Math.random() > 0.2;
+                        if (isSafe) {
+                            print(`  [RESULT] FILE INTEGRITY VERIFIED. ACCEPTED.`, "text-green-500");
+                            if (typeof speak === 'function') speak("File accepted.");
+                        } else {
+                            print(`  [WARNING] ANOMALY DETECTED IN ${file.name}. QUARANTINED.`, "text-red-500 font-bold");
+                            if (typeof speak === 'function') speak("Warning. Malicious data detected.");
+                            if (typeof triggerHaptic === 'function') triggerHaptic([50, 50, 200]);
+                        }
+                    }, 2500);
+                });
+            }
+
+            // --- 7. TIMELINE ---
+            function animateTimeline() {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
-                            const bars = entry.target.querySelectorAll('.skill-progress-bar');
-                            bars.forEach(bar => {
-                                const progress = bar.getAttribute('data-progress');
-                                bar.style.width = `${progress}%`;
-                            });
-                            observer.unobserve(entry.target);
+                            entry.target.classList.add('in-view');
                         }
                     });
-                }, { threshold: 0.5 });
-                // Speak welcome message (ONLY ONCE PER SESSION)
-                if (!sessionStorage.getItem('system_welcomed')) {
-                    setTimeout(() => {
-                        speak("System online.");
-                        sessionStorage.setItem('system_welcomed', 'true');
-                    }, 1000);
-                }
-
-                const skillSection = document.getElementById('tech-matrix-section');
-                if (skillSection) {
-                    observer.observe(skillSection);
-                }
+                }, { threshold: 0.2 });
+                const items = document.querySelectorAll('.timeline-item');
+                items.forEach(item => observer.observe(item));
             }
+            animateTimeline();
 
-            document.addEventListener('DOMContentLoaded', () => {
-                // 1. Basic Initializations
-                updateClock();
-                animateSkillBars();
+            // --- 8. THEME & INPUT ---
+            const isDark = html.classList.contains('dark');
+            themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
+            themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
 
-                // --- TYPEWRITER & LIVE EDIT LOGIC (Fixed) ---
-                const inputName = document.getElementById('input-name');
-                const liveName = document.getElementById('live-name-display');
-                const inputRoles = document.getElementById('input-roles');
-                const typewriterElement = document.getElementById('typewriter');
-
-                let phrases = ["Websites", "Apps", "Systems"];
-                let phraseIndex = 0;
-                let charIndex = 0;
-                let isDeleting = false;
-                let typeTimeout; // To control the loop
-
-                // A. Sync Name Immediately
-                if (inputName && liveName) {
-                    inputName.addEventListener('input', () => {
-                        const rawText = inputName.innerText.trim();
-                        // Remove quotes if the user accidentally types them
-                        const cleanText = rawText.replace(/['"]/g, '');
-                        liveName.innerText = cleanText || 'User';
-                    });
-                }
-
-                // B. Sync Typewriter Immediately
-                function updatePhrases() {
-                    if (!inputRoles) return;
-                    const text = inputRoles.innerText.trim();
-                    // Split by comma, remove quotes/brackets
-                    const parts = text.split(',').map(part => part.trim().replace(/['"\[\]]/g, ''));
-
-                    const newPhrases = parts.filter(p => p.length > 0);
-
-                    // If we have valid words, update and RESET animation instantly
-                    if (newPhrases.length > 0) {
-                        phrases = newPhrases;
-                        // Reset Loop
-                        clearTimeout(typeTimeout);
-                        phraseIndex = 0;
-                        charIndex = 0;
-                        isDeleting = false;
-                        typewriterElement.textContent = ''; // Clear text
-                        type(); // Restart immediately
-                    }
-                }
-
-                if (inputRoles) {
-                    inputRoles.addEventListener('input', () => {
-                        // Debounce slightly so it doesn't glitch while typing
-                        clearTimeout(typeTimeout);
-                        setTimeout(updatePhrases, 500);
-                    });
-                }
-
-                function type() {
-                    const currentPhrase = phrases[phraseIndex % phrases.length];
-
-                    if (isDeleting) {
-                        typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
-                        charIndex--;
-                    } else {
-                        typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                        charIndex++;
-                    }
-
-                    let typeSpeed = isDeleting ? 50 : 100;
-
-                    if (!isDeleting && charIndex === currentPhrase.length) {
-                        isDeleting = true;
-                        typeSpeed = 2000; // Pause at end
-                    } else if (isDeleting && charIndex === 0) {
-                        isDeleting = false;
-                        phraseIndex++;
-                        typeSpeed = 500; // Pause before next word
-                    }
-
-                    typeTimeout = setTimeout(type, typeSpeed);
-                }
-
-                // Start the loop
-                type();
-
-                // --- 2. DIGITAL PARTICLE TRAIL ---
-                const cursorCanvas = document.createElement('canvas');
-                const cursorCtx = cursorCanvas.getContext('2d');
-                cursorCanvas.style.position = 'fixed';
-                cursorCanvas.style.top = '0';
-                cursorCanvas.style.left = '0';
-                cursorCanvas.style.width = '100%';
-                cursorCanvas.style.height = '100%';
-                cursorCanvas.style.pointerEvents = 'none';
-                cursorCanvas.style.zIndex = '9998';
-                document.body.appendChild(cursorCanvas);
-
-                let cursorParticles = [];
-
-                function resizeCursorCanvas() {
-                    cursorCanvas.width = window.innerWidth;
-                    cursorCanvas.height = window.innerHeight;
-                }
-                window.addEventListener('resize', resizeCursorCanvas);
-                resizeCursorCanvas();
-
-                class Particle {
-                    constructor(x, y) {
-                        this.x = x;
-                        this.y = y;
-                        this.size = Math.random() * 3 + 1;
-                        this.speedX = Math.random() * 2 - 1;
-                        this.speedY = Math.random() * 2 - 1;
-                        this.color = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim();
-                        this.life = 1.0;
-                    }
-                    update() {
-                        this.x += this.speedX;
-                        this.y += this.speedY;
-                        this.life -= 0.02;
-                        if (this.size > 0.1) this.size -= 0.1;
-                    }
-                    draw() {
-                        cursorCtx.fillStyle = this.color;
-                        cursorCtx.globalAlpha = this.life;
-                        cursorCtx.fillRect(this.x, this.y, this.size, this.size);
-                        cursorCtx.globalAlpha = 1.0;
-                    }
-                }
-
-                window.addEventListener('mousemove', (e) => {
-                    cursorParticles.push(new Particle(e.clientX, e.clientY));
-                    cursorParticles.push(new Particle(e.clientX, e.clientY));
-                });
-
-                function animateParticles() {
-                    cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-                    for (let i = 0; i < cursorParticles.length; i++) {
-                        cursorParticles[i].update();
-                        cursorParticles[i].draw();
-                        if (cursorParticles[i].life <= 0) {
-                            cursorParticles.splice(i, 1);
-                            i--;
-                        }
-                    }
-                    requestAnimationFrame(animateParticles);
-                }
-                animateParticles();
-
-                // --- 3. REAL SYSTEM MONITORING ---
-                (function initSystemMonitor() {
-                    const fpsElem = document.getElementById('sys-fps');
-                    const memElem = document.getElementById('sys-mem');
-                    const pingElem = document.getElementById('net-ping');
-                    let lastTime = performance.now();
-                    let frameCount = 0;
-
-                    function monitorLoop() {
-                        const now = performance.now();
-                        frameCount++;
-                        if (now - lastTime >= 1000) {
-                            const fps = frameCount;
-                            frameCount = 0;
-                            lastTime = now;
-                            if (fpsElem) {
-                                fpsElem.innerText = fps;
-                                if (fps < 30) fpsElem.className = 'text-red-500 font-bold';
-                                else if (fps < 50) fpsElem.className = 'text-yellow-500';
-                                else fpsElem.className = 'text-green-500';
-                            }
-                            if (memElem) {
-                                // @ts-ignore
-                                if (performance && performance.memory) {
-                                    memElem.innerText = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
-                                } else {
-                                    const sim = 45 + (Math.random() * 10);
-                                    memElem.innerText = sim.toFixed(1) + '*';
-                                }
-                            }
-                            if (pingElem) {
-                                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                                if (conn && conn.rtt) {
-                                    pingElem.innerText = conn.rtt;
-                                } else {
-                                    const timing = performance.getEntriesByType("navigation")[0];
-                                    const loadTime = timing ? Math.round(timing.domComplete) : 25;
-                                    pingElem.innerText = loadTime;
-                                }
-                            }
-                        }
-                        requestAnimationFrame(monitorLoop);
-                    }
-                    monitorLoop();
-                })();
-
-                // --- 4. PHANTOM TOUCH ---
-                function triggerHaptic(pattern) {
-                    if (navigator.vibrate) navigator.vibrate(pattern);
-                }
-                const interactiveElements = document.querySelectorAll('button, a, .terminal-card, input');
-                interactiveElements.forEach(el => {
-                    el.addEventListener('click', () => triggerHaptic(15));
-                    el.addEventListener('mouseenter', () => triggerHaptic(5));
-                });
-
-                // --- 5. HOLOGRAPHIC DECK ---
-                if (window.DeviceOrientationEvent) {
-                    window.addEventListener('deviceorientation', (e) => {
-                        if (e.beta === null || e.gamma === null) return;
-                        const tiltX = e.gamma;
-                        const tiltY = e.beta;
-                        const grid = document.querySelector('.cyber-grid');
-                        if (grid) grid.style.transform = `translate(${tiltX * 2}px, ${tiltY * 2}px)`;
-                        const heroCard = document.getElementById('tilt-card');
-                        if (heroCard) heroCard.style.transform = `perspective(1000px) rotateY(${tiltX / 10}deg) rotateX(${-tiltY / 10}deg)`;
-                    });
-                }
-
-                // --- 6. DATA INGESTION ---
-                const dropZone = document.body;
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
-                });
-
-                dropZone.addEventListener('dragenter', () => {
-                    document.body.style.border = '4px dashed var(--accent-primary)';
-                    document.body.style.opacity = '0.7';
-                    const term = document.getElementById('overlay-terminal');
-                    if (term) term.style.display = 'flex';
-                    print("[SYSTEM] DETECTING EXTERNAL DATA STREAM...", "text-neonCyan animate-pulse");
-                });
-
-                dropZone.addEventListener('dragleave', () => {
-                    document.body.style.border = 'none';
-                    document.body.style.opacity = '1';
-                });
-
-                dropZone.addEventListener('drop', (e) => {
-                    document.body.style.border = 'none';
-                    document.body.style.opacity = '1';
-                    const files = e.dataTransfer.files;
-                    handleFiles(files);
-                });
-
-                function handleFiles(files) {
-                    const term = document.getElementById('overlay-terminal');
-                    if (term) term.style.display = 'flex';
-                    ([...files]).forEach(file => {
-                        print(`> UPLOADING: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`, "text-white");
-                        if (typeof triggerHaptic === 'function') triggerHaptic(20);
-                        if (typeof playSound === 'function') playSound('click');
-                        setTimeout(() => print(`  [SCANNING HEX DUMP...]`, "text-gray-500"), 600);
-                        setTimeout(() => print(`  [ANALYZING METADATA...]`, "text-gray-500"), 1200);
-                        setTimeout(() => {
-                            const isSafe = Math.random() > 0.2;
-                            if (isSafe) {
-                                print(`  [RESULT] FILE INTEGRITY VERIFIED. ACCEPTED.`, "text-green-500");
-                                if (typeof speak === 'function') speak("File accepted.");
-                            } else {
-                                print(`  [WARNING] ANOMALY DETECTED IN ${file.name}. QUARANTINED.`, "text-red-500 font-bold");
-                                if (typeof speak === 'function') speak("Warning. Malicious data detected.");
-                                if (typeof triggerHaptic === 'function') triggerHaptic([50, 50, 200]);
-                            }
-                        }, 2500);
-                    });
-                }
-
-                // --- 7. TIMELINE ---
-                function animateTimeline() {
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                entry.target.classList.add('in-view');
-                            }
-                        });
-                    }, { threshold: 0.2 });
-                    const items = document.querySelectorAll('.timeline-item');
-                    items.forEach(item => observer.observe(item));
-                }
-                animateTimeline();
-
-                // --- 8. THEME & INPUT ---
-                const isDark = html.classList.contains('dark');
-                themeBtn.querySelector('.ri-sun-line').classList.toggle('hidden', isDark);
-                themeBtn.querySelector('.ri-moon-line').classList.toggle('hidden', !isDark);
-
-                const elements = [inputName, inputRoles].filter(el => el != null);
-                elements.forEach(el => {
-                    el.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
-                });
+            const elements = [inputName, inputRoles].filter(el => el != null);
+            elements.forEach(el => {
+                el.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
             });
-        })();
+        });
+
         // --- Shared Terminal Logic (ENDS HERE) ---
         // --- HACKER TEXT DECODE EFFECT ---
         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*";
