@@ -237,6 +237,25 @@
     z-index: 100;
     display: none; /* Hidden by default */
 }
+/* --- MOBILE OPTIMIZATION (LOADING SCREEN) --- */
+        @media (max-width: 640px) {
+            .terminal-container {
+                width: 95%;
+                height: 85vh; /* Taller on mobile to fit logs */
+                padding: 10px;
+            }
+            .terminal-output {
+                font-size: 11px; /* Smaller font for mobile */
+                line-height: 1.4;
+            }
+            #task-status, #percentage {
+                font-size: 10px;
+            }
+            /* Hide the heavy scanlines on mobile to save battery/performance */
+            .scanlines {
+                background-size: 100% 2px; 
+            }
+        }
     </style>
 </head>
 

@@ -457,6 +457,70 @@
             /* Center it */
             top: -5vh;
         }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        /* --- MOBILE OPTIMIZATION (MAIN INTERFACE) --- */
+        @media (max-width: 640px) {
+
+            /* 1. Make the terminal fit the screen */
+            #overlay-terminal {
+                width: 90% !important;
+                left: 5% !important;
+                right: 5% !important;
+                bottom: 90px !important;
+                /* Above the toggle button */
+                height: 50vh !important;
+                min-width: unset;
+            }
+
+            /* 2. Shrink the Toggle Button slightly */
+            #terminal-toggle {
+                bottom: 20px;
+                right: 20px;
+                transform: scale(0.9);
+            }
+
+            /* 3. Adjust Typography */
+            h1 {
+                font-size: 2.5rem !important;
+                /* Smaller main titles */
+                line-height: 1.1;
+            }
+
+            /* 4. Fix Timeline Spacing (About/Home) */
+            .timeline-line {
+                left: 15px;
+                /* Adjust line position */
+            }
+
+            .timeline-dot {
+                left: 10px;
+                /* Adjust dot position */
+            }
+
+            .relative.pl-8 {
+                padding-left: 2rem;
+                /* Less padding */
+            }
+
+            /* 5. Ensure Grid Background doesn't lag */
+            .cyber-grid {
+                background-size: 20px 20px;
+                /* Smaller grid cells */
+            }
+        }
     </style>
 </head>
 
@@ -485,7 +549,8 @@
                 <span class="self-center text-xl font-bold tracking-wide dark:text-textMain">CodeBaaz</span>
             </a>
 
-            <div class="flex items-center gap-6">
+            <div
+                class="flex items-center gap-6 font-mono text-sm overflow-x-auto w-full md:w-auto pb-2 md:pb-0 hide-scrollbar">
                 <div class="hidden md:flex gap-6 font-mono text-sm">
                     <a href="home.html"
                         class="hover:text-neonBlue dark:hover:text-neonCyan transition-colors">~/Home</a>
@@ -1947,12 +2012,12 @@
                     });
                 }, { threshold: 0.5 });
                 // Speak welcome message (ONLY ONCE PER SESSION)
-            if (!sessionStorage.getItem('system_welcomed')) {
-                setTimeout(() => {
-                    speak("System online.");
-                    sessionStorage.setItem('system_welcomed', 'true');
-                }, 1000);
-            }
+                if (!sessionStorage.getItem('system_welcomed')) {
+                    setTimeout(() => {
+                        speak("System online.");
+                        sessionStorage.setItem('system_welcomed', 'true');
+                    }, 1000);
+                }
 
                 const skillSection = document.getElementById('tech-matrix-section');
                 if (skillSection) {
