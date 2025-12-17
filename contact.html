@@ -59,6 +59,25 @@
             --accent-secondary: #3b82f6;
             /* Blue */
             --grid-color: rgba(102, 252, 241, 0.15);
+
+            /* IDE SPECIFIC VARS (Now Dynamic) */
+
+            /* Mixes main bg with 5% white so the IDE stands out slightly from the page */
+            --ide-bg: color-mix(in srgb, var(--bg-primary), white 5%);
+
+            /* Sidebar blends seamlessly with the page background */
+            --ide-sidebar: var(--bg-primary);
+
+            /* Borders glow with your theme's main accent color */
+            --ide-border: var(--accent-primary);
+
+            /* Status bar uses your secondary accent color */
+            --status-bg: var(--accent-secondary);
+            --status-fg: #fff;
+
+            /* File list interaction colors derived from theme */
+            --file-hover: var(--grid-color);
+            --file-active: color-mix(in srgb, var(--accent-primary), transparent 80%);
         }
 
         /* Smooth Transition for Theme Switching */
@@ -250,6 +269,57 @@
             font-size: 0.8rem;
         }
 
+        /* --- UPDATED TERMINAL TABS & PANES --- */
+        .term-tab {
+            cursor: pointer;
+            color: #666;
+            padding-bottom: 2px;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .term-tab:hover {
+            color: #ccc;
+        }
+
+        .term-tab.active {
+            color: #fff;
+            border-bottom: 1px solid #fff;
+            /* The "Active" Underline */
+        }
+
+        /* Utility to hide inactive panes */
+        .console-pane.hidden {
+            display: none;
+        }
+
+        .console-pane {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* DEBUG CONSOLE SPECIFIC */
+        .debug-input-line {
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #333;
+            padding-top: 5px;
+            margin-top: 5px;
+        }
+
+        .debug-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ce9178;
+            /* Orange-ish input color */
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            width: 100%;
+            margin-left: 5px;
+        }
+
         /* --- SYSTEM CURSOR --- */
 
         a,
@@ -350,6 +420,514 @@
             -webkit-tap-highlight-color: transparent;
             /* Removes blue tap box on Android */
         }
+
+        /* =========================================
+   === NEW IDE COMPONENT STYLES ===
+========================================= */
+        .ide-window {
+            width: 1000px;
+            max-width: 100%;
+            height: 650px;
+            background: var(--ide-bg);
+            border: 1px solid var(--ide-border);
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: 48px 220px 1fr;
+            grid-template-rows: 1fr 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: border-color 0.3s;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .ide-window:hover {
+            border-color: var(--accent-primary);
+        }
+
+        /* 1. ACTIVITY BAR */
+        .activity-bar {
+            background: #333;
+            grid-row: 1 / 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+            border-right: 1px solid #111;
+        }
+
+        .act-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #858585;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .act-icon:hover,
+        .act-icon.active {
+            color: #fff;
+        }
+
+        .act-icon.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: var(--accent-primary);
+        }
+
+        /* 2. SIDEBAR */
+        .folder-header i {
+            transition: transform 0.2s ease;
+            margin-right: 4px;
+        }
+
+        .ide-sidebar {
+            background: var(--ide-sidebar);
+            grid-row: 1 / 2;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #111;
+            font-size: 13px;
+        }
+
+        .explorer-header {
+            padding: 10px 20px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #bbbbbb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .folder-header {
+            padding: 4px 10px;
+            font-weight: bold;
+            color: #cccccc;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 20px;
+            cursor: pointer;
+            color: #cccccc;
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .file-item:hover {
+            background: var(--file-hover);
+            color: #fff;
+        }
+
+        .file-item.active {
+            background: var(--file-active);
+            color: #fff;
+        }
+
+        .icon-html {
+            color: #e44d26;
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        /* 3. EDITOR - FIXED LAYOUT */
+        .editor-main {
+            grid-row: 1 / 2;
+            display: flex;
+            flex-direction: column;
+            background: var(--ide-bg);
+            position: relative;
+            overflow: hidden;
+            /* Critical: Prevents entire editor from expanding */
+        }
+
+        .tab-bar {
+            height: 35px;
+            background: #252526;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            flex-shrink: 0;
+            /* Never shrink the tabs */
+        }
+
+        .tab {
+            height: 100%;
+            padding: 0 10px;
+            background: #1e1e1e;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            border-top: 1px solid var(--accent-primary);
+            border-right: 1px solid #252526;
+            min-width: 120px;
+        }
+
+        .lang-switch {
+            margin-left: auto;
+            padding-right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #666;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+
+        .lang-btn.active {
+            color: var(--accent-primary);
+            border: 1px solid var(--accent-primary);
+        }
+
+        /* --- STATIC WORKSPACE (Main Code Area) --- */
+        .editor-workspace {
+            position: relative;
+            flex-grow: 1;
+            /* Take all remaining space */
+            flex-shrink: 1;
+            /* Allow shrinking if needed */
+            min-height: 0;
+            /* CRITICAL FIX: Allows scrolling inside flex item */
+            display: flex;
+            overflow: hidden;
+            background: var(--ide-bg);
+        }
+
+        .code-container {
+            flex-grow: 1;
+            display: flex;
+            overflow: hidden;
+            padding-right: 60px;
+            /* Space for absolute minimap */
+        }
+
+        .line-nums {
+            width: 45px;
+            text-align: right;
+            padding: 10px 15px 0 0;
+            color: #858585;
+            font-size: 14px;
+            line-height: 24px;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .code-body {
+            flex-grow: 1;
+            padding: 10px 0 0 10px;
+            font-size: 14px;
+            line-height: 24px;
+            overflow-y: auto;
+            color: #d4d4d4;
+        }
+
+        /* --- STATIC MINIMAP (Pinned Right) --- */
+        .minimap {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 60px;
+            background: var(--ide-bg);
+            border-left: 1px solid #2a2a2a;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        canvas#minimap-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .minimap-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        /* --- TERMINAL RESIZER --- */
+        .resizer-bar {
+            height: 4px;
+            background: #2a2a2a;
+            cursor: row-resize;
+            transition: background 0.2s;
+            width: 100%;
+            z-index: 20;
+            flex-shrink: 0;
+            /* Never collapse */
+        }
+
+        .resizer-bar:hover,
+        .resizer-bar.resizing {
+            background: var(--accent-primary);
+        }
+
+        /* --- TERMINAL PANE --- */
+        .ide-terminal-pane {
+            height: 140px;
+            /* Default Height */
+            min-height: 50px;
+            border-top: 1px solid var(--ide-border);
+            background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            /* CRITICAL: Prevents terminal from disappearing */
+            z-index: 15;
+            position: relative;
+        }
+
+        .ide-term-bar {
+            padding: 4px 15px;
+            font-size: 11px;
+            color: #aaa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .ide-term-content {
+            flex-grow: 1;
+            padding: 8px 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            color: #cccccc;
+        }
+
+        .run-btn {
+            background: var(--accent-primary);
+            color: #000;
+            padding: 2px 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 10px;
+            border-radius: 2px;
+        }
+
+        /* Git Blame Style */
+        .git-blame {
+            display: inline-block;
+            margin-left: 15px;
+            color: #555;
+            font-style: italic;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .input-group:focus-within .git-blame {
+            opacity: 1;
+        }
+
+        /* --- NEW: CONTACT INPUTS FIX --- */
+        .ide-input {
+            background-color: transparent !important;
+            background: transparent !important;
+            border: none;
+            outline: none;
+            color: #ce9178;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            border-bottom: 1px dashed #444;
+            width: 180px;
+            padding: 0;
+            margin: 0;
+            transition: border-color 0.2s;
+        }
+
+        /* REMOVES WHITE AUTOFILL BACKGROUND */
+        .ide-input:-webkit-autofill,
+        .ide-input:-webkit-autofill:hover,
+        .ide-input:-webkit-autofill:focus,
+        .ide-input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px var(--ide-bg) inset !important;
+            -webkit-text-fill-color: #ce9178 !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .ide-input:focus {
+            border-bottom: 1px solid var(--accent-primary);
+        }
+
+        .ide-input.error {
+            border-bottom-color: #ff5555;
+        }
+
+        /* 4. STATUS BAR */
+        .status-bar {
+            grid-column: 1 / 4;
+            grid-row: 2 / 3;
+            background: var(--status-bg);
+            color: var(--status-fg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 12px;
+            z-index: 10;
+            cursor: default;
+        }
+
+        .sb-left,
+        .sb-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .status-building {
+            background: #d97706 !important;
+        }
+
+        .status-ready {
+            background: #16a34a !important;
+        }
+
+        /* SYNTAX COLORS */
+        .kwd {
+            color: #569cd6;
+        }
+
+        .str {
+            color: #ce9178;
+        }
+
+        .fun {
+            color: #dcdcaa;
+        }
+
+        .var {
+            color: #9cdcfe;
+        }
+
+        .theme-rust .kwd {
+            color: #ff5c57;
+        }
+
+        /* Responsive Fix */
+        @media (max-width: 768px) {
+            .ide-window {
+                grid-template-columns: 50px 1fr;
+                height: 80vh;
+            }
+
+            .ide-sidebar {
+                display: none;
+            }
+        }
+
+        /* --- NEW: TERMINAL RESIZER --- */
+        .resizer-bar {
+            height: 4px;
+            background: #2a2a2a;
+            /* Subtle separator color */
+            cursor: row-resize;
+            transition: background 0.2s;
+            z-index: 20;
+            width: 100%;
+        }
+
+        .resizer-bar:hover,
+        .resizer-bar.resizing {
+            background: var(--accent-primary);
+            /* Highlights when grabbed */
+        }
+
+        /* --- UPDATED: MINIMAP CONTAINER --- */
+        .minimap {
+            width: 60px;
+            /* Slightly wider */
+            background: var(--ide-bg);
+            border-left: 1px solid #2a2a2a;
+            opacity: 1;
+            /* Remove global opacity for clearer colors */
+            position: relative;
+            /* For the shadow overlay */
+            overflow: hidden;
+        }
+
+        /* The "Viewport Shadow" simulates the current scroll position */
+        .minimap-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        /* TERMINAL PANE - ADD THIS BACK */
+        .ide-terminal-pane {
+            height: 140px;
+            /* Default starting height */
+            min-height: 50px;
+            /* Safety minimum */
+            border-top: 1px solid var(--ide-border);
+            background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+
+            /* CRITICAL FIX: Prevents the panel from being crushed by the editor above */
+            flex-shrink: 0;
+        }
+
+        .cmd-item {
+            padding: 6px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            color: #ccc;
+            font-size: 13px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .cmd-item:hover,
+        .cmd-item.selected {
+            background-color: var(--accent-primary);
+            /* Uses your theme color! */
+            color: #000;
+        }
+
+        .cmd-key {
+            font-size: 11px;
+            opacity: 0.7;
+        }
     </style>
 </head>
 
@@ -384,72 +962,162 @@
     </nav>
 
     <section id="contact-page"
-        class="relative z-10 pt-32 pb-20 container mx-auto px-6 min-h-[80vh] flex flex-col justify-center flex-grow">
-        <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        class="relative z-10 pt-32 pb-20 container mx-auto px-4 flex-grow flex items-center justify-center">
 
-            <div class="space-y-8">
-                <h1 class="text-4xl md:text-5xl font-bold font-mono break-all leading-tight">
-                    <span class="text-neonBlue dark:text-neonCyan">./</span>Initialize_Comm
-                </h1>
-                <p class="text-gray-600 dark:text-gray-400 text-lg">
-                    Have a project in mind or just want to discuss the latest tech? Execute the form command.
-                </p>
+        <div class="ide-window shadow-2xl">
 
-                <div class="space-y-4 font-mono">
-                    <div class="flex items-center gap-4 group cursor-pointer">
-                        <div
-                            class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded flex items-center justify-center group-hover:text-neonBlue dark:group-hover:text-neonCyan transition-colors">
-                            <i class="ri-mail-send-line text-xl"></i>
-                        </div>
-                        <span
-                            class="group-hover:text-neonBlue dark:group-hover:text-neonCyan break-all">shashwatop89@gmail.com</span>
+            <div class="activity-bar">
+                <div class="act-icon active"><i class="ri-file-code-line"></i></div>
+                <div class="act-icon"><i class="ri-search-line"></i></div>
+                <div class="act-icon"><i class="ri-git-merge-line"></i></div>
+                <div class="act-icon" style="margin-top:auto; margin-bottom: 10px;"><i class="ri-settings-3-line"></i>
+                </div>
+            </div>
+
+            <div class="ide-sidebar">
+                <div class="explorer-header">
+                    <span>EXPLORER</span>
+                    <i class="ri-more-fill cursor-pointer hover:text-white"></i>
+                </div>
+
+                <div class="folder-header" onclick="toggleFolder('f-port', this)">
+                    <i class="ri-arrow-down-s-line"></i>
+                    <span>PORTFOLIO</span>
+                </div>
+                <div id="f-port" class="folder-content">
+                    <a href="about.html" class="file-item">
+                        <i class="ri-code-s-slash-line icon-html"></i>
+                        <span>about.html</span>
+                    </a>
+                    <a href="contact.html" class="file-item active">
+                        <i class="ri-code-s-slash-line icon-html"></i>
+                        <span>contact.html</span>
+                    </a>
+                    <a href="home.html" class="file-item">
+                        <i class="ri-code-s-slash-line icon-html"></i>
+                        <span>home.html</span>
+                    </a>
+                    <a href="projects.html" class="file-item">
+                        <i class="ri-code-s-slash-line icon-html"></i>
+                        <span>projects.html</span>
+                    </a>
+                </div>
+
+                <div class="folder-header" onclick="toggleFolder('f-data', this)">
+                    <i class="ri-arrow-right-s-line"></i>
+                    <span>DATA</span>
+                </div>
+                <div id="f-data" class="folder-content hidden">
+                    <div class="file-item" onclick="openDummy('skills.json')">
+                        <i class="ri-braces-line text-yellow-400 text-base"></i>
+                        <span>skills.json</span>
                     </div>
-                    <div class="flex items-center gap-4 group cursor-pointer">
-                        <div
-                            class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded flex items-center justify-center group-hover:text-neonBlue dark:group-hover:text-neonCyan transition-colors">
-                            <i class="ri-github-line text-xl"></i>
-                        </div>
-                        <span
-                            class="group-hover:text-neonBlue dark:group-hover:text-neonCyan break-all">github.com/ShashwatEv</span>
+                    <div class="file-item" onclick="openDummy('resume.yaml')">
+                        <i class="ri-file-list-2-line text-purple-400 text-base"></i>
+                        <span>resume.yaml</span>
+                    </div>
+                </div>
+
+                <div class="folder-header" onclick="toggleFolder('f-conf', this)">
+                    <i class="ri-arrow-right-s-line"></i>
+                    <span>CONFIG</span>
+                </div>
+                <div id="f-conf" class="folder-content hidden">
+                    <div class="file-item" onclick="openDummy('package.json')">
+                        <i class="ri-braces-line text-yellow-400 text-base"></i>
+                        <span>package.json</span>
+                    </div>
+                    <div class="file-item" onclick="openDummy('.env.local')">
+                        <i class="ri-settings-4-line text-gray-500 text-base"></i>
+                        <span>.env.local</span>
                     </div>
                 </div>
             </div>
 
-            <div
-                class="bg-white dark:bg-bgDark p-8 rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl relative overflow-hidden transition-colors duration-500">
-                <div
-                    class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-neonCyan dark:to-purple-500">
-                </div>
-                <div class="flex gap-2 mb-6">
-                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            <div class="editor-main">
+                <div class="tab-bar">
+                    <div class="tab">
+                        <span id="tab-icon" class="text-yellow-400 ri-javascript-fill"></span>
+                        <span id="tab-name">contact.js</span>
+                        <i class="ri-close-line" style="margin-left: auto; opacity: 0.7;"></i>
+                    </div>
+                    <div class="lang-switch">
+                        <button class="lang-btn active" onclick="setLang('js')" data-lang="js">JS</button>
+                        <button class="lang-btn" onclick="setLang('python')" data-lang="python">PY</button>
+                        <button class="lang-btn" onclick="setLang('rust')" data-lang="rust">RS</button>
+                        <button class="lang-btn" onclick="setLang('go')" data-lang="go">GO</button>
+                    </div>
                 </div>
 
-                <form action="https://api.web3forms.com/submit" method="POST" class="space-y-6">
-                    <input type="hidden" name="access_key" value="e48ea064-c4b0-46d0-86c5-dbda6644e805">
+                <div class="editor-workspace">
+                    <div class="code-container">
+                        <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10</div>
+                        <div class="code-body" id="code-body"></div>
+                    </div>
+                    <div class="minimap">
+                        <canvas id="minimap-canvas"></canvas>
+                        <div class="minimap-overlay"></div>
+                    </div>
+                </div>
 
-                    <div>
-                        <label class="block font-mono text-xs text-gray-500 mb-1">var Name =</label>
-                        <input type="text" name="name" placeholder="'Your Name'" class="term-input" required>
+                <div id="term-resizer" class="resizer-bar"></div>
+
+                <div class="ide-terminal-pane" id="ide-terminal">
+                    <div class="ide-term-bar">
+                        <div class="flex gap-4 select-none">
+                            <span class="term-tab" id="tab-prob" onclick="switchConsoleTab('prob')">PROBLEMS</span>
+                            <span class="term-tab active" id="tab-term"
+                                onclick="switchConsoleTab('term')">TERMINAL</span>
+                            <span class="term-tab" id="tab-out" onclick="switchConsoleTab('out')">OUTPUT</span>
+                            <span class="term-tab" id="tab-debug" onclick="switchConsoleTab('debug')">DEBUG
+                                CONSOLE</span>
+                        </div>
+                        <button class="run-btn" onclick="deploy()">▶ RUN (Ctrl+Enter)</button>
                     </div>
-                    <div>
-                        <label class="block font-mono text-xs text-gray-500 mb-1">var Email =</label>
-                        <input type="email" name="email" placeholder="'your@email.com'" class="term-input" required>
+
+                    <div id="pane-prob" class="ide-term-content console-pane hidden">
+                        <div class="text-gray-400 italic">No problems have been detected in the workspace.</div>
                     </div>
-                    <div>
-                        <label class="block font-mono text-xs text-gray-500 mb-1">const Message =</label>
-                        <textarea name="message" rows="4" placeholder="// Type your message here..." class="term-input"
-                            required></textarea>
+
+                    <div id="pane-term" class="ide-term-content console-pane">
+                        <div class="text-gray-500">Microsoft Windows [Version 10.0.19045.3693]</div>
+                        <div class="text-gray-500">(c) Microsoft Corporation. All rights reserved.</div>
+                        <br>
+                        <div class="text-green-500">➜ ~/workspace <span class="text-gray-300 animate-pulse">_</span>
+                        </div>
                     </div>
-                    <button type="submit"
-                        class="w-full py-3 bg-neonBlue dark:bg-neonCyan text-white dark:text-black font-bold font-mono rounded hover:shadow-lg transition-all transform hover:translate-y-[-2px]">
-                        > Execute Send()
-                    </button>
-                </form>
+
+                    <div id="pane-out" class="ide-term-content console-pane hidden">
+                        <div class="text-gray-500">[System] Extension 'ContactForm' v1.0.0 activated.</div>
+                        <div class="text-gray-500">[System] Resolving dependencies... Done.</div>
+                        <div class="text-blue-400">[Info] Waiting for user input...</div>
+                    </div>
+
+                    <div id="pane-debug" class="ide-term-content console-pane hidden">
+                        <div class="text-gray-400">Debug Console attached. Type 'help' for commands.</div>
+                        <div id="debug-log" class="flex-grow overflow-y-auto"></div>
+                        <div class="debug-input-line">
+                            <span class="text-blue-500">>></span>
+                            <input type="text" class="debug-input" id="debug-cmd" placeholder="Evaluate expression..."
+                                autocomplete="off">
+                        </div>
+                    </div>
+                </div>
             </div>
 
+            <div class="status-bar" id="status-bar">
+                <div class="sb-left">
+                    <div class="sb-item"><i class="ri-git-branch-line"></i> main*</div>
+                    <div class="sb-item"><i class="ri-refresh-line"></i> 0</div>
+                    <div class="sb-item"><i class="ri-error-warning-line"></i> 0</div>
+                </div>
+                <div class="sb-right">
+                    <div class="sb-item" id="lang-stat">JavaScript</div>
+                    <div class="sb-item"><i class="ri-notification-3-line"></i></div>
+                </div>
+            </div>
         </div>
+
     </section>
 
     <footer id="main-footer" class="bg-black border-t border-gray-800 relative z-10">
@@ -519,6 +1187,293 @@
         </div>
     </div>
     <script>
+        // --- IDE CONTACT FORM LOGIC ---
+
+        const ideTemplates = {
+            js: {
+                file: 'contact.js', name: 'JavaScript',
+                code: () => `
+            <div><span class="kwd">import</span> { <span class="var">send</span> } <span class="kwd">from</span> <span class="str">'./api'</span>;</div>
+            <br>
+            <div><span class="kwd">const</span> <span class="var">payload</span> = {</div>
+            <div class="input-group">&nbsp;&nbsp;name: <span class="str">"<input id="i-name" placeholder="Name" class="ide-input">"</span>,<span class="git-blame">// You, seconds ago</span></div>
+            <div class="input-group">&nbsp;&nbsp;email: <span class="str">"<input id="i-email" placeholder="Email" class="ide-input">"</span>,<span class="git-blame">// Uncommitted change</span></div>
+            <div class="input-group">&nbsp;&nbsp;body: <span class="str">"<input id="i-msg" placeholder="Message" class="ide-input">"</span></div>
+            <div>};</div>
+            <br>
+            <div><span class="kwd">await</span> <span class="fun">send</span>(<span class="var">payload</span>);</div>`
+            },
+            python: {
+                file: 'contact.py', name: 'Python',
+                code: () => `
+            <div><span class="kwd">import</span> requests</div>
+            <br>
+            <div><span class="kwd">def</span> <span class="fun">contact_host</span>():</div>
+            <div class="input-group">&nbsp;&nbsp;data = {</div>
+            <div class="input-group">&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"u_name"</span>: <span class="str">"<input id="i-name" placeholder="Name" class="ide-input">"</span>,<span class="git-blame"># Blame: You</span></div>
+            <div class="input-group">&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"u_mail"</span>: <span class="str">"<input id="i-email" placeholder="Email" class="ide-input">"</span>,<span class="git-blame"># Edited just now</span></div>
+            <div class="input-group">&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"u_text"</span>: <span class="str">"<input id="i-msg" placeholder="Message" class="ide-input">"</span></div>
+            <div class="input-group">&nbsp;&nbsp;}</div>
+            <br>
+            <div>&nbsp;&nbsp;requests.<span class="fun">post</span>(API, json=data)</div>`
+            },
+            rust: {
+                file: 'contact.rs', name: 'Rust',
+                code: () => `
+            <div><span class="kwd">fn</span> <span class="fun">main</span>() {</div>
+            <div>&nbsp;&nbsp;<span class="kwd">let</span> <span class="kwd">mut</span> msg = <span class="var">Msg</span>::new();</div>
+            <br>
+            <div class="input-group">&nbsp;&nbsp;msg.name = <span class="str">"<input id="i-name" placeholder="Name" class="ide-input">"</span>.to_string();<span class="git-blame">// ref: HEAD</span></div>
+            <div class="input-group">&nbsp;&nbsp;msg.mail = <span class="str">"<input id="i-email" placeholder="Email" class="ide-input">"</span>.to_string();</div>
+            <div class="input-group">&nbsp;&nbsp;msg.body = <span class="str">"<input id="i-msg" placeholder="Message" class="ide-input">"</span>.to_string();</div>
+            <br>
+            <div>&nbsp;&nbsp;<span class="var">Server</span>::<span class="fun">push</span>(&msg).unwrap();</div>
+            <div>}</div>`
+            },
+            go: {
+                file: 'main.go', name: 'Go',
+                code: () => `
+            <div><span class="kwd">func</span> <span class="fun">main</span>() {</div>
+            <div class="input-group">&nbsp;&nbsp;m := <span class="var">Message</span>{</div>
+            <div class="input-group">&nbsp;&nbsp;&nbsp;&nbsp;User: <span class="str">"<input id="i-name" placeholder="Name" class="ide-input">"</span>,<span class="git-blame">// func: init</span></div>
+            <div class="input-group">&nbsp;&nbsp;&nbsp;&nbsp;Mail: <span class="str">"<input id="i-email" placeholder="Email" class="ide-input">"</span>,</div>
+            <div class="input-group">&nbsp;&nbsp;&nbsp;&nbsp;Text: <span class="str">"<input id="i-msg" placeholder="Message" class="ide-input">"</span>,</div>
+            <div>&nbsp;&nbsp;}</div>
+            <div>&nbsp;&nbsp;<span class="var">fmt</span>.<span class="fun">Println</span>(m)</div>
+            <div>}</div>`
+            }
+        };
+
+        let currentLang = 'js';
+        const formValues = { name: '', email: '', msg: '' };
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = ideTemplates[lang];
+
+            // UI Updates
+            document.getElementById('tab-name').innerText = t.file;
+            document.getElementById('lang-stat').innerText = t.name;
+
+            const tabIcon = document.getElementById('tab-icon');
+            tabIcon.className = lang === 'js' ? 'ri-javascript-fill text-yellow-400' :
+                lang === 'python' ? 'ri-terminal-box-line text-blue-400' :
+                    'ri-code-s-slash-line text-white';
+
+            // --- NEW: TYPEWRITER / FADE EFFECT ---
+            const codeBody = document.getElementById('code-body');
+
+            // 1. Hide initially
+            codeBody.style.opacity = '0';
+            codeBody.style.transition = 'none'; // Disable transition for instant hide
+
+            // 2. Insert Content
+            codeBody.innerHTML = t.code();
+
+            // 3. Trigger Fade In (Small delay to allow DOM render)
+            setTimeout(() => {
+                codeBody.style.transition = 'opacity 0.3s ease-in';
+                codeBody.style.opacity = '1';
+            }, 50);
+
+            // Restore Inputs
+            if (formValues.name) document.getElementById('i-name').value = formValues.name;
+            if (formValues.email) document.getElementById('i-email').value = formValues.email;
+            if (formValues.msg) document.getElementById('i-msg').value = formValues.msg;
+
+            bindInputs();
+            drawMinimap();
+            updateActiveBtns();
+        }
+
+        function bindInputs() {
+            document.querySelectorAll('.ide-input').forEach(inp => {
+                // 1. INPUT EVENT: Handles data binding and Sound Effects
+                inp.addEventListener('input', (e) => {
+                    const id = e.target.id;
+
+                    // Update the formValues object
+                    if (id === 'i-name') formValues.name = e.target.value;
+                    if (id === 'i-email') formValues.email = e.target.value;
+                    if (id === 'i-msg') formValues.msg = e.target.value;
+                    e.target.classList.remove('error');
+
+                    // SUGGESTION 2: Trigger mechanical key sound if available
+                    if (typeof playKeyClick === 'function') {
+                        playKeyClick();
+                    }
+                });
+
+                // 2. KEYDOWN EVENT: Handles Keyboard Shortcuts
+                inp.addEventListener('keydown', (e) => {
+                    // Existing Shortcut: Deploy
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        deploy();
+                    }
+
+                    // BONUS SUGGESTION: Simulate "Save" (Ctrl+S)
+                    if (e.ctrlKey && e.key === 's') {
+                        e.preventDefault(); // Prevents browser from saving the HTML file
+                        const term = document.getElementById('ide-term-out');
+
+                        // Print a VS Code-style "Saved" message to the internal terminal
+                        term.innerHTML += `<div class="text-gray-400">>> File saved locally. Ready to deploy.</div>`;
+                        term.scrollTop = term.scrollHeight;
+                    }
+                });
+            });
+        }
+
+        function updateActiveBtns() {
+            // 1. Remove 'active' class from ALL buttons first
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+
+            // 2. Select the specific button that matches the current language
+            const activeBtn = document.querySelector(`.lang-btn[data-lang="${currentLang}"]`);
+
+            // 3. Add the class only to that button
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+
+        // Replace your existing deploy() function with this:
+        async function deploy() {
+            const bar = document.getElementById('status-bar');
+            const term = document.getElementById('pane-term');
+            const probPane = document.getElementById('pane-prob'); // NEW target
+
+            // 1. Get Values
+            const name = document.getElementById('i-name').value;
+            const email = document.getElementById('i-email').value;
+            const message = document.getElementById('i-msg').value;
+
+            // --- 2. VALIDATION & ERROR COUNTING ---
+            if (!name || !email || !message) {
+                // Calculate error count
+                const errCount = [name, email, message].filter(v => !v).length;
+
+                // A. Update Status Bar
+                const errLabel = document.querySelector('.ri-error-warning-line').parentNode;
+                if (errLabel) {
+                    errLabel.innerHTML = `<i class="ri-error-warning-line text-red-500"></i> ${errCount}`;
+                    errLabel.classList.add('text-red-500');
+                }
+
+                // B. Update Terminal
+                term.innerHTML += `<div class="text-red-500 mt-1">>> ERROR: Compilation failed. ${errCount} missing module(s).</div>`;
+                term.scrollTop = term.scrollHeight;
+
+                // C. Highlight Inputs
+                document.querySelectorAll('.ide-input').forEach(i => { if (!i.value) i.classList.add('error'); });
+
+                // D. Log to Output
+                logToOutput(`Build failed: ${errCount} missing input fields.`, 'error');
+
+                // E. NEW: Populate PROBLEMS Tab
+                if (probPane) {
+                    probPane.innerHTML = ''; // Clear old errors
+
+                    // Helper to generate the error line HTML
+                    const addError = (msg, inputId, line) => {
+                        probPane.innerHTML += `
+                    <div class="cursor-pointer hover:bg-white/5 p-1 text-red-400 font-mono text-xs mb-1 transition-colors" 
+                         onclick="focusInput('${inputId}')">
+                        <i class="ri-close-circle-line"></i> 
+                        <span class="text-gray-500">[Error]</span> ${ideTemplates[currentLang].file}:${line}:1 
+                        <span class="text-gray-300">- ${msg}</span>
+                    </div>`;
+                    };
+
+                    // Add specific errors based on missing fields
+                    if (!name) addError(`'name' is defined but never assigned a value.`, 'i-name', 5);
+                    if (!email) addError(`'email' cannot be void.`, 'i-email', 6);
+                    if (!message) addError(`Argument 'message' missing in payload.`, 'i-msg', 7);
+
+                    // Automatically switch to the problems tab to show user
+                    switchConsoleTab('prob');
+                }
+                return;
+            }
+
+            // --- RESET ERROR COUNT (If validation passes) ---
+            const errLabel = document.querySelector('.ri-error-warning-line').parentNode;
+            if (errLabel) {
+                errLabel.innerHTML = `<i class="ri-error-warning-line"></i> 0`;
+                errLabel.classList.remove('text-red-500');
+            }
+
+            // Clear Problems Pane on start
+            if (probPane) probPane.innerHTML = `<div class="text-gray-500 italic p-2">Building...</div>`;
+
+            // 3. UI: Start "Build"
+            bar.classList.add('status-building');
+            term.innerHTML += `<div class="text-yellow-500 mt-2">>> Building ${ideTemplates[currentLang].file}...</div>`;
+            term.scrollTop = term.scrollHeight;
+
+            logToOutput(`Starting build for ${ideTemplates[currentLang].file}...`);
+            logToOutput(`Target: Production (Release)`);
+
+            try {
+                const response = await fetch("https://api.web3forms.com/submit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Accept: "application/json" },
+                    body: JSON.stringify({
+                        access_key: "e48ea064-c4b0-46d0-86c5-dbda6644e805",
+                        name: name,
+                        email: email,
+                        message: message
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    bar.classList.remove('status-building');
+                    bar.classList.add('status-ready');
+
+                    term.innerHTML += `<div class="text-green-400">>> Success: Packet delivered [200 OK].</div>`;
+                    term.innerHTML += `<div class="text-gray-500">>> Server response: ${result.message}</div>`;
+
+                    logToOutput(`POST /api/submit - 200 OK`, 'success');
+                    logToOutput(`Build completed successfully.`, 'success');
+
+                    // Clear inputs
+                    document.querySelectorAll('.ide-input').forEach(i => i.value = '');
+
+                    // Clear Problems Pane
+                    if (probPane) probPane.innerHTML = `<div class="text-green-500 italic p-2">>> No problems found. Build clean.</div>`;
+
+                } else {
+                    throw new Error("API Error");
+                }
+            } catch (error) {
+                bar.classList.remove('status-building');
+                term.innerHTML += `<div class="text-red-500">>> ERROR: Connection Refused. Check Network.</div>`;
+                logToOutput(`Connection Error: ${error.message}`, 'error');
+            }
+
+            term.scrollTop = term.scrollHeight;
+            setTimeout(() => bar.classList.remove('status-ready'), 5000);
+        }
+
+        function focusInput(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.focus();
+                // Add a temporary flash effect
+                el.style.backgroundColor = 'rgba(239, 68, 68, 0.2)'; // Red flash
+                el.style.transition = 'background-color 0.3s';
+                setTimeout(() => {
+                    el.style.backgroundColor = 'transparent';
+                }, 500);
+            }
+        }
+
+        // Initialize IDE
+        document.addEventListener('DOMContentLoaded', () => {
+            setLang('js');
+        });
         // --- Shared Terminal Logic (STARTS HERE) ---
 
         const terminalOutput = document.getElementById('terminal-output');
@@ -1791,7 +2746,285 @@
                 window.speechSynthesis.speak(utterance);
             }
         }
+        /* =========================================
+   === 1. VS CODE STYLE MINIMAP LOGIC ===
+========================================= */
+        function drawMinimap() {
+            const c = document.getElementById('minimap-canvas');
+            if (!c) return;
+            const ctx = c.getContext('2d');
+
+            // High-DPI Support for crisp lines
+            const dpr = window.devicePixelRatio || 1;
+            // Get container dimensions
+            const parent = c.parentElement;
+            c.width = parent.clientWidth * dpr;
+            c.height = parent.clientHeight * dpr;
+            ctx.scale(dpr, dpr);
+
+            // VS Code Syntax Colors (Blue, Orange, Green, Purple, Light Blue)
+            const syntaxColors = ['#569cd6', '#ce9178', '#6a9955', '#c586c0', '#4fc1ff', '#dcdcaa'];
+
+            let y = 10;
+            const width = parent.clientWidth;
+
+            // Generate "Code Blocks"
+            while (y < parent.clientHeight) {
+                // Randomly skip lines (paragraph breaks)
+                if (Math.random() > 0.85) { y += 6; continue; }
+
+                let x = 5; // Left padding
+                let indent = Math.floor(Math.random() * 3) * 10; // Random indentation
+                x += indent;
+
+                // Draw words in a line
+                while (x < width - 10) {
+                    // Random word length (short to medium)
+                    const wordLen = Math.random() * 25 + 5;
+                    // Pick a syntax color
+                    const color = syntaxColors[Math.floor(Math.random() * syntaxColors.length)];
+
+                    ctx.fillStyle = color;
+                    ctx.globalAlpha = 0.7; // VS Code minimap is slightly faded
+                    ctx.fillRect(x, y, wordLen, 3); // Draw the "word" rectangle
+
+                    x += wordLen + 4; // Space between words
+
+                    // Randomly end the line
+                    if (Math.random() > 0.8) break;
+                }
+                y += 5; // Line spacing
+            }
+        }
+
+        /* =========================================
+           === 2. VERTICAL TERMINAL RESIZER ===
+        ========================================= */
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Minimap
+            drawMinimap();
+
+            // Initialize Resizer
+            const resizer = document.getElementById('term-resizer');
+            const terminal = document.getElementById('ide-terminal');
+            const editorWindow = document.querySelector('.ide-window'); // Main container
+
+            if (!resizer || !terminal) return;
+
+            let isResizing = false;
+
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                resizer.classList.add('resizing');
+                document.body.style.cursor = 'row-resize'; // Global cursor change
+                e.preventDefault(); // Prevent text selection while dragging
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+
+                // Calculate new height
+                // Formula: Bottom of Window - Mouse Y Position - Footer Height (Status Bar ~22px)
+                const windowRect = editorWindow.getBoundingClientRect();
+                const newHeight = windowRect.bottom - e.clientY - 25;
+
+                // Constraints (Min 50px, Max 400px)
+                if (newHeight > 50 && newHeight < 400) {
+                    terminal.style.height = `${newHeight}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    resizer.classList.remove('resizing');
+                    document.body.style.cursor = 'default';
+                }
+            });
+
+            // Redraw minimap if window resizes
+            window.addEventListener('resize', drawMinimap);
+        });
+        // --- CONSOLE TABS LOGIC ---
+
+        // --- FOLDER LOGIC ---
+
+        function toggleFolder(folderId, headerEl) {
+            const content = document.getElementById(folderId);
+            const icon = headerEl.querySelector('i');
+
+            // Toggle Visibility
+            if (content.classList.contains('hidden')) {
+                // OPEN IT
+                content.classList.remove('hidden');
+                icon.className = 'ri-arrow-down-s-line';
+            } else {
+                // CLOSE IT
+                content.classList.add('hidden');
+                icon.className = 'ri-arrow-right-s-line';
+            }
+        }
+
+        function openDummy(fileName) {
+            // 1. Switch to Output Tab to show the "action"
+            switchConsoleTab('out');
+
+            // 2. Log the action using the function we made earlier
+            logToOutput(`Opening binary file: ${fileName}...`);
+
+            // 3. Simulate a read delay
+            setTimeout(() => {
+                logToOutput(`[System] File '${fileName}' is read-only in guest mode.`, 'text-yellow-500');
+            }, 400);
+        }
+
+        // 1. Switch Tabs
+        function switchConsoleTab(tabName) {
+            // UI: Update Header Classes
+            document.querySelectorAll('.term-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            // UI: Show/Hide Panes
+            document.querySelectorAll('.console-pane').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`pane-${tabName}`).classList.remove('hidden');
+
+            // Focus input if debug selected
+            if (tabName === 'debug') document.getElementById('debug-cmd').focus();
+        }
+
+        // 2. Debug Console Interaction (The "Working" Part)
+        const debugInput = document.getElementById('debug-cmd');
+        const debugLog = document.getElementById('debug-log');
+
+        debugInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = debugInput.value.trim();
+                if (!cmd) return;
+
+                // Echo the command
+                debugLog.innerHTML += `<div class="mt-1"><span class="text-blue-500">>></span> <span class="text-gray-300">${cmd}</span></div>`;
+
+                // Process Command
+                let response = '';
+                try {
+                    if (cmd === 'help') {
+                        response = `<span class="text-yellow-500">Available vars:</span> formValues, currentLang, navigator<br><span class="text-yellow-500">Commands:</span> clear, theme`;
+                    } else if (cmd === 'clear') {
+                        debugLog.innerHTML = '';
+                        debugInput.value = '';
+                        return;
+                    } else if (cmd === 'formValues' || cmd === 'form') {
+                        // Show live data from the form inputs
+                        response = `<span class="text-green-400">${JSON.stringify(formValues, null, 2)}</span>`;
+                    } else if (cmd === 'navigator') {
+                        response = `<span class="text-orange-400">UserAgent: ${navigator.userAgent}</span>`;
+                    } else {
+                        // Safe eval for other simple math/strings
+                        response = `<span class="text-gray-400">${eval(cmd)}</span>`;
+                    }
+                } catch (err) {
+                    response = `<span class="text-red-500">ReferenceError: ${cmd} is not defined</span>`;
+                }
+
+                debugLog.innerHTML += `<div class="pl-4 mb-2">${response}</div>`;
+                debugLog.scrollTop = debugLog.scrollHeight;
+                debugInput.value = '';
+            }
+        });
+
+        // 3. Update Deploy to write to OUTPUT tab as well
+        // (Paste this OVER your existing update inside deploy() function)
+        function logToOutput(msg, type = 'info') {
+            const outPane = document.getElementById('pane-out');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            const color = type === 'error' ? 'text-red-500' : type === 'success' ? 'text-green-400' : 'text-gray-400';
+            outPane.innerHTML += `<div><span class="text-gray-600">[${time}]</span> <span class="${color}">${msg}</span></div>`;
+            outPane.scrollTop = outPane.scrollHeight;
+        }
+        // --- COMMAND PALETTE LOGIC ---
+        const palette = document.getElementById('cmd-palette');
+        const cmdInput = document.getElementById('cmd-input');
+        const cmdList = document.getElementById('cmd-list');
+
+        // Define Commands
+        const sysCommands = [
+            { label: 'Deploy Application', key: 'Ctrl+Enter', action: () => deploy() },
+            { label: 'Clear Terminal', key: '', action: () => document.getElementById('pane-term').innerHTML = '' },
+            { label: 'Format Document', key: 'Shift+Alt+F', action: () => formatInputs() },
+            { label: 'Theme: Matrix', key: '', action: () => applyTheme('matrix') },
+            { label: 'Theme: Cyberpunk', key: '', action: () => applyTheme('cyberpunk') },
+            { label: 'Theme: Default', key: '', action: () => applyTheme('default') },
+            { label: 'File: Save', key: 'Ctrl+S', action: () => logToOutput('File saved locally.') },
+            { label: 'Go to Home', key: '', action: () => window.location.href = 'home.html' },
+            { label: 'System: Self Destruct', key: 'Ctrl+Alt+D', action: () => runCommand('rm -rf /') },
+        ];
+
+        function togglePalette(show) {
+            if (show) {
+                palette.classList.remove('hidden');
+                cmdInput.value = '';
+                renderCommands(sysCommands);
+                cmdInput.focus();
+            } else {
+                palette.classList.add('hidden');
+            }
+        }
+
+        function renderCommands(list) {
+            cmdList.innerHTML = list.map(cmd => `
+        <div class="cmd-item" onclick="execCmd('${cmd.label}')">
+            <span>${cmd.label}</span>
+            <span class="cmd-key">${cmd.key}</span>
+        </div>
+    `).join('');
+        }
+
+        function execCmd(label) {
+            const cmd = sysCommands.find(c => c.label === label);
+            if (cmd) cmd.action();
+            togglePalette(false);
+        }
+
+        function formatInputs() {
+            // Trim whitespace from inputs
+            document.querySelectorAll('.ide-input').forEach(i => i.value = i.value.trim());
+            logToOutput('Document formatted.');
+        }
+
+        // Event Listeners
+        document.addEventListener('keydown', (e) => {
+            // Open on Ctrl+Shift+P OR F1
+            if ((e.ctrlKey && e.shiftKey && e.key === 'P') || e.key === 'F1') {
+                e.preventDefault();
+                togglePalette(true);
+            }
+            // Close on Escape
+            if (e.key === 'Escape') togglePalette(false);
+        });
+
+        // Filter Logic
+        cmdInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = sysCommands.filter(c => c.label.toLowerCase().includes(term));
+            renderCommands(filtered);
+        });
     </script>
+    <div id="cmd-palette" class="fixed inset-0 bg-black/50 z-[9999] hidden flex justify-center pt-[10vh]"
+        onclick="togglePalette(false)">
+        <div class="w-[600px] max-w-[90%] bg-[#252526] border border-[#454545] shadow-2xl rounded-md overflow-hidden flex flex-col h-max max-h-[50vh]"
+            onclick="event.stopPropagation()">
+
+            <div class="p-2 border-b border-[#454545] flex items-center gap-2">
+                <span class="text-gray-400">></span>
+                <input id="cmd-input" type="text"
+                    class="bg-transparent border-none outline-none text-white w-full font-mono text-sm"
+                    placeholder="Type a command...">
+            </div>
+
+            <div id="cmd-list" class="overflow-y-auto py-1">
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
