@@ -1058,15 +1058,70 @@
 
             <div
                 class="absolute left-6 md:left-1/2 transform md:-translate-x-1/2 top-32 bottom-10 w-0.5 bg-gray-200 dark:bg-gray-800">
-                <div class="absolute inset-0 bg-gradient-to-b from-purple-500 via-orange-500 to-green-500 opacity-0 md:opacity-100 transition-opacity duration-500"
-                    id="progress-line"></div>
+                <div class="absolute inset-0 opacity-0 md:opacity-100 transition-opacity duration-500"
+                    id="progress-line" style="background: linear-gradient(to bottom, 
+        #00ff41 0%,   /* Aegis (Green) */
+        #a855f7 20%,  /* Commune-X (Purple) */
+        #f97316 40%,  /* Dhanvaanijya (Orange) */
+        #ef4444 60%,  /* Security (Red) */
+        #eab308 80%,  /* EduLink (Yellow) */
+        #06b6d4 100%  /* Init (Cyan) */
+     );">
+                </div>
 
                 <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
                     <i class="ri-arrow-up-double-line text-green-500/50 text-xl animate-bounce"></i>
                     <div class="w-2 h-2 bg-green-500/50 rounded-full mt-1"></div>
                 </div>
             </div>
+            <div
+                class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group left-card">
+                <div class="md:w-5/12 pl-16 md:pl-0 order-2 md:order-1">
+                    <div class="circuit-line hidden md:block" style="background: #00ff41;"></div>
 
+                    <div
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-r-4 md:border-r-[#00ff41] md:border-l-0 border-l-4 border-l-[#00ff41] md:text-right bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-[#00ff41] rounded-full md:hidden"></div>
+
+                        <div class="flex justify-between md:justify-end items-start mb-2 gap-4">
+                            <span
+                                class="text-xs font-mono text-neonBlue order-2 md:order-1 animate-pulse">[CLASSIFIED]</span>
+                            <span
+                                class="text-xs font-mono text-[#00ff41] bg-green-500/10 px-2 py-1 rounded order-1 md:order-2">
+                                Dec 2025
+                            </span>
+                        </div>
+
+                        <h3
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-[#00ff41] transition-colors">
+                            Project: Aegis Secure
+                        </h3>
+
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed md:border-r-2 md:border-l-0 border-l-2 border-gray-700 md:pr-3 pl-3 md:pl-0">
+                            engineered a military-grade ZK-SNARK communication protocol with ephemeral messaging ("Burn
+                            Timer") and honeypot defenses.
+                        </p>
+
+                        <div class="flex flex-wrap gap-2 text-xs font-mono md:justify-end">
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Cryptography</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Redis</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-500 dark:text-gray-400">#Socket.io</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-[#00ff41] rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_#00ff41] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-shield-check-line text-[#00ff41]"></i>
+                </div>
+
+                <div class="md:w-5/12 order-3"></div>
+            </div>
             <div
                 class="timeline-item relative flex flex-col md:flex-row items-center justify-between mb-24 group right-card">
                 <div class="md:w-5/12 order-1"></div>
@@ -1243,24 +1298,26 @@
                 <div class="md:w-5/12 order-1"></div>
 
                 <div
-                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-green-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_green] group-hover:scale-110 transition-transform duration-300 order-1">
-                    <i class="ri-graduation-cap-fill text-green-500"></i>
+                    class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-10 h-10 bg-[#0a0a0a] border-2 border-cyan-500 rounded-full z-10 flex items-center justify-center shadow-[0_0_15px_cyan] group-hover:scale-110 transition-transform duration-300 order-1">
+                    <i class="ri-graduation-cap-fill text-cyan-500"></i>
                 </div>
 
                 <div class="md:w-5/12 pl-16 md:pl-0 order-2">
-                    <div class="circuit-line hidden md:block" style="background: #22c55e;"></div>
+                    <div class="circuit-line hidden md:block" style="background: #06b6d4;"></div>
+
                     <div
-                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-green-500 bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
-                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-green-500 rounded-full md:hidden"></div>
+                        class="terminal-card p-6 relative group-hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-cyan-500 bg-opacity-90 dark:bg-opacity-40 backdrop-blur-sm">
+                        <div class="absolute -left-2 top-1/2 w-2 h-2 bg-cyan-500 rounded-full md:hidden"></div>
 
                         <div class="flex justify-between items-start mb-2">
-                            <span class="text-xs font-mono text-green-500 bg-green-500/10 px-2 py-1 rounded">2020 -
+                            <span class="text-xs font-mono text-cyan-500 bg-cyan-500/10 px-2 py-1 rounded">2020 -
                                 2023</span>
                             <span class="text-xs font-mono text-gray-500">[INIT]</span>
                         </div>
                         <h3
-                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-green-400 transition-colors">
-                            System Initialization</h3>
+                            class="text-xl font-bold dark:text-white mb-2 font-mono group-hover:text-cyan-400 transition-colors">
+                            System Initialization
+                        </h3>
                         <p
                             class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed border-l-2 border-gray-700 pl-3">
                             Started the journey with C++ and Python. Completed High School (Physics/CS) and entered the
@@ -2373,11 +2430,11 @@
             }, 30);
         }
 
-       // Apply to Section Headings (Excluding the Hero Typewriter)
+        // Apply to Section Headings (Excluding the Hero Typewriter)
         document.querySelectorAll('h2').forEach(header => {
             // FIXED: If this header contains the typewriter, do NOT apply the effect
             if (header.querySelector('#typewriter')) return;
-            
+
             header.addEventListener('mouseover', hackerEffect);
         });
         // --- AUDIO SYSTEM (Synthesized Sounds) ---
