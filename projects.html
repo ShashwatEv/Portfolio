@@ -228,6 +228,26 @@
             color: #27c93f;
         }
 
+        /* 4. AEGIS THEME (New) */
+        .theme-aegis {
+            --spotlight-color: rgba(0, 255, 65, 0.15);
+            /* Matrix Green Glow */
+        }
+
+        .theme-aegis:hover {
+            border-color: #00ff41;
+            box-shadow: 0 10px 40px -10px rgba(0, 255, 65, 0.3);
+        }
+
+        .theme-aegis .term-header {
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        .theme-aegis .prompt-user {
+            color: #00ff41;
+        }
+
         /* TERMINAL INTERNALS */
         .term-header {
             padding: 8px 12px;
@@ -644,41 +664,41 @@
                 </div>
             </a>
 
-            <a href="home.html" class="project-item block h-full group" data-tags="HTML5, CSS3, JS, Vanilla"
-                data-complexity="1">
-                <div class="project-terminal theme-default">
+            <a href="https://aegis-frontend-7f1o.onrender.com" class="project-item block h-full group"
+                data-tags="ZK-SNARKs, Redis, Socket.io, AES-256" data-complexity="5">
+                <div class="project-terminal theme-aegis">
                     <div class="terminal-spotlight"></div>
 
                     <div class="term-header">
                         <div class="dot red"></div>
                         <div class="dot yellow"></div>
                         <div class="dot green"></div>
-                        <span class="ml-2 text-xs text-gray-400 font-mono">portfolio_v1.js</span>
+                        <span class="ml-2 text-xs text-gray-400 font-mono">protocol_v2.zk</span>
                         <span
-                            class="ml-auto px-2 py-0.5 rounded text-xs font-mono bg-blue-500 text-white font-bold">STABLE</span>
+                            class="ml-auto px-2 py-0.5 rounded text-xs font-mono bg-red-600 text-black font-bold">SECURE</span>
                     </div>
                     <div class="term-body">
                         <div class="mb-3">
-                            <span class="prompt-user font-bold">Sash@home:~$</span> npm run build
+                            <span class="prompt-user font-bold">ghost@aegis:~$</span> ./init_handshake
                         </div>
-                        <div class="text-neonBlue dark:text-neonCyan mb-4 text-xs leading-relaxed">
-                            > Compiling Assets...<br>
-                            > Optimizing CSS...<br>
-                            > Deploying to Vercel...<br>
-                            > <span class="text-green-500">Build Successful (20ms)</span>
+                        <div style="color: #00ff41;" class="mb-4 text-xs leading-relaxed">
+                            > Generating ZK-Proof... [OK]<br>
+                            > Encrypting Stream (AES-256)...<br>
+                            > Burn Timer: <span class="text-red-500 font-bold">30s ACTIVE</span><br>
+                            > Connection: <span class="animate-pulse">Encrypted</span>
                         </div>
 
-                        <h3 class="text-2xl font-bold mb-2 font-mono group-hover:text-neonCyan transition-colors">
-                            Portfolio System</h3>
+                        <h3 class="text-2xl font-bold mb-2 font-mono group-hover:text-green-500 transition-colors">
+                            Aegis Secure</h3>
                         <p class="text-gray-600 dark:text-gray-400 text-sm mb-6 flex-grow">
-                            The interactive terminal-themed portfolio you are browsing right now. Featuring dynamic JS
-                            simulations and dark mode.
+                            Military-grade E2E chat system for penetration testers. Features Zero-Knowledge auth,
+                            message incineration, and honeypot defenses.
                         </p>
 
                         <div class="flex flex-wrap gap-2 mt-auto">
-                            <span class="tech-tag">HTML5</span>
-                            <span class="tech-tag">CSS3</span>
-                            <span class="tech-tag">Vanilla JS</span>
+                            <span class="tech-tag group-hover:border-green-500/50">ZK-SNARKs</span>
+                            <span class="tech-tag group-hover:border-green-500/50">Redis</span>
+                            <span class="tech-tag group-hover:border-green-500/50">Socket.io</span>
                         </div>
                     </div>
                 </div>
